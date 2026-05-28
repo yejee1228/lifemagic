@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>인생마술 | 우리들의 공연으로 인생의 마법 같은 순간을</title>
+    <meta name="description"
+        content="관객들의 인생에 마술 같은 일이 벌어지기를 바라는 전문 마술 공연단 '인생마술'입니다. 어린이 마술, 극장 공연, 버스킹, 기업 행사 맞춤형 마술 프로그램을 제안합니다.">
+    <!-- Google Fonts & Icon -->
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <!-- INTEGRATED HEADER NAV -->
+    <header id="header">
+        <div class="nav-container">
+            <a href="index.html" class="logo">
+                <img src="images/logo.png" alt="인생마술 로고">
+            </a>
+            <nav>
+                <ul class="nav-links" id="nav-links">
+                    <li><a href="index.html">홈</a></li>
+                    <li><a href="about.html">회사소개</a></li>
+                    <li><a href="program.html">프로그램</a></li>
+                    <li><a href="history.html">히스토리</a></li>
+                    <li><a href="inquiry.html">문의</a></li>
+                </ul>
+            </nav>
+            <button class="hamburger" id="hamburger" aria-label="메뉴 토글">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+    </header>
+
+    <!-- FULL PAGE SCROLL CONTAINER -->
+    <main class="scroll-container" id="scroll-container">
+
+        <!-- SECTION 1: HERO (MOTTO) -->
+        <section class="snap-section sec-hero active" id="home">
+            <div class="hero-content">
+                <p class="hero-subtitle">LIFE MAGIC</p>
+                <h1 class="hero-title">
+                    우리들의 공연으로<br>
+                    관객들의 인생에<br>
+                    마술 같은 일이 벌어지기를
+                </h1>
+                <div style="display: flex; gap: 15px; justify-content: center; margin-top: 20px;">
+                    <a href="about.html" class="btn-gold">회사 소개 보기</a>
+                    <a href="inquiry.html" class="btn-glass">공연 예약 및 문의</a>
+                </div>
+            </div>
+
+            <div class="scroll-indicator">
+                <span>SCROLL DOWN</span>
+                <svg viewBox="0 0 24 24">
+                    <path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z" />
+                </svg>
+            </div>
+        </section>
+
+        <!-- SECTION 2: PROGRAM INTRO -->
+        <section class="snap-section sec-program-intro" id="programs">
+            <div class="intro-glass-card glass-panel">
+                <p class="artist-tag" style="margin-bottom: 10px;">Our Magic Programs</p>
+                <h2>다채롭고 신비로운 공연 프로그램</h2>
+                <p>
+                    어린이들을 위한 꿈과 희망의 키즈 매직부터 대규모 극장 스토리 쇼, 관객과 가까이서 호흡하는 행사 및 버스킹, 기업과 기관의 성격을 극대화하는 맞춤형 브랜딩 퍼포먼스까지 완벽하게
+                    짜여진 연출을 선사합니다.
+                </p>
+                <a href="program.html" class="btn-gold">공연 프로그램 보러가기</a>
+            </div>
+        </section>
+
+        <!-- SECTION 3: INQUIRY INTRO & FOOTER -->
+        <section class="snap-section sec-inquiry-intro" id="inquiry"
+            style="justify-content: space-between; padding-bottom: 0;">
+            <!-- Dummy spacer to center form card perfectly -->
+            <div></div>
+
+            <div class="intro-glass-card glass-panel" style="margin-top: 40px; margin-bottom: 40px;">
+                <p class="artist-tag" style="margin-bottom: 10px;">Ready to Cast a Spell?</p>
+                <h2>마술 같은 날을 지금 계획하세요</h2>
+                <p>
+                    일정, 주소, 예산 및 관객 연령대를 포함한 세부 사항을 남겨주시면, 전문 기획진이 상상하시는 무대 그 이상을 현실로 만들어 드립니다.
+                </p>
+                <a href="inquiry.html" class="btn-gold">공연 상담 및 예약 신청</a>
+            </div>
+
+            <!-- INTEGRATED FOOTER inside Section 3 for continuous snapping experience -->
+            <footer style="width: 100%; border-top: 1px solid rgba(255,255,255,0.05); margin-top: auto;">
+                <div class="footer-container">
+                    <div class="footer-info">
+                        <div class="footer-brand"><span>인생마술</span></div>
+                        <div class="footer-biz-details">
+                            <p>상호명: 인생마술 | 대표자: 오성민</p>
+                            <p>사업자등록번호: 123-45-67890 | 이메일: contact@insaengmasul.com</p>
+                            <p>주소: 서울특별시 마포구 어울마당로 123, 3층</p>
+                            <p>공연 및 예약 전화 문의: 010-1234-5678 (상담 시간: 10:00 - 19:00)</p>
+                        </div>
+                    </div>
+                    <div class="footer-sns-box">
+                        <h4 class="sns-title">CONNECT WITH US</h4>
+                        <div class="sns-links-grid">
+                            <!-- Instagram -->
+                            <a href="https://instagram.com" target="_blank" class="sns-circle-link" aria-label="인스타그램">
+                                <svg viewBox="0 0 24 24">
+                                    <path
+                                        d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.051.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.406-11.845a1.44 1.44 0 1 0 0 2.881 1.44 1.44 0 0 0 0-2.881z" />
+                                </svg>
+                            </a>
+                            <!-- Blog -->
+                            <a href="https://section.blog.naver.com" target="_blank" class="sns-circle-link"
+                                aria-label="블로그">
+                                <svg viewBox="0 0 24 24">
+                                    <path
+                                        d="M22.5 0h-21C.672 0 0 .672 0 1.5v21C0 23.328.672 24 1.5 24h21c.828 0 1.5-.672 1.5-1.5v-21C24 .672 23.328 0 22.5 0zM17.43 12.56h-2.45v5.33h-2.68v-5.33H9.85V9.92h7.58v2.64z" />
+                                </svg>
+                            </a>
+                            <!-- Kakao -->
+                            <a href="https://pf.kakao.com" target="_blank" class="sns-circle-link" aria-label="카카오톡">
+                                <svg viewBox="0 0 24 24">
+                                    <path
+                                        d="M12 3c-4.97 0-9 3.185-9 7.115 0 2.557 1.707 4.8 4.27 6.054-.188.702-.68 2.531-.777 2.893-.118.438.148.433.31.325.127-.085 2.012-1.366 2.805-1.902.443.084.903.13 1.392.13 4.97 0 9-3.186 9-7.115C21 6.185 16.97 3 12 3z" />
+                                </svg>
+                            </a>
+                            <!-- Phone -->
+                            <a href="tel:010-1234-5678" class="sns-circle-link" aria-label="전화번호">
+                                <svg viewBox="0 0 24 24">
+                                    <path
+                                        d="M20.01 15.38c-1.23 0-2.42-.2-3.53-.56-.35-.12-.74-.03-1.02.24l-2.2 2.2c-2.83-1.44-5.15-3.75-6.59-6.58l2.2-2.21c.28-.27.36-.66.25-1.01-.36-1.11-.56-2.3-.56-3.53 0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1 0 9.39 7.61 17 17 17 .55 0 1-.45 1-1v-3.58c0-.56-.45-1-1-1z" />
+                                </svg>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="footer-copyright">
+                    © 2026 INSAENG MASUL. ALL RIGHTS RESERVED.
+                </div>
+            </footer>
+        </section>
+
+    </main>
+
+    <!-- Global Javascript -->
+    <script src="main.js"></script>
+</body>
+
+</html>

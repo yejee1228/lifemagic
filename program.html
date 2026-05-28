@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>인생마술 | 프로그램 - 다채로운 공연 서비스</title>
+    <meta name="description" content="어린이 키즈쇼부터 대규모 오리지널 극장 매직, 거리 버스킹, 대기업 브랜딩 퍼포먼스까지 인생마술만의 특별한 4대 프로그램 라인업을 소개합니다.">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="prog-bg" style="background-size: cover; background-position: center; background-repeat: no-repeat; min-height: 100vh;">
+    <!-- ORIENTATION BACKGROUND STYLE FOR PROGRAM PAGE -->
+    <style>
+        @media (orientation: landscape) {
+            body.prog-bg { background-image: linear-gradient(rgba(7, 6, 10, 0.7), rgba(7, 6, 10, 0.9)), url('images/bg2_land.png'); }
+        }
+        @media (orientation: portrait) {
+            body.prog-bg { background-image: linear-gradient(rgba(7, 6, 10, 0.8), rgba(7, 6, 10, 0.95)), url('images/bg2_port.png'); }
+        }
+    </style>
+
+    <!-- INTEGRATED HEADER NAV -->
+    <header>
+        <div class="nav-container">
+            <a href="index.html" class="logo">
+                <span>인생마술</span>
+            </a>
+            <nav>
+                <ul class="nav-links" id="nav-links">
+                    <li><a href="index.html">홈</a></li>
+                    <li><a href="about.html">회사소개</a></li>
+                    <li><a href="program.html" class="active">프로그램</a></li>
+                    <li><a href="history.html">히스토리</a></li>
+                    <li><a href="inquiry.html">문의</a></li>
+                </ul>
+            </nav>
+            <button class="hamburger" id="hamburger" aria-label="메뉴 토글">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+    </header>
+
+    <!-- PROGRAM CONTENT SECTION -->
+    <main class="program-page">
+        <h2 class="section-title">공연 프로그램</h2>
+
+        <!-- CATEGORY 1: 어린이 프로그램 -->
+        <div class="program-category-section">
+            <div class="category-header">
+                <h3>어린이 프로그램</h3>
+                <p>아이들의 상상력을 자극하고, 꿈과 희망을 선물하는 관객 참여형 키즈 마술쇼</p>
+            </div>
+            <div class="program-grid">
+                <!-- Card 1 -->
+                <div class="tilt-card-container">
+                    <div class="tilt-card glass-panel js-tilt">
+                        <div class="card-pattern-overlay" style="background-color: rgba(138, 43, 226, 0.05);"></div>
+                        <div class="card-content">
+                            <span class="card-tag">Kids Magic</span>
+                            <h4 class="card-title">상상나래 키즈 매직쇼</h4>
+                            <p class="card-desc">눈높이에 맞춘 쉽고 흥미로운 구성, 모든 아이들이 무대의 주인공이 되어 함께 마술을 완성하는 친환경 에듀 매직 콘서트입니다.</p>
+                        </div>
+                    </div>
+                </div>
+                <!-- Card 2 -->
+                <div class="tilt-card-container">
+                    <div class="tilt-card glass-panel js-tilt">
+                        <div class="card-pattern-overlay" style="background-color: rgba(212, 175, 55, 0.05);"></div>
+                        <div class="card-content">
+                            <span class="card-tag">Balloon & Magic</span>
+                            <h4 class="card-title">꿈꾸는 풍선마법사</h4>
+                            <p class="card-desc">대형 비눗방울과 화려한 풍선 공예, 그리고 신비로운 마술이 유기적으로 조화된 다이내믹 시각 버라이어티 쇼입니다.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- CATEGORY 2: 극장 프로그램 -->
+        <div class="program-category-section">
+            <div class="category-header">
+                <h3>극장 프로그램</h3>
+                <p>웅장한 사운드와 몰입도 높은 연출로 예술적 완성도를 극대화한 스토리텔링 일루전 매직쇼</p>
+            </div>
+            <div class="program-grid">
+                <!-- Card 1 -->
+                <div class="tilt-card-container">
+                    <div class="tilt-card glass-panel js-tilt">
+                        <div class="card-pattern-overlay" style="background-color: rgba(138, 43, 226, 0.05);"></div>
+                        <div class="card-content">
+                            <span class="card-tag">Theater Show</span>
+                            <h4 class="card-title">인생마술 극장: The Moment</h4>
+                            <p class="card-desc">인생의 소중한 순간들을 마술적 스토리로 풀어내어 깊은 반전과 따뜻한 감동을 동시에 제공하는 시그니처 옴니버스 매직극입니다.</p>
+                        </div>
+                    </div>
+                </div>
+                <!-- Card 2 -->
+                <div class="tilt-card-container">
+                    <div class="tilt-card glass-panel js-tilt">
+                        <div class="card-pattern-overlay" style="background-color: rgba(212, 175, 55, 0.05);"></div>
+                        <div class="card-content">
+                            <span class="card-tag">Fantasy Magic</span>
+                            <h4 class="card-title">시간 여행자의 가방</h4>
+                            <p class="card-desc">미스터리한 트렁크 가방 속 소품을 통해 과거와 미래를 넘나드는 듯한 비주얼 일루전 및 멘탈 매직을 보여주는 판타지 쇼입니다.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- CATEGORY 3: 행사/버스킹 프로그램 -->
+        <div class="program-category-section">
+            <div class="category-header">
+                <h3>행사 / 버스킹 프로그램</h3>
+                <p>거리, 공원, 축제 현장 어디서나 야외 무대의 열기와 소통을 100% 보장하는 스트리트 쇼</p>
+            </div>
+            <div class="program-grid">
+                <!-- Card 1 -->
+                <div class="tilt-card-container">
+                    <div class="tilt-card glass-panel js-tilt">
+                        <div class="card-pattern-overlay" style="background-color: rgba(138, 43, 226, 0.05);"></div>
+                        <div class="card-content">
+                            <span class="card-tag">Street Magic</span>
+                            <h4 class="card-title">스트리트 매직 카니발</h4>
+                            <p class="card-desc">격식 없는 자유로운 소통과 배꼽 잡는 코미디 매직이 결합되어, 지나가는 모든 행인의 발걸음을 단숨에 사로잡는 게릴라성 마술 축제입니다.</p>
+                        </div>
+                    </div>
+                </div>
+                <!-- Card 2 -->
+                <div class="tilt-card-container">
+                    <div class="tilt-card glass-panel js-tilt">
+                        <div class="card-pattern-overlay" style="background-color: rgba(212, 175, 55, 0.05);"></div>
+                        <div class="card-content">
+                            <span class="card-tag">Close-up Magic</span>
+                            <h4 class="card-title">클로즈업 미라클 테이블</h4>
+                            <p class="card-desc">무대 장치 없이 오직 관객의 눈앞 10cm 거리에서 손기술(Sleight of Hand)로 시각적 착시와 기적을 펼쳐내는 최고 난이도의 초근접 쇼입니다.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- CATEGORY 4: 기업/기관 프로그램 -->
+        <div class="program-category-section">
+            <div class="category-header">
+                <h3>기업 / 기관 프로그램</h3>
+                <p>조직의 비전, 브랜드 메시지를 세련되게 담아 행사의 품격을 높이는 고품격 런칭 및 연수 매직쇼</p>
+            </div>
+            <div class="program-grid">
+                <!-- Card 1 -->
+                <div class="tilt-card-container">
+                    <div class="tilt-card glass-panel js-tilt">
+                        <div class="card-pattern-overlay" style="background-color: rgba(138, 43, 226, 0.05);"></div>
+                        <div class="card-content">
+                            <span class="card-tag">Corporate Show</span>
+                            <h4 class="card-title">비즈니스 일루전 & 커스텀</h4>
+                            <p class="card-desc">신제품 발표회, 비전 선포식 등에서 회사의 로고나 가치관을 마술의 기법과 미디어 융합으로 화려하게 드러내는 브랜딩 전용 스페셜 무대입니다.</p>
+                        </div>
+                    </div>
+                </div>
+                <!-- Card 2 -->
+                <div class="tilt-card-container">
+                    <div class="tilt-card glass-panel js-tilt">
+                        <div class="card-pattern-overlay" style="background-color: rgba(212, 175, 55, 0.05);"></div>
+                        <div class="card-content">
+                            <span class="card-tag">Motivation Lecture</span>
+                            <h4 class="card-title">동기부여 융합 매직 강연</h4>
+                            <p class="card-desc">도전과 실패, 마법 같은 극복 스토리를 유쾌하고 명쾌한 마술 퍼포먼스와 함께 녹여내어 임직원에게 큰 위로와 강력한 동기부여를 주는 콘서트식 강연입니다.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- INTEGRATED FOOTER -->
+    <footer>
+        <div class="footer-container">
+            <div class="footer-info">
+                <div class="footer-brand"><span>인생마술</span></div>
+                <div class="footer-biz-details">
+                    <p>상호명: 인생마술 | 대표자: 오성민</p>
+                    <p>사업자등록번호: 123-45-67890 | 이메일: contact@insaengmasul.com</p>
+                    <p>주소: 서울특별시 마포구 어울마당로 123, 3층</p>
+                    <p>공연 및 예약 전화 문의: 010-1234-5678 (상담 시간: 10:00 - 19:00)</p>
+                </div>
+            </div>
+            <div class="footer-sns-box">
+                <h4 class="sns-title">CONNECT WITH US</h4>
+                <div class="sns-links-grid">
+                    <a href="https://instagram.com" target="_blank" class="sns-circle-link" aria-label="인스타그램">
+                        <svg viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.051.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.406-11.845a1.44 1.44 0 1 0 0 2.881 1.44 1.44 0 0 0 0-2.881z"/></svg>
+                    </a>
+                    <a href="https://section.blog.naver.com" target="_blank" class="sns-circle-link" aria-label="블로그">
+                        <svg viewBox="0 0 24 24"><path d="M22.5 0h-21C.672 0 0 .672 0 1.5v21C0 23.328.672 24 1.5 24h21c.828 0 1.5-.672 1.5-1.5v-21C24 .672 23.328 0 22.5 0zM17.43 12.56h-2.45v5.33h-2.68v-5.33H9.85V9.92h7.58v2.64z"/></svg>
+                    </a>
+                    <a href="https://pf.kakao.com" target="_blank" class="sns-circle-link" aria-label="카카오톡">
+                        <svg viewBox="0 0 24 24"><path d="M12 3c-4.97 0-9 3.185-9 7.115 0 2.557 1.707 4.8 4.27 6.054-.188.702-.68 2.531-.777 2.893-.118.438.148.433.31.325.127-.085 2.012-1.366 2.805-1.902.443.084.903.13 1.392.13 4.97 0 9-3.186 9-7.115C21 6.185 16.97 3 12 3z"/></svg>
+                    </a>
+                    <a href="tel:010-1234-5678" class="sns-circle-link" aria-label="전화번호">
+                        <svg viewBox="0 0 24 24"><path d="M20.01 15.38c-1.23 0-2.42-.2-3.53-.56-.35-.12-.74-.03-1.02.24l-2.2 2.2c-2.83-1.44-5.15-3.75-6.59-6.58l2.2-2.21c.28-.27.36-.66.25-1.01-.36-1.11-.56-2.3-.56-3.53 0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1 0 9.39 7.61 17 17 17 .55 0 1-.45 1-1v-3.58c0-.56-.45-1-1-1z"/></svg>
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="footer-copyright">
+            © 2026 INSAENG MASUL. ALL RIGHTS RESERVED.
+        </div>
+    </footer>
+
+    <!-- Global Javascript -->
+    <script src="main.js"></script>
+</body>
+</html>

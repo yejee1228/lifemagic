@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>인생마술 | 문의 - 고격맞춤형 마술공연 견적문의</title>
+    <meta name="description" content="인생마술 공연 예약을 위한 공식 문의 양식입니다. 행사 일정, 장소, 예상 규모, 관객층, 예산 등을 작성하여 최상의 맞춤 공연 제안서를 무료로 받아보세요.">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- BACKGROUND OVERLAY -->
+    <div class="inquiry-bg-overlay"></div>
+
+    <!-- INTEGRATED HEADER NAV -->
+    <header>
+        <div class="nav-container">
+            <a href="index.html" class="logo">
+                <span>인생마술</span>
+            </a>
+            <nav>
+                <ul class="nav-links" id="nav-links">
+                    <li><a href="index.html">홈</a></li>
+                    <li><a href="about.html">회사소개</a></li>
+                    <li><a href="program.html">프로그램</a></li>
+                    <li><a href="history.html">히스토리</a></li>
+                    <li><a href="inquiry.html" class="active">문의</a></li>
+                </ul>
+            </nav>
+            <button class="hamburger" id="hamburger" aria-label="메뉴 토글">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+    </header>
+
+    <!-- INQUIRY FORM MAIN -->
+    <main class="inquiry-page">
+        <h2 class="section-title">공연 문의 및 예약</h2>
+        
+        <div class="inquiry-wrapper">
+            <div class="inquiry-form-card glass-panel">
+                <p class="artist-tag" style="text-align: center; margin-bottom: 25px;">Magical Day Booking</p>
+                
+                <form id="inquiry-form">
+                    <div class="inquiry-grid-2col">
+                        
+                        <!-- 1. Name -->
+                        <div class="admin-form-group">
+                            <label for="inq-name">신청자명 / 단체명 <span class="gold-glow-text">*</span></label>
+                            <input type="text" id="inq-name" class="admin-input" placeholder="이름 또는 단체명을 입력하세요" required>
+                        </div>
+
+                        <!-- 2. Contact -->
+                        <div class="admin-form-group">
+                            <label for="inq-phone">연락처 <span class="gold-glow-text">*</span></label>
+                            <input type="tel" id="inq-phone" class="admin-input" placeholder="예: 010-1234-5678" required>
+                        </div>
+
+                        <!-- 3. Event Date -->
+                        <div class="admin-form-group">
+                            <label for="inq-date">행사 희망 날짜 <span class="gold-glow-text">*</span></label>
+                            <input type="date" id="inq-date" class="admin-input" required>
+                        </div>
+
+                        <!-- 4. Event Time -->
+                        <div class="admin-form-group">
+                            <label for="inq-time">행사 진행 시간 <span class="gold-glow-text">*</span></label>
+                            <input type="time" id="inq-time" class="admin-input" required>
+                        </div>
+
+                        <!-- 5. Address -->
+                        <div class="admin-form-group inquiry-grid-span2">
+                            <label for="inq-addr">행사 상세 주소 / 공연 장소 <span class="gold-glow-text">*</span></label>
+                            <input type="text" id="inq-addr" class="admin-input" placeholder="예: 서울특별시 마포구 어울마당로 123 마포공연장" required>
+                        </div>
+
+                        <!-- 6. Audience Count -->
+                        <div class="admin-form-group">
+                            <label for="inq-audience">예상 관객 수 <span class="gold-glow-text">*</span></label>
+                            <select id="inq-audience" class="admin-select" required>
+                                <option value="">관객 규모 선택</option>
+                                <option value="30명 이하">30명 이하 (소규모 홈미팅 / 교실)</option>
+                                <option value="31명 ~ 100명">31명 ~ 100명 (유치원 / 소강당)</option>
+                                <option value="101명 ~ 300명">101명 ~ 300명 (학교 체육관 / 대강당)</option>
+                                <option value="300명 이상">300명 이상 (야외 축제 / 전문 공연장)</option>
+                            </select>
+                        </div>
+
+                        <!-- 7. Budget -->
+                        <div class="admin-form-group">
+                            <label for="inq-budget">기획 예산 범위 <span class="gold-glow-text">*</span></label>
+                            <select id="inq-budget" class="admin-select" required>
+                                <option value="">예산 범위 선택</option>
+                                <option value="협의 후 결정">협의 후 결정</option>
+                                <option value="100만원 이하">100만원 이하</option>
+                                <option value="100만원 ~ 200만원">100만원 ~ 200만원</option>
+                                <option value="200만원 ~ 500만원">200만원 ~ 500만원</option>
+                                <option value="500만원 이상">500만원 이상</option>
+                            </select>
+                        </div>
+
+                        <!-- 8. Audience Age Group (Multiple checklist) -->
+                        <div class="admin-form-group inquiry-grid-span2">
+                            <label style="margin-bottom: 12px;">주요 관객 연령층 (중복 선택 가능)</label>
+                            <div style="display: flex; flex-wrap: wrap; gap: 15px;">
+                                <label class="checkbox-label" style="background: rgba(255,255,255,0.03); padding: 8px 16px; border-radius: 20px; border: var(--border-glass);">
+                                    <input type="checkbox" name="inq-age" value="영유아/어린이"> 영유아 / 어린이
+                                </label>
+                                <label class="checkbox-label" style="background: rgba(255,255,255,0.03); padding: 8px 16px; border-radius: 20px; border: var(--border-glass);">
+                                    <input type="checkbox" name="inq-age" value="청소년"> 청소년
+                                </label>
+                                <label class="checkbox-label" style="background: rgba(255,255,255,0.03); padding: 8px 16px; border-radius: 20px; border: var(--border-glass);">
+                                    <input type="checkbox" name="inq-age" value="성인"> 성인 (20대 ~ 50대)
+                                </label>
+                                <label class="checkbox-label" style="background: rgba(255,255,255,0.03); padding: 8px 16px; border-radius: 20px; border: var(--border-glass);">
+                                    <input type="checkbox" name="inq-age" value="실버/시니어"> 실버 / 시니어 (60대 이상)
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- 9. Detail Contents -->
+                        <div class="admin-form-group inquiry-grid-span2">
+                            <label for="inq-desc">상세 문의 내용</label>
+                            <textarea id="inq-desc" class="admin-input admin-textarea" placeholder="원하시는 공연 콘셉트, 참고 사항 등을 자유롭게 적어주세요."></textarea>
+                        </div>
+
+                    </div>
+
+                    <!-- 10. Privacy policy checkbox -->
+                    <div class="terms-agreement-container">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="inq-agree" required>
+                            <span>
+                                개인정보 수집 및 이용에 동의합니다. 
+                                <a href="#" class="terms-link" id="terms-open-btn">약관 보기</a> (필수)
+                            </span>
+                        </label>
+                    </div>
+
+                    <!-- Submit -->
+                    <button type="submit" class="btn-gold" style="width: 100%; padding: 15px; font-size: 1.1rem; font-weight: 700;">
+                        마법 같은 하루 예약 신청하기
+                    </button>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <!-- TERMS AGREEMENT MODAL -->
+    <div class="terms-modal" id="terms-modal">
+        <div class="terms-modal-box glass-panel">
+            <h3 style="font-family: var(--font-serif); color: var(--color-primary-gold);">개인정보 수집 및 이용 동의</h3>
+            <div class="terms-modal-content">
+                인생마술(이하 '회사')은 고객님의 상담 및 공연 계약 체결을 위해 아래와 같이 개인정보를 수집·이용하고자 합니다.
+                <br><br>
+                1. 수집하는 개인정보 항목: 신청자명, 연락처, 이메일, 장소, 예산 등 상담 관련 정보
+                <br>
+                2. 개인정보 수집 및 이용 목적: 맞춤형 마술 공연 상담 예약, 공연 가능 여부 파악 및 견적 안내
+                <br>
+                3. 개인정보 보유 및 이용기간: 상담 및 관련 업무 종료 후 6개월까지 (법령에 따른 보존의무 기간이 있는 경우 그에 따름)
+                <br><br>
+                귀하는 본 동의를 거부하실 수 있으나, 거부 시 정상적인 견적 상담 및 계약 예약이 어려울 수 있습니다.
+            </div>
+            <button type="button" class="btn-gold" id="terms-close-btn" style="width: 100%;">확인 및 닫기</button>
+        </div>
+    </div>
+
+    <!-- CANVAS FOR MAGIC PARTICLES EXPLOSION -->
+    <canvas id="particle-canvas"></canvas>
+
+    <!-- SUCCESS MESSAGE DIALOG -->
+    <div class="success-modal" id="success-modal">
+        <div class="success-card glass-panel" id="success-card">
+            <div class="success-magic-icon">✦</div>
+            <h3>예약 신청이 접수되었습니다!</h3>
+            <p>
+                인생마술 기획사업부에 마법 같은 하루 예약이 안전하게 전달되었습니다.<br>
+                적어주신 연락처로 24시간 이내에 담당자가 친절하게 연락드리겠습니다.
+            </p>
+            <a href="index.html" class="btn-gold">홈으로 돌아가기</a>
+        </div>
+    </div>
+
+    <!-- INTEGRATED FOOTER -->
+    <footer>
+        <div class="footer-container">
+            <div class="footer-info">
+                <div class="footer-brand"><span>인생마술</span></div>
+                <div class="footer-biz-details">
+                    <p>상호명: 인생마술 | 대표자: 오성민</p>
+                    <p>사업자등록번호: 123-45-67890 | 이메일: contact@insaengmasul.com</p>
+                    <p>주소: 서울특별시 마포구 어울마당로 123, 3층</p>
+                    <p>공연 및 예약 전화 문의: 010-1234-5678 (상담 시간: 10:00 - 19:00)</p>
+                </div>
+            </div>
+            <div class="footer-sns-box">
+                <h4 class="sns-title">CONNECT WITH US</h4>
+                <div class="sns-links-grid">
+                    <a href="https://instagram.com" target="_blank" class="sns-circle-link" aria-label="인스타그램">
+                        <svg viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.051.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.406-11.845a1.44 1.44 0 1 0 0 2.881 1.44 1.44 0 0 0 0-2.881z"/></svg>
+                    </a>
+                    <a href="https://section.blog.naver.com" target="_blank" class="sns-circle-link" aria-label="블로그">
+                        <svg viewBox="0 0 24 24"><path d="M22.5 0h-21C.672 0 0 .672 0 1.5v21C0 23.328.672 24 1.5 24h21c.828 0 1.5-.672 1.5-1.5v-21C24 .672 23.328 0 22.5 0zM17.43 12.56h-2.45v5.33h-2.68v-5.33H9.85V9.92h7.58v2.64z"/></svg>
+                    </a>
+                    <a href="https://pf.kakao.com" target="_blank" class="sns-circle-link" aria-label="카카오톡">
+                        <svg viewBox="0 0 24 24"><path d="M12 3c-4.97 0-9 3.185-9 7.115 0 2.557 1.707 4.8 4.27 6.054-.188.702-.68 2.531-.777 2.893-.118.438.148.433.31.325.127-.085 2.012-1.366 2.805-1.902.443.084.903.13 1.392.13 4.97 0 9-3.186 9-7.115C21 6.185 16.97 3 12 3z"/></svg>
+                    </a>
+                    <a href="tel:010-1234-5678" class="sns-circle-link" aria-label="전화번호">
+                        <svg viewBox="0 0 24 24"><path d="M20.01 15.38c-1.23 0-2.42-.2-3.53-.56-.35-.12-.74-.03-1.02.24l-2.2 2.2c-2.83-1.44-5.15-3.75-6.59-6.58l2.2-2.21c.28-.27.36-.66.25-1.01-.36-1.11-.56-2.3-.56-3.53 0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1 0 9.39 7.61 17 17 17 .55 0 1-.45 1-1v-3.58c0-.56-.45-1-1-1z"/></svg>
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="footer-copyright">
+            © 2026 INSAENG MASUL. ALL RIGHTS RESERVED.
+        </div>
+    </footer>
+
+    <!-- Global Javascript -->
+    <script src="main.js"></script>
+</body>
+</html>
