@@ -1,45 +1,34 @@
 <!DOCTYPE html>
 <html lang="ko">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>인생마술 | 회사소개 - 연혁 & 아티스트</title>
-    <meta name="description" content="인생마술의 빛나는 역사와 무대를 빛내는 최고의 아티스트 오성민 마술사를 소개합니다. SBS, KBS 방송 출연 및 화려한 수상 이력을 갖춘 전문 마술사들의 연혁과 필모그래피를 확인하세요.">
+    <meta name="description"
+        content="인생마술의 빛나는 역사와 무대를 빛내는 최고의 아티스트 이은재 마술사를 소개합니다. SBS, KBS 방송 출연 및 화려한 수상 이력을 갖춘 전문 마술사들의 연혁과 필모그래피를 확인하세요.">
     <link rel="stylesheet" href="style.css">
 </head>
-<body class="about-bg" style="background-size: cover; background-position: center; background-repeat: no-repeat; min-height: 100vh;">
+
+<body class="about-bg"
+    style="background-size: cover; background-position: center; background-repeat: no-repeat; min-height: 100vh;">
     <!-- ORIENTATION BACKGROUND STYLE FOR ABOUT PAGE (Fallback to CSS for high fidelity) -->
     <style>
         @media (orientation: landscape) {
-            body.about-bg { background-image: linear-gradient(rgba(7, 6, 10, 0.7), rgba(7, 6, 10, 0.9)), url('images/bg2_land.png'); }
+            body.about-bg {
+                background-image: linear-gradient(rgba(7, 6, 10, 0.7), rgba(7, 6, 10, 0.9)), url('images/bg2_land.png');
+            }
         }
+
         @media (orientation: portrait) {
-            body.about-bg { background-image: linear-gradient(rgba(7, 6, 10, 0.8), rgba(7, 6, 10, 0.95)), url('images/bg2_port.png'); }
+            body.about-bg {
+                background-image: linear-gradient(rgba(7, 6, 10, 0.8), rgba(7, 6, 10, 0.95)), url('images/bg2_port.png');
+            }
         }
     </style>
 
     <!-- INTEGRATED HEADER NAV -->
-    <header>
-        <div class="nav-container">
-            <a href="index.html" class="logo">
-                <span>인생마술</span>
-            </a>
-            <nav>
-                <ul class="nav-links" id="nav-links">
-                    <li><a href="index.html">홈</a></li>
-                    <li><a href="about.html" class="active">회사소개</a></li>
-                    <li><a href="program.html">프로그램</a></li>
-                    <li><a href="history.html">히스토리</a></li>
-                    <li><a href="inquiry.html">문의</a></li>
-                </ul>
-            </nav>
-            <button class="hamburger" id="hamburger" aria-label="메뉴 토글">
-                <span></span>
-                <span></span>
-                <span></span>
-            </button>
-        </div>
-    </header>
+    <header></header>
 
     <!-- ABOUT MAIN SECTION -->
     <main class="about-page">
@@ -103,7 +92,7 @@
             <div class="artist-section">
                 <!-- GRID FOR FLEXIBILITY (STABLE DESIGN WITH 1 OR MORE ARTISTS) -->
                 <div class="artist-grid">
-                    
+
                     <!-- MASTER ARTIST 1 (SPOTLIGHT WIDE LAYOUT) -->
                     <div class="artist-spotlight-card glass-panel">
                         <div class="artist-img-wrapper">
@@ -111,36 +100,42 @@
                             <svg class="magic-avatar-svg" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
                                 <defs>
                                     <radialGradient id="glow" cx="50%" cy="50%" r="50%">
-                                        <stop offset="0%" stop-color="#f3e5ab" stop-opacity="0.8"/>
-                                        <stop offset="40%" stop-color="#d4af37" stop-opacity="0.3"/>
-                                        <stop offset="100%" stop-color="#07060a" stop-opacity="0"/>
+                                        <stop offset="0%" stop-color="#f3e5ab" stop-opacity="0.8" />
+                                        <stop offset="40%" stop-color="#d4af37" stop-opacity="0.3" />
+                                        <stop offset="100%" stop-color="#07060a" stop-opacity="0" />
                                     </radialGradient>
                                     <linearGradient id="purpleGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                                        <stop offset="0%" stop-color="#8a2be2"/>
-                                        <stop offset="100%" stop-color="#4b0082"/>
+                                        <stop offset="0%" stop-color="#8a2be2" />
+                                        <stop offset="100%" stop-color="#4b0082" />
                                     </linearGradient>
                                 </defs>
-                                <circle cx="100" cy="100" r="95" fill="none" stroke="rgba(212, 175, 55, 0.2)" stroke-width="2" stroke-dasharray="5,5"/>
-                                <circle cx="100" cy="100" r="90" fill="none" stroke="url(#purpleGrad)" stroke-width="1"/>
+                                <circle cx="100" cy="100" r="95" fill="none" stroke="rgba(212, 175, 55, 0.2)"
+                                    stroke-width="2" stroke-dasharray="5,5" />
+                                <circle cx="100" cy="100" r="90" fill="none" stroke="url(#purpleGrad)"
+                                    stroke-width="1" />
                                 <!-- Magical Glow behind the silhouette -->
-                                <circle cx="100" cy="90" r="50" fill="url(#glow)"/>
+                                <circle cx="100" cy="90" r="50" fill="url(#glow)" />
                                 <!-- Mystical Magician Silhouette inside gold ring -->
-                                <circle cx="100" cy="100" r="80" fill="none" stroke="#d4af37" stroke-width="2"/>
-                                <path d="M70 180 C70 140, 90 120, 100 120 C110 120, 130 140, 130 180 Z" fill="#1b172a" stroke="rgba(255,255,255,0.1)"/>
-                                <circle cx="100" cy="95" r="22" fill="#1b172a" stroke="rgba(255,255,255,0.1)"/>
-                                <polygon points="75,80 125,80 115,50 85,50" fill="#0d0a14" stroke="#d4af37" stroke-width="1.5"/>
-                                <ellipse cx="100" cy="80" rx="30" ry="5" fill="#0d0a14" stroke="#d4af37" stroke-width="1.5"/>
+                                <circle cx="100" cy="100" r="80" fill="none" stroke="#d4af37" stroke-width="2" />
+                                <path d="M70 180 C70 140, 90 120, 100 120 C110 120, 130 140, 130 180 Z" fill="#1b172a"
+                                    stroke="rgba(255,255,255,0.1)" />
+                                <circle cx="100" cy="95" r="22" fill="#1b172a" stroke="rgba(255,255,255,0.1)" />
+                                <polygon points="75,80 125,80 115,50 85,50" fill="#0d0a14" stroke="#d4af37"
+                                    stroke-width="1.5" />
+                                <ellipse cx="100" cy="80" rx="30" ry="5" fill="#0d0a14" stroke="#d4af37"
+                                    stroke-width="1.5" />
                                 <!-- Golden Magic Particles swirling -->
-                                <circle cx="65" cy="120" r="2" fill="#f3e5ab"/>
-                                <circle cx="140" cy="110" r="3" fill="#f3e5ab"/>
-                                <circle cx="120" cy="140" r="1.5" fill="#f3e5ab"/>
-                                <circle cx="78" cy="150" r="2" fill="#f3e5ab"/>
-                                <path d="M 60,110 Q 100,160 140,110" fill="none" stroke="rgba(212, 175, 55, 0.4)" stroke-width="1" stroke-dasharray="4,4"/>
+                                <circle cx="65" cy="120" r="2" fill="#f3e5ab" />
+                                <circle cx="140" cy="110" r="3" fill="#f3e5ab" />
+                                <circle cx="120" cy="140" r="1.5" fill="#f3e5ab" />
+                                <circle cx="78" cy="150" r="2" fill="#f3e5ab" />
+                                <path d="M 60,110 Q 100,160 140,110" fill="none" stroke="rgba(212, 175, 55, 0.4)"
+                                    stroke-width="1" stroke-dasharray="4,4" />
                             </svg>
                         </div>
                         <div class="artist-details-wrapper">
                             <span class="artist-tag">Lead Magician & Director</span>
-                            <h3 class="artist-name">오성민 <small>대표 마술사</small></h3>
+                            <h3 class="artist-name">이은재 <small>대표 마술사</small></h3>
                             <p class="artist-motto">
                                 "마술은 단순한 속임수가 아닌, 관객의 잊혀진 동심을 깨우는 가장 순수하고 아름다운 예술입니다."
                             </p>
@@ -155,48 +150,17 @@
                     </div>
 
                     <!-- 이 자리에 다른 아티스트 추가 시에도 flex-wrap과 justify-content: center 덕분에 정밀하고 세련되게 세로/가로 그리드로 자동 재배치됩니다. -->
-                    
+
                 </div>
             </div>
         </div>
     </main>
 
     <!-- INTEGRATED FOOTER -->
-    <footer>
-        <div class="footer-container">
-            <div class="footer-info">
-                <div class="footer-brand"><span>인생마술</span></div>
-                <div class="footer-biz-details">
-                    <p>상호명: 인생마술 | 대표자: 오성민</p>
-                    <p>사업자등록번호: 123-45-67890 | 이메일: contact@insaengmasul.com</p>
-                    <p>주소: 서울특별시 마포구 어울마당로 123, 3층</p>
-                    <p>공연 및 예약 전화 문의: 010-1234-5678 (상담 시간: 10:00 - 19:00)</p>
-                </div>
-            </div>
-            <div class="footer-sns-box">
-                <h4 class="sns-title">CONNECT WITH US</h4>
-                <div class="sns-links-grid">
-                    <a href="https://instagram.com" target="_blank" class="sns-circle-link" aria-label="인스타그램">
-                        <svg viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.051.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.406-11.845a1.44 1.44 0 1 0 0 2.881 1.44 1.44 0 0 0 0-2.881z"/></svg>
-                    </a>
-                    <a href="https://section.blog.naver.com" target="_blank" class="sns-circle-link" aria-label="블로그">
-                        <svg viewBox="0 0 24 24"><path d="M22.5 0h-21C.672 0 0 .672 0 1.5v21C0 23.328.672 24 1.5 24h21c.828 0 1.5-.672 1.5-1.5v-21C24 .672 23.328 0 22.5 0zM17.43 12.56h-2.45v5.33h-2.68v-5.33H9.85V9.92h7.58v2.64z"/></svg>
-                    </a>
-                    <a href="https://pf.kakao.com" target="_blank" class="sns-circle-link" aria-label="카카오톡">
-                        <svg viewBox="0 0 24 24"><path d="M12 3c-4.97 0-9 3.185-9 7.115 0 2.557 1.707 4.8 4.27 6.054-.188.702-.68 2.531-.777 2.893-.118.438.148.433.31.325.127-.085 2.012-1.366 2.805-1.902.443.084.903.13 1.392.13 4.97 0 9-3.186 9-7.115C21 6.185 16.97 3 12 3z"/></svg>
-                    </a>
-                    <a href="tel:010-1234-5678" class="sns-circle-link" aria-label="전화번호">
-                        <svg viewBox="0 0 24 24"><path d="M20.01 15.38c-1.23 0-2.42-.2-3.53-.56-.35-.12-.74-.03-1.02.24l-2.2 2.2c-2.83-1.44-5.15-3.75-6.59-6.58l2.2-2.21c.28-.27.36-.66.25-1.01-.36-1.11-.56-2.3-.56-3.53 0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1 0 9.39 7.61 17 17 17 .55 0 1-.45 1-1v-3.58c0-.56-.45-1-1-1z"/></svg>
-                    </a>
-                </div>
-            </div>
-        </div>
-        <div class="footer-copyright">
-            © 2026 INSAENG MASUL. ALL RIGHTS RESERVED.
-        </div>
-    </footer>
+    <footer></footer>
 
     <!-- Global Javascript -->
     <script src="main.js"></script>
 </body>
+
 </html>

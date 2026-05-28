@@ -1,11 +1,12 @@
-@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Noto+Sans+KR:wght@300;400;500;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap');
+@import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css");
 
 /* ==========================================
    1. DESIGN SYSTEM & ROOT VARIABLES
    ========================================== */
 :root {
-    --font-serif: 'Pretendard', serif;
-    --font-sans: 'Noto Sans KR', sans-serif;
+    --font-serif: 'Pretendard', 'Noto Sans KR', sans-serif;
+    --font-sans: 'Pretendard', 'Noto Sans KR', sans-serif;
 
     /* Premium Color Palette */
     --color-bg-dark: #07060a;
@@ -92,7 +93,7 @@ li {
 
 .btn-gold:hover {
     transform: translateY(-3px) scale(1.02);
-    box-shadow: 0 8px 25px rgba(243, 229, 171, 0);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.65);
 }
 
 .btn-glass {

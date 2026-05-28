@@ -3,27 +3,154 @@
  * Main JavaScript Controller
  */
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
 
     /* ==========================================================================
-       1. NAVIGATION & RESPONSIVE MOBILE DRAWER
+       0. DYNAMIC HEADER & FOOTER COMPONENT LOADER
        ========================================================================== */
-    const hamburger = document.getElementById('hamburger');
-    const navLinks = document.getElementById('nav-links');
+    await loadHeaderAndFooter();
 
-    if (hamburger && navLinks) {
-        hamburger.addEventListener('click', () => {
-            hamburger.classList.toggle('active');
-            navLinks.classList.toggle('active');
-        });
+    async function loadHeaderAndFooter() {
+        const headerEl = document.querySelector('header');
+        const footerEls = document.querySelectorAll('footer');
+        
+        const headerHTML = `<div class="nav-container">
+            <a href="index.html" class="logo">
+                <img src="images/logo.png" alt="인생마술 로고">
+            </a>
+            <nav>
+                <ul class="nav-links" id="nav-links">
+                    <li><a href="index.html" data-page="index">홈</a></li>
+                    <li><a href="about.html" data-page="about">회사소개</a></li>
+                    <li><a href="program.html" data-page="program">프로그램</a></li>
+                    <li><a href="history.html" data-page="history">히스토리</a></li>
+                    <li><a href="inquiry.html" data-page="inquiry">문의</a></li>
+                </ul>
+            </nav>
+            <button class="hamburger" id="hamburger" aria-label="메뉴 토글">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>`;
 
-        // Close mobile drawer when clicking a link
-        navLinks.querySelectorAll('a').forEach(link => {
-            link.addEventListener('click', () => {
-                hamburger.classList.remove('active');
-                navLinks.classList.remove('active');
+        const footerHTML = `<div class="footer-container">
+            <div class="footer-info">
+                <div class="footer-brand"><span>인생마술</span></div>
+                <div class="footer-biz-details">
+                    <p>상호명: 인생마술 | 대표자: 이은재</p>
+                    <p>사업자등록번호: 305-37-51109 | 이메일: art4623@naver.com</p>
+                    <p>주소: 경기도 부천시 원미구 상일로 69, 지12호</p>
+                    <p>공연 및 예약 전화 문의: 010-4370-4623 (상담 시간: 10:00 - 19:00)</p>
+                </div>
+            </div>
+            <div class="footer-sns-box">
+                <h4 class="sns-title">CONNECT WITH US</h4>
+                <div class="sns-links-grid">
+                    <a href="https://instagram.com" target="_blank" class="sns-circle-link" aria-label="인스타그램">
+                        <svg viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.051.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.406-11.845a1.44 1.44 0 1 0 0 2.881 1.44 1.44 0 0 0 0-2.881z" /></svg>
+                    </a>
+                    <a href="https://section.blog.naver.com" target="_blank" class="sns-circle-link" aria-label="블로그">
+                        <svg viewBox="0 0 24 24"><path d="M22.5 0h-21C.672 0 0 .672 0 1.5v21C0 23.328.672 24 1.5 24h21c.828 0 1.5-.672 1.5-1.5v-21C24 .672 23.328 0 22.5 0zM17.43 12.56h-2.45v5.33h-2.68v-5.33H9.85V9.92h7.58v2.64z" /></svg>
+                    </a>
+                    <a href="https://pf.kakao.com" target="_blank" class="sns-circle-link" aria-label="카카오톡">
+                        <svg viewBox="0 0 24 24"><path d="M12 3c-4.97 0-9 3.185-9 7.115 0 2.557 1.707 4.8 4.27 6.054-.188.702-.68 2.531-.777 2.893-.118.438.148.433.31.325.127-.085 2.012-1.366 2.805-1.902.443.084.903.13 1.392.13 4.97 0 9-3.186 9-7.115C21 6.185 16.97 3 12 3z" /></svg>
+                    </a>
+                    <a href="tel:010-4370-4623" class="sns-circle-link" aria-label="전화번호">
+                        <svg viewBox="0 0 24 24"><path d="M20.01 15.38c-1.23 0-2.42-.2-3.53-.56-.35-.12-.74-.03-1.02.24l-2.2 2.2c-2.83-1.44-5.15-3.75-6.59-6.58l2.2-2.21c.28-.27.36-.66.25-1.01-.36-1.11-.56-2.3-.56-3.53 0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1 0 9.39 7.61 17 17 17 .55 0 1-.45 1-1v-3.58c0-.56-.45-1-1-1z" /></svg>
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="footer-copyright">
+            © 2026 INSAENG MASUL. ALL RIGHTS RESERVED.
+        </div>`;
+
+        // 1. Load Header
+        if (headerEl) {
+            let loaded = false;
+            if (window.location.protocol.startsWith('http')) {
+                try {
+                    const response = await fetch('header.html');
+                    if (response.ok) {
+                        headerEl.innerHTML = await response.text();
+                        loaded = true;
+                    }
+                } catch (e) {
+                    console.warn("Header fetch failed, falling back to local template", e);
+                }
+            }
+            if (!loaded) {
+                headerEl.innerHTML = headerHTML;
+            }
+            highlightActiveNav();
+            initHeaderInteractions();
+        }
+
+        // 2. Load Footer
+        if (footerEls.length > 0) {
+            let loaded = false;
+            let footerContent = '';
+            if (window.location.protocol.startsWith('http')) {
+                try {
+                    const response = await fetch('footer.html');
+                    if (response.ok) {
+                        footerContent = await response.text();
+                        loaded = true;
+                    }
+                } catch (e) {
+                    console.warn("Footer fetch failed, falling back to local template", e);
+                }
+            }
+            if (!loaded) {
+                footerContent = footerHTML;
+            }
+            footerEls.forEach(footer => {
+                footer.innerHTML = footerContent;
             });
+        }
+    }
+
+    function highlightActiveNav() {
+        const path = window.location.pathname;
+        const page = path.substring(path.lastIndexOf('/') + 1);
+        
+        let activePage = 'index'; // default
+        if (page.includes('about.html')) activePage = 'about';
+        else if (page.includes('program.html')) activePage = 'program';
+        else if (page.includes('history.html')) activePage = 'history';
+        else if (page.includes('inquiry.html')) activePage = 'inquiry';
+        else if (page.includes('admin.html')) activePage = 'admin';
+
+        // Highlight matching link
+        document.querySelectorAll('.nav-links a').forEach(link => {
+            const pageAttr = link.getAttribute('data-page');
+            if (pageAttr === activePage) {
+                link.classList.add('active');
+            } else {
+                link.classList.remove('active');
+            }
         });
+    }
+
+    function initHeaderInteractions() {
+        const hamburger = document.getElementById('hamburger');
+        const navLinks = document.getElementById('nav-links');
+
+        if (hamburger && navLinks) {
+            hamburger.addEventListener('click', () => {
+                hamburger.classList.toggle('active');
+                navLinks.classList.toggle('active');
+            });
+
+            // Close mobile drawer when clicking a link
+            navLinks.querySelectorAll('a').forEach(link => {
+                link.addEventListener('click', () => {
+                    hamburger.classList.remove('active');
+                    navLinks.classList.remove('active');
+                });
+            });
+        }
     }
 
     // Shrink header on scroll
@@ -110,7 +237,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function triggerTimelineGrowth() {
         const timelineLine = document.getElementById('timeline-line');
         const timelineItems = document.querySelectorAll('.timeline-item');
-        
+
         if (!timelineLine) return;
 
         // Animate line growth immediately
@@ -142,7 +269,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const cardRect = card.getBoundingClientRect();
                 const cardWidth = cardRect.width;
                 const cardHeight = cardRect.height;
-                
+
                 // Calculate mouse position relative to the center of the card (-0.5 to 0.5)
                 const mouseX = (e.clientX - cardRect.left) / cardWidth - 0.5;
                 const mouseY = (e.clientY - cardRect.top) / cardHeight - 0.5;
@@ -187,7 +314,7 @@ document.addEventListener('DOMContentLoaded', () => {
             title: "서울 마포아트센터 오리지널 정기 매직 콘서트 성황리 성료!",
             date: "2026-05-15",
             location: "서울 마포아트센터 대극장",
-            description: "인생마술 크루의 혼이 듬뿍 실린 오리지널 극장 매직 쇼 'The Moment'가 1,200석 전석 매진을 기록하며 막을 내렸습니다. 마포아트센터에 참석해주신 수많은 연인, 가족 관객 여러분께서 매 무대마다 뜨거운 기립 박수를 보내주셨습니다. 특히 오성민 대표 마술사의 모토가 흘러나온 피날레 일루전 퍼포먼스에서는 눈시울을 붉힌 관객분들도 계셨을 정도로 진심과 감동이 가득했던 최고의 밤이었습니다.",
+            description: "인생마술 크루의 혼이 듬뿍 실린 오리지널 극장 매직 쇼 'The Moment'가 1,200석 전석 매진을 기록하며 막을 내렸습니다. 마포아트센터에 참석해주신 수많은 연인, 가족 관객 여러분께서 매 무대마다 뜨거운 기립 박수를 보내주셨습니다. 특히 이은재 대표 마술사의 모토가 흘러나온 피날레 일루전 퍼포먼스에서는 눈시울을 붉힌 관객분들도 계셨을 정도로 진심과 감동이 가득했던 최고의 밤이었습니다.",
             image: "" // Placeholder magic visual
         },
         {
@@ -321,6 +448,7 @@ document.addEventListener('DOMContentLoaded', () => {
             adminLockscreen.style.display = 'none';
             adminDashboard.style.display = 'block';
             renderAdminList();
+            renderAdminInquiries();
         } else {
             alert('비밀번호가 올바르지 않습니다. 다시 입력해주세요.');
             passcodeField.value = '';
@@ -384,7 +512,7 @@ document.addEventListener('DOMContentLoaded', () => {
             localStorage.setItem('insaeng_history', JSON.stringify(currentList));
 
             alert('공연 히스토리가 성공적으로 등록되었습니다.');
-            
+
             // Reset form
             adminForm.reset();
             loadedBase64 = '';
@@ -414,7 +542,7 @@ document.addEventListener('DOMContentLoaded', () => {
         posts.forEach(post => {
             const item = document.createElement('div');
             item.className = `admin-list-item${post.hidden ? ' is-hidden' : ''}`;
-            
+
             const eyeOpenSvg = `<svg style="width: 20px; height: 20px;" fill="currentColor" viewBox="0 0 24 24"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>`;
             const eyeClosedSvg = `<svg style="width: 20px; height: 20px;" fill="currentColor" viewBox="0 0 24 24"><path d="M12 7c2.76 0 5 2.24 5 5 0 .65-.13 1.26-.36 1.82l2.92 2.92c1.51-1.2 2.7-2.78 3.44-4.74-1.73-4.39-6-7.5-11-7.5-1.4 0-2.74.25-3.98.7l2.16 2.16C10.74 7.13 11.35 7 12 7zM2 4.27l2.28 2.28.46.46C3.08 8.3 1.78 10.02 1 12c1.73 4.39 6 7.5 11 7.5 1.55 0 3.03-.3 4.38-.84l.42.42L19.73 22 21 20.73 3.27 3 2 4.27zM7.53 9.8l1.55 1.55c-.05.21-.08.43-.08.65 0 1.66 1.34 3 3 3 .22 0 .44-.03.65-.08l1.55 1.55c-.67.33-1.41.53-2.2.53-2.76 0-5-2.24-5-5 0-.79.2-1.53.53-2.2zm4.31-.78l3.15 3.15.02-.17c0-1.66-1.34-3-3-3l-.17.02z"/></svg>`;
 
@@ -476,7 +604,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (exportBtn) {
         exportBtn.addEventListener('click', () => {
             const dataStr = localStorage.getItem('insaeng_history') || JSON.stringify(defaultHistory);
-            const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+            const dataUri = 'data:application/json;charset=utf-8,' + encodeURIComponent(dataStr);
 
             const exportFileDefaultName = 'insaeng_masul_history_backup.json';
 
@@ -541,6 +669,40 @@ document.addEventListener('DOMContentLoaded', () => {
         inquiryForm.addEventListener('submit', (e) => {
             e.preventDefault();
 
+            // Collect inquiry data
+            const nameVal = document.getElementById('inq-name').value;
+            const phoneVal = document.getElementById('inq-phone').value;
+            const dateVal = document.getElementById('inq-date').value;
+            const timeVal = document.getElementById('inq-time').value;
+            const addrVal = document.getElementById('inq-addr').value;
+            const audienceVal = document.getElementById('inq-audience').value;
+            const budgetVal = document.getElementById('inq-budget').value;
+            
+            // Collect ages
+            const ageCheckboxes = document.querySelectorAll('input[name="inq-age"]:checked');
+            const agesVal = Array.from(ageCheckboxes).map(cb => cb.value);
+            
+            const descVal = document.getElementById('inq-desc').value;
+
+            const newInquiry = {
+                id: Date.now(),
+                name: nameVal,
+                phone: phoneVal,
+                date: dateVal,
+                time: timeVal,
+                address: addrVal,
+                audience: audienceVal,
+                budget: budgetVal,
+                ages: agesVal,
+                description: descVal,
+                timestamp: new Date().toLocaleString('ko-KR'),
+                read: false
+            };
+
+            const inquiries = JSON.parse(localStorage.getItem('insaeng_inquiries') || '[]');
+            inquiries.unshift(newInquiry);
+            localStorage.setItem('insaeng_inquiries', JSON.stringify(inquiries));
+
             // Fire canvas particle explosion
             explodeMagicParticles();
 
@@ -552,6 +714,118 @@ document.addEventListener('DOMContentLoaded', () => {
                 }, 100);
             }
         });
+    }
+
+    // Inquiries management functions for Admin Dashboard
+    const btnTabInquiry = document.getElementById('btn-tab-inquiry');
+    if (btnTabInquiry) {
+        btnTabInquiry.addEventListener('click', () => {
+            renderAdminInquiries();
+        });
+    }
+
+    function getInquiriesData() {
+        const data = localStorage.getItem('insaeng_inquiries');
+        return data ? JSON.parse(data) : [];
+    }
+
+    function renderAdminInquiries() {
+        const inquiryListContainer = document.getElementById('admin-inquiry-list');
+        const inquiriesCount = document.getElementById('inquiries-count');
+        if (!inquiryListContainer) return;
+
+        const inquiries = getInquiriesData();
+        inquiryListContainer.innerHTML = '';
+        if (inquiriesCount) inquiriesCount.innerText = `${inquiries.length}개`;
+
+        if (inquiries.length === 0) {
+            inquiryListContainer.innerHTML = `<div style="text-align: center; padding: 50px; color: var(--color-text-muted); font-size: 0.9rem;">신청된 문의 내역이 없습니다.</div>`;
+            return;
+        }
+
+        inquiries.forEach(inq => {
+            const card = document.createElement('div');
+            card.className = 'glass-panel';
+            card.style.padding = '24px';
+            card.style.marginBottom = '20px';
+            card.style.border = 'var(--border-glass)';
+            card.style.borderRadius = '16px';
+            card.style.boxShadow = 'var(--shadow-premium)';
+            card.style.background = 'rgba(18, 16, 26, 0.4)';
+
+            const ageBadges = inq.ages && inq.ages.length > 0 
+                ? inq.ages.map(age => `<span style="background: rgba(138, 43, 226, 0.15); border: 1px solid rgba(138, 43, 226, 0.3); color: #d1b3ff; font-size: 0.8rem; padding: 3px 10px; border-radius: 12px; margin-right: 8px; display: inline-block; margin-bottom: 5px;">${age}</span>`).join('') 
+                : '<span style="color: var(--color-text-muted); font-size: 0.85rem;">선택 없음</span>';
+
+            card.innerHTML = `
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 1px solid rgba(255, 255, 255, 0.08); padding-bottom: 15px; margin-bottom: 15px; flex-wrap: wrap; gap: 15px;">
+                    <div>
+                        <h4 style="font-size: 1.25rem; font-weight: 700; color: #fff; margin-bottom: 6px; display: flex; align-items: center; flex-wrap: wrap; gap: 10px;">
+                            ${inq.name} 
+                            <span style="font-size: 0.9rem; font-weight: 400; color: var(--color-text-muted);">📞 ${inq.phone}</span>
+                        </h4>
+                        <div style="font-size: 0.8rem; color: var(--color-primary-gold);">신청일시: ${inq.timestamp}</div>
+                    </div>
+                    <div style="display: flex; gap: 10px; align-items: center;">
+                        <button type="button" class="btn-glass btn-inq-read" data-id="${inq.id}" style="padding: 6px 14px; font-size: 0.8rem; border-radius: 20px; border-color: ${inq.read ? 'rgba(255, 255, 255, 0.15)' : 'var(--color-primary-gold)'}; color: ${inq.read ? 'var(--color-text-muted)' : 'var(--color-primary-gold)'}; cursor: pointer; background: transparent; transition: var(--transition-fast);">
+                            ${inq.read ? '읽음 완료' : '미확인'}
+                        </button>
+                        <button type="button" class="admin-delete-btn btn-inq-delete" data-id="${inq.id}" style="background: rgba(255, 77, 77, 0.1); border: none; color: #ff4d4d; cursor: pointer; padding: 8px; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: var(--transition-fast); width: 34px; height: 34px;">
+                            <svg style="width: 18px; height: 18px;" fill="currentColor" viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
+                        </button>
+                    </div>
+                </div>
+                
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 15px; margin-bottom: 20px; font-size: 0.9rem;">
+                    <div><strong style="color: var(--color-text-muted);">📅 희망 일시:</strong> <span style="color: #fff;">${inq.date} ${inq.time}</span></div>
+                    <div><strong style="color: var(--color-text-muted);">📍 공연 장소:</strong> <span style="color: #fff;">${inq.address}</span></div>
+                    <div><strong style="color: var(--color-text-muted);">👥 예상 관객:</strong> <span style="color: #fff;">${inq.audience}</span></div>
+                    <div><strong style="color: var(--color-text-muted);">💰 기획 예산:</strong> <span style="color: #fff;">${inq.budget}</span></div>
+                </div>
+                
+                <div style="margin-bottom: 20px;">
+                    <strong style="color: var(--color-text-muted); font-size: 0.9rem; display: block; margin-bottom: 8px;">👥 주요 연령층:</strong>
+                    <div>${ageBadges}</div>
+                </div>
+                
+                <div style="background: rgba(0, 0, 0, 0.25); padding: 18px; border-radius: 8px; border: var(--border-glass);">
+                    <strong style="color: var(--color-text-muted); font-size: 0.9rem; display: block; margin-bottom: 8px;">💬 상세 문의 내용:</strong>
+                    <p style="color: #e5e5e7; line-height: 1.6; font-size: 0.95rem; white-space: pre-wrap; word-break: break-all; margin: 0;">${inq.description || '작성된 내용이 없습니다.'}</p>
+                </div>
+            `;
+
+            // Attach event listeners
+            card.querySelector('.btn-inq-read').addEventListener('click', () => {
+                toggleInquiryRead(inq.id);
+            });
+
+            card.querySelector('.btn-inq-delete').addEventListener('click', () => {
+                if (confirm('정말로 이 문의 글을 삭제하시겠습니까? (삭제된 정보는 복구할 수 없습니다)')) {
+                    deleteInquiry(inq.id);
+                }
+            });
+
+            inquiryListContainer.appendChild(card);
+        });
+    }
+
+    function toggleInquiryRead(id) {
+        const inquiries = getInquiriesData();
+        const updated = inquiries.map(inq => {
+            if (inq.id === id) {
+                inq.read = !inq.read;
+            }
+            return inq;
+        });
+        localStorage.setItem('insaeng_inquiries', JSON.stringify(updated));
+        renderAdminInquiries();
+    }
+
+    function deleteInquiry(id) {
+        const inquiries = getInquiriesData();
+        const filtered = inquiries.filter(inq => inq.id !== id);
+        localStorage.setItem('insaeng_inquiries', JSON.stringify(filtered));
+        renderAdminInquiries();
     }
 
     // CANVAS PARTICLES ENGINE
@@ -575,15 +849,15 @@ document.addEventListener('DOMContentLoaded', () => {
         constructor(x, y) {
             this.x = x;
             this.y = y;
-            
+
             // Random direction speeds
             this.vx = (Math.random() - 0.5) * 14;
             this.vy = (Math.random() - 0.5) * 14 - 3; // slight upward drag
-            
+
             // Sizes & speeds
             this.size = Math.random() * 8 + 4;
             this.color = Math.random() > 0.5 ? '#d4af37' : '#8a2be2'; // Gold or Purple
-            
+
             this.opacity = 1;
             this.fadeSpeed = Math.random() * 0.015 + 0.01;
             this.gravity = 0.15;
@@ -614,9 +888,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 ctx.beginPath();
                 for (let i = 0; i < 5; i++) {
                     ctx.lineTo(Math.cos((18 + i * 72) * Math.PI / 180) * this.size + this.x,
-                               Math.sin((18 + i * 72) * Math.PI / 180) * this.size + this.y);
+                        Math.sin((18 + i * 72) * Math.PI / 180) * this.size + this.y);
                     ctx.lineTo(Math.cos((54 + i * 72) * Math.PI / 180) * (this.size / 2) + this.x,
-                               Math.sin((54 + i * 72) * Math.PI / 180) * (this.size / 2) + this.y);
+                        Math.sin((54 + i * 72) * Math.PI / 180) * (this.size / 2) + this.y);
                 }
                 ctx.closePath();
                 ctx.fill();
@@ -627,11 +901,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function explodeMagicParticles() {
         if (!canvas || !ctx) return;
-        
+
         // Spawn coordinates around the center of the screen
         const startX = window.innerWidth / 2;
         const startY = window.innerHeight / 2;
-        
+
         particles = [];
         for (let i = 0; i < 120; i++) {
             particles.push(new Particle(startX, startY));
@@ -642,9 +916,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function animateParticles() {
         if (!canvas || !ctx || particles.length === 0) return;
-        
+
         ctx.clearRect(0, 0, canvas.width, canvas.height);
-        
+
         particles.forEach((p, idx) => {
             p.update();
             p.draw();

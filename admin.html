@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="ko">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,30 +8,11 @@
     <meta name="robots" content="noindex, nofollow">
     <link rel="stylesheet" href="style.css">
 </head>
+
 <body style="min-height: 100vh; display: flex; flex-direction: column;">
 
     <!-- INTEGRATED HEADER NAV -->
-    <header>
-        <div class="nav-container">
-            <a href="index.html" class="logo">
-                <span>인생마술</span>
-            </a>
-            <nav>
-                <ul class="nav-links" id="nav-links">
-                    <li><a href="index.html">홈</a></li>
-                    <li><a href="about.html">회사소개</a></li>
-                    <li><a href="program.html">프로그램</a></li>
-                    <li><a href="history.html">히스토리</a></li>
-                    <li><a href="inquiry.html">문의</a></li>
-                </ul>
-            </nav>
-            <button class="hamburger" id="hamburger" aria-label="메뉴 토글">
-                <span></span>
-                <span></span>
-                <span></span>
-            </button>
-        </div>
-    </header>
+    <header></header>
 
     <!-- ADMIN PANEL BODY -->
     <main class="admin-page">
@@ -49,135 +31,138 @@
 
         <!-- 2. MAIN DASHBOARD CONTENT (Hidden until auth) -->
         <div class="admin-dashboard" id="admin-dashboard">
-            <div class="admin-grid-layout">
-                
-                <!-- Left: Form to Add Post -->
-                <div class="glass-panel">
-                    <div class="admin-card-header">
-                        <span>새 공연 히스토리 등록</span>
-                    </div>
-                    <form class="admin-form" id="admin-form">
-                        
-                        <!-- Program Select -->
-                        <div class="admin-form-group">
-                            <label for="admin-post-prog">공연 작품 종류</label>
-                            <select id="admin-post-prog" class="admin-select" required>
-                                <option value="">작품 선택</option>
-                                <option value="상상나래 키즈 매직쇼">상상나래 키즈 매직쇼</option>
-                                <option value="꿈꾸는 풍선마법사">꿈꾸는 풍선마법사</option>
-                                <option value="인생마술 극장: The Moment">인생마술 극장: The Moment</option>
-                                <option value="시간 여행자의 가방">시간 여행자의 가방</option>
-                                <option value="스트리트 매직 카니발">스트리트 매직 카니발</option>
-                                <option value="클로즈업 미라클 테이블">클로즈업 미라클 테이블</option>
-                                <option value="비즈니스 일루전 & 커스텀">비즈니스 일루전 & 커스텀</option>
-                                <option value="동기부여 융합 매직 강연">동기부여 융합 매직 강연</option>
-                            </select>
-                        </div>
 
-                        <!-- Date & Location -->
-                        <div class="inquiry-grid-2col" style="gap: 15px;">
-                            <div class="admin-form-group">
-                                <label for="admin-post-date">공연 날짜</label>
-                                <input type="date" id="admin-post-date" class="admin-input" style="margin-bottom: 0;" required>
-                            </div>
-                            <div class="admin-form-group">
-                                <label for="admin-post-loc">공연 장소 (도시/회관)</label>
-                                <input type="text" id="admin-post-loc" class="admin-input" placeholder="예: 서울 마포아트센터" style="margin-bottom: 0;" required>
-                            </div>
-                        </div>
-
-                        <!-- Post Title -->
-                        <div class="admin-form-group">
-                            <label for="admin-post-title">포스트 제목 (작품/일시/장소 반영 권장)</label>
-                            <input type="text" id="admin-post-title" class="admin-input" placeholder="예: 강남 초등학교 어린이 마술 성료!" required>
-                        </div>
-
-                        <!-- Post Image (Base64 file converter) -->
-                        <div class="admin-form-group">
-                            <label>공연 사진 파일 (정방형 또는 가로 권장)</label>
-                            <div class="admin-file-custom">
-                                <span id="file-label-text">여기를 눌러 사진 선택</span>
-                                <input type="file" id="admin-post-file" class="admin-file-input" accept="image/*">
-                            </div>
-                            <!-- Image preview -->
-                            <div id="image-preview-box" style="margin-top: 15px; display: none; text-align: center;">
-                                <img id="image-preview" src="" alt="미리보기" style="max-height: 150px; border-radius: 8px; border: var(--border-glass);">
-                            </div>
-                        </div>
-
-                        <!-- Post content description -->
-                        <div class="admin-form-group">
-                            <label for="admin-post-desc">공연 후기 및 세부 성과</label>
-                            <textarea id="admin-post-desc" class="admin-input admin-textarea" placeholder="관객 반응, 공연 관련 에피소드 등 상세 후기를 적어주세요." required></textarea>
-                        </div>
-
-                        <button type="submit" class="btn-gold" style="width: 100%; margin-top: 10px;">공연 등록하기</button>
-                    </form>
-                </div>
-
-                <!-- Right: List of Current Posts to Delete -->
-                <div class="glass-panel" style="display: flex; flex-direction: column;">
-                    <div class="admin-card-header">
-                        <span>현재 등록된 공연 목록</span>
-                        <span id="posts-count" class="gold-glow-text" style="font-size: 0.9rem;">0개</span>
-                    </div>
-                    <div class="admin-list-box" id="admin-list-box">
-                        <!-- Dynamic List loaded here -->
-                    </div>
-                </div>
-
-                <!-- Bottom panel: Data Export/Import for permanence -->
-                <div class="admin-backup-panel glass-panel">
-                    <div style="margin-right: auto; align-self: center; font-size: 0.85rem; color: var(--color-text-muted);">
-                        ※ 데이터는 브라우저 내부(localStorage)에 보관되므로 컴퓨터 변경 시 백업 버튼을 활용해 옮길 수 있습니다.
-                    </div>
-                    <button type="button" class="btn-glass" id="admin-export-btn" style="padding: 8px 18px; font-size: 0.85rem;">데이터 백업하기 (JSON)</button>
-                    <div class="btn-gold" style="position: relative; padding: 8px 18px; font-size: 0.85rem; cursor: pointer; color: var(--color-bg-dark);">
-                        데이터 불러오기
-                        <input type="file" id="admin-import-file" accept=".json" style="position: absolute; inset: 0; opacity: 0; cursor: pointer;">
-                    </div>
-                </div>
-
+            <!-- SUB TABS FOR HISTORY AND INQUIRIES -->
+            <div class="tab-nav-container" style="max-width: 500px; margin-bottom: 40px;">
+                <button class="tab-btn active" data-tab="admin-tab-history" id="btn-tab-history">공연 히스토리 관리</button>
+                <button class="tab-btn" data-tab="admin-tab-inquiry" id="btn-tab-inquiry">문의글 목록 조회</button>
             </div>
+
+            <!-- Tab 1: History Management -->
+            <div class="tab-content active" id="admin-tab-history" style="max-width: 100%; padding: 0;">
+                <div class="admin-grid-layout">
+
+                    <!-- Left: Form to Add Post -->
+                    <div class="glass-panel">
+                        <div class="admin-card-header">
+                            <span>새 공연 히스토리 등록</span>
+                        </div>
+                        <form class="admin-form" id="admin-form">
+
+                            <!-- Program Select -->
+                            <div class="admin-form-group">
+                                <label for="admin-post-prog">공연 작품 종류</label>
+                                <select id="admin-post-prog" class="admin-select" required>
+                                    <option value="">작품 선택</option>
+                                    <option value="상상나래 키즈 매직쇼">상상나래 키즈 매직쇼</option>
+                                    <option value="꿈꾸는 풍선마법사">꿈꾸는 풍선마법사</option>
+                                    <option value="인생마술 극장: The Moment">인생마술 극장: The Moment</option>
+                                    <option value="시간 여행자의 가방">시간 여행자의 가방</option>
+                                    <option value="스트리트 매직 카니발">스트리트 매직 카니발</option>
+                                    <option value="클로즈업 미라클 테이블">클로즈업 미라클 테이블</option>
+                                    <option value="비즈니스 일루전 & 커스텀">비즈니스 일루전 & 커스텀</option>
+                                    <option value="동기부여 융합 매직 강연">동기부여 융합 매직 강연</option>
+                                </select>
+                            </div>
+
+                            <!-- Date & Location -->
+                            <div class="inquiry-grid-2col" style="gap: 15px;">
+                                <div class="admin-form-group">
+                                    <label for="admin-post-date">공연 날짜</label>
+                                    <input type="date" id="admin-post-date" class="admin-input" style="margin-bottom: 0;"
+                                        required>
+                                </div>
+                                <div class="admin-form-group">
+                                    <label for="admin-post-loc">공연 장소 (도시/회관)</label>
+                                    <input type="text" id="admin-post-loc" class="admin-input" placeholder="예: 서울 마포아트센터"
+                                        style="margin-bottom: 0;" required>
+                                </div>
+                            </div>
+
+                            <!-- Post Title -->
+                            <div class="admin-form-group">
+                                <label for="admin-post-title">포스트 제목 (작품/일시/장소 반영 권장)</label>
+                                <input type="text" id="admin-post-title" class="admin-input"
+                                    placeholder="예: 강남 초등학교 어린이 마술 성료!" required>
+                            </div>
+
+                            <!-- Post Image (Base64 file converter) -->
+                            <div class="admin-form-group">
+                                <label>공연 사진 파일 (정방형 또는 가로 권장)</label>
+                                <div class="admin-file-custom">
+                                    <span id="file-label-text">여기를 눌러 사진 선택</span>
+                                    <input type="file" id="admin-post-file" class="admin-file-input" accept="image/*">
+                                </div>
+                                <!-- Image preview -->
+                                <div id="image-preview-box" style="margin-top: 15px; display: none; text-align: center;">
+                                    <img id="image-preview" src="" alt="미리보기"
+                                        style="max-height: 150px; border-radius: 8px; border: var(--border-glass);">
+                                </div>
+                            </div>
+
+                            <!-- Post content description -->
+                            <div class="admin-form-group">
+                                <label for="admin-post-desc">공연 후기 및 세부 성과</label>
+                                <textarea id="admin-post-desc" class="admin-input admin-textarea"
+                                    placeholder="관객 반응, 공연 관련 에피소드 등 상세 후기를 적어주세요." required></textarea>
+                            </div>
+
+                            <button type="submit" class="btn-gold" style="width: 100%; margin-top: 10px;">공연 등록하기</button>
+                        </form>
+                    </div>
+
+                    <!-- Right: List of Current Posts to Delete -->
+                    <div class="glass-panel" style="display: flex; flex-direction: column;">
+                        <div class="admin-card-header">
+                            <span>현재 등록된 공연 목록</span>
+                            <span id="posts-count" class="gold-glow-text" style="font-size: 0.9rem;">0개</span>
+                        </div>
+                        <div class="admin-list-box" id="admin-list-box">
+                            <!-- Dynamic List loaded here -->
+                        </div>
+                    </div>
+
+                    <!-- Bottom panel: Data Export/Import for permanence -->
+                    <div class="admin-backup-panel glass-panel">
+                        <div
+                            style="margin-right: auto; align-self: center; font-size: 0.85rem; color: var(--color-text-muted);">
+                            ※ 데이터는 브라우저 내부(localStorage)에 보관되므로 컴퓨터 변경 시 백업 버튼을 활용해 옮길 수 있습니다.
+                        </div>
+                        <button type="button" class="btn-glass" id="admin-export-btn"
+                            style="padding: 8px 18px; font-size: 0.85rem;">데이터 백업하기 (JSON)</button>
+                        <div class="btn-gold"
+                            style="position: relative; padding: 8px 18px; font-size: 0.85rem; cursor: pointer; color: var(--color-bg-dark);">
+                            데이터 불러오기
+                            <input type="file" id="admin-import-file" accept=".json"
+                                style="position: absolute; inset: 0; opacity: 0; cursor: pointer;">
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- Tab 2: Inquiry List Viewer -->
+            <div class="tab-content" id="admin-tab-inquiry" style="max-width: 100%; padding: 0;">
+                <div class="glass-panel" style="padding: 30px; margin-bottom: 30px;">
+                    <div class="admin-card-header" style="padding: 0 0 20px 0; margin-bottom: 20px; border-bottom: var(--border-glass);">
+                        <span>신청된 공연 문의 목록</span>
+                        <span id="inquiries-count" class="gold-glow-text" style="font-size: 0.9rem;">0개</span>
+                    </div>
+                    
+                    <div class="admin-list-box" id="admin-inquiry-list" style="max-height: 700px;">
+                        <!-- Dynamic Inquiries loaded here -->
+                    </div>
+                </div>
+            </div>
+
         </div>
     </main>
 
     <!-- INTEGRATED FOOTER -->
-    <footer style="margin-top: auto;">
-        <div class="footer-container">
-            <div class="footer-info">
-                <div class="footer-brand"><span>인생마술</span></div>
-                <div class="footer-biz-details">
-                    <p>상호명: 인생마술 | 대표자: 오성민</p>
-                    <p>사업자등록번호: 123-45-67890 | 이메일: contact@insaengmasul.com</p>
-                    <p>주소: 서울특별시 마포구 어울마당로 123, 3층</p>
-                    <p>공연 및 예약 전화 문의: 010-1234-5678 (상담 시간: 10:00 - 19:00)</p>
-                </div>
-            </div>
-            <div class="footer-sns-box">
-                <h4 class="sns-title">CONNECT WITH US</h4>
-                <div class="sns-links-grid">
-                    <a href="https://instagram.com" target="_blank" class="sns-circle-link" aria-label="인스타그램">
-                        <svg viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.051.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.406-11.845a1.44 1.44 0 1 0 0 2.881 1.44 1.44 0 0 0 0-2.881z"/></svg>
-                    </a>
-                    <a href="https://section.blog.naver.com" target="_blank" class="sns-circle-link" aria-label="블로그">
-                        <svg viewBox="0 0 24 24"><path d="M22.5 0h-21C.672 0 0 .672 0 1.5v21C0 23.328.672 24 1.5 24h21c.828 0 1.5-.672 1.5-1.5v-21C24 .672 23.328 0 22.5 0zM17.43 12.56h-2.45v5.33h-2.68v-5.33H9.85V9.92h7.58v2.64z"/></svg>
-                    </a>
-                    <a href="https://pf.kakao.com" target="_blank" class="sns-circle-link" aria-label="카카오톡">
-                        <svg viewBox="0 0 24 24"><path d="M12 3c-4.97 0-9 3.185-9 7.115 0 2.557 1.707 4.8 4.27 6.054-.188.702-.68 2.531-.777 2.893-.118.438.148.433.31.325.127-.085 2.012-1.366 2.805-1.902.443.084.903.13 1.392.13 4.97 0 9-3.186 9-7.115C21 6.185 16.97 3 12 3z"/></svg>
-                    </a>
-                    <a href="tel:010-1234-5678" class="sns-circle-link" aria-label="전화번호">
-                        <svg viewBox="0 0 24 24"><path d="M20.01 15.38c-1.23 0-2.42-.2-3.53-.56-.35-.12-.74-.03-1.02.24l-2.2 2.2c-2.83-1.44-5.15-3.75-6.59-6.58l2.2-2.21c.28-.27.36-.66.25-1.01-.36-1.11-.56-2.3-.56-3.53 0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1 0 9.39 7.61 17 17 17 .55 0 1-.45 1-1v-3.58c0-.56-.45-1-1-1z"/></svg>
-                    </a>
-                </div>
-            </div>
-        </div>
-        <div class="footer-copyright">
-            © 2026 INSAENG MASUL. ALL RIGHTS RESERVED.
-        </div>
-    </footer>
+    <footer style="margin-top: auto;"></footer>
 
     <!-- Global Javascript -->
     <script src="main.js"></script>
 </body>
+
 </html>
