@@ -110,6 +110,33 @@
                             </div>
                         </div>
 
+                        <!-- 9. Additional Programs (Multiple checklist, optional) -->
+                        <div class="admin-form-group inquiry-grid-span2">
+                            <label style="margin-bottom: 12px;">추가 선택 부가 프로그램 (중복 선택 가능, 선택사항)</label>
+                            <div style="display: flex; flex-wrap: wrap; gap: 15px;">
+                                <label class="checkbox-label"
+                                    style="background: rgba(255,255,255,0.03); padding: 8px 16px; border-radius: 20px; border: var(--border-glass);">
+                                    <input type="checkbox" name="inq-add-prog" value="버블 체험"> 버블 체험
+                                </label>
+                                <label class="checkbox-label"
+                                    style="background: rgba(255,255,255,0.03); padding: 8px 16px; border-radius: 20px; border: var(--border-glass);">
+                                    <input type="checkbox" name="inq-add-prog" value="마술 강의"> 마술 강의
+                                </label>
+                                <label class="checkbox-label"
+                                    style="background: rgba(255,255,255,0.03); padding: 8px 16px; border-radius: 20px; border: var(--border-glass);">
+                                    <input type="checkbox" name="inq-add-prog" value="직업 강의"> 직업 강의
+                                </label>
+                                <label class="checkbox-label"
+                                    style="background: rgba(255,255,255,0.03); padding: 8px 16px; border-radius: 20px; border: var(--border-glass);">
+                                    <input type="checkbox" name="inq-add-prog" value="팝콘기계 대여"> 팝콘기계 대여
+                                </label>
+                                <label class="checkbox-label"
+                                    style="background: rgba(255,255,255,0.03); padding: 8px 16px; border-radius: 20px; border: var(--border-glass);">
+                                    <input type="checkbox" name="inq-add-prog" value="포토부스(네컷촬영) 대여"> 포토부스(네컷촬영) 대여
+                                </label>
+                            </div>
+                        </div>
+
                         <!-- 9. Detail Contents -->
                         <div class="admin-form-group inquiry-grid-span2">
                             <label for="inq-desc">상세 문의 내용</label>
@@ -178,6 +205,12 @@
     <!-- INTEGRATED FOOTER -->
     <footer></footer>
 
+    <!-- Firebase SDK Compat -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+    <script src="firebase-config.js"></script>
+    <script src="firebase.js"></script>
     <!-- Global Javascript -->
     <script src="main.js"></script>
 </body>

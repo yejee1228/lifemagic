@@ -310,34 +310,50 @@ document.addEventListener('DOMContentLoaded', async () => {
     const defaultHistory = [
         {
             id: 1716931200000,
-            program: "인생마술 극장: The Moment",
+            program: "반짝반짝 빛나는 마술사의 방",
             title: "서울 마포아트센터 오리지널 정기 매직 콘서트 성황리 성료!",
             date: "2026-05-15",
             location: "서울 마포아트센터 대극장",
-            description: "인생마술 크루의 혼이 듬뿍 실린 오리지널 극장 매직 쇼 'The Moment'가 1,200석 전석 매진을 기록하며 막을 내렸습니다. 마포아트센터에 참석해주신 수많은 연인, 가족 관객 여러분께서 매 무대마다 뜨거운 기립 박수를 보내주셨습니다. 특히 이은재 대표 마술사의 모토가 흘러나온 피날레 일루전 퍼포먼스에서는 눈시울을 붉힌 관객분들도 계셨을 정도로 진심과 감동이 가득했던 최고의 밤이었습니다.",
+            description: "인생마술 크루의 혼이 듬뿍 실린 오리지널 극장 매직 쇼 '반짝반짝 빛나는 마술사의 방'이 전석 매진을 기록하며 성황리에 막을 내렸습니다. 빛을 활용한 다채로운 일루전과 따뜻한 감동이 담긴 옴니버스 스토리극에 관객 여러분께서 기립 박수를 보내주셨습니다.",
             image: "" // Placeholder magic visual
         },
         {
             id: 1716499200000,
-            program: "상상나래 키즈 매직쇼",
+            program: "매직버블벌룬쇼",
             title: "대전 월드컵 어린이회관 초청 - 꿈과 상상을 전파한 키즈 축제",
             date: "2026-05-10",
             location: "대전 월드컵 어린이회관",
-            description: "가정의 달을 맞아 대전 월드컵 어린이회관의 메인 무대에 올랐습니다. 300여 명의 어린이 친구들과 학부모님들이 객석을 꽉 메워주셨습니다. 무대로 직접 올라와 꼬마 마술사가 되어 마법 주문을 외치며 비둘기와 꽃가루를 피우는 참여형 스테이지는 아이들에게 단연 인기 최고였습니다. 어린이들의 함성과 미소 덕분에 마술사들도 마술 같은 하루를 보냈습니다.",
+            description: "가정의 달을 맞아 대전 월드컵 어린이회관에서 매직버블벌룬쇼를 선보였습니다. 수많은 비눗방울과 대형 풍선 아트 퍼포먼스가 어우러져 어린이들과 학부모님들 모두가 무대 위에 올라가 꼬마 마술사가 되어 함께 즐기는 환상의 하루였습니다.",
             image: ""
         },
         {
             id: 1715808000000,
-            program: "스트리트 매직 카니발",
+            program: "안녕, 낯선이",
             title: "부산 해운대 모래축제 거리 버스킹 - 열광의 스트리트 피버!",
             date: "2026-05-02",
             location: "부산 해운대 백사장 광장",
-            description: "파란 바다를 등지고 펼쳐진 즉흥 야외 버스킹! 해운대 백사장을 지나가던 500여 명의 행인들이 인생마술의 서커스 링과 로프 마술, 심장을 쫄깃하게 만드는 멘탈 매직에 빠져들어 거대한 광장을 꽉 채웠습니다. 해변의 시원한 파도 소리와 함께 관객분들의 함성이 한데 어우러진, 최고의 날것 그대로의 소통 무대였습니다.",
+            description: "파란 바다를 등지고 펼쳐진 안녕, 낯선이 버스킹 쇼! 지나가던 500여 명의 관객들이 인생마술의 참여형 1인극에 스며들어 무대를 꽉 메워주셨습니다. 관객분들이 직접 이야기의 주인공으로 어우러져 소통했던 잊지 못할 밤이었습니다.",
             image: ""
         }
     ];
 
-    function getHistoryData() {
+    async function getHistoryData() {
+        if (window.fb && window.fb.isInitialized()) {
+            try {
+                let posts = await window.fb.getHistory();
+                if (posts && posts.length === 0) {
+                    console.log("Firestore history collection is empty. Auto-populating initial data...");
+                    for (const item of defaultHistory) {
+                        await window.fb.saveHistory(item);
+                    }
+                    posts = await window.fb.getHistory();
+                }
+                return posts || defaultHistory;
+            } catch (e) {
+                console.error("Firebase read failed, using localStorage fallback:", e);
+            }
+        }
+
         let data = localStorage.getItem('insaeng_history');
         if (!data) {
             localStorage.setItem('insaeng_history', JSON.stringify(defaultHistory));
@@ -346,9 +362,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         return JSON.parse(data);
     }
 
-    function renderHistoryBoard() {
+    async function renderHistoryBoard() {
         if (!historyGrid) return;
-        const allPosts = getHistoryData();
+        const allPosts = await getHistoryData();
         const posts = allPosts.filter(p => !p.hidden);
         historyGrid.innerHTML = '';
 
@@ -428,14 +444,43 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 
     /* ==========================================================================
-       6. CLIENT-SIDE LOCAL ADMIN MANAGEMENT (admin.html)
+       6. CLIENT-SIDE LOCAL ADMIN MANAGEMENT & FIREBASE AUTH (admin.html)
        ========================================================================== */
     const adminLockscreen = document.getElementById('admin-lockscreen');
     const adminDashboard = document.getElementById('admin-dashboard');
     const passcodeBtn = document.getElementById('lock-submit-btn');
     const passcodeField = document.getElementById('passcode-input');
+    const adminEmailField = document.getElementById('admin-email-input');
+    const adminLogoutBtn = document.getElementById('admin-logout-btn');
 
-    // Admin authorization logic
+    // Subscribe to Firebase Auth state if available
+    let firebaseUser = null;
+    if (window.fb && window.fb.isInitialized() && (adminLockscreen || adminDashboard)) {
+        window.fb.onAuthStateChanged(async (user) => {
+            if (user) {
+                firebaseUser = user;
+                if (adminLockscreen) adminLockscreen.style.display = 'none';
+                if (adminDashboard) adminDashboard.style.display = 'block';
+                if (adminLogoutBtn) {
+                    adminLogoutBtn.style.display = 'block';
+                    adminLogoutBtn.innerText = '로그아웃';
+                }
+                const emailGroup = document.getElementById('admin-email-group');
+                if (emailGroup) emailGroup.style.display = 'none';
+
+                await renderAdminList();
+                await renderAdminInquiries();
+            } else {
+                firebaseUser = null;
+                if (adminLockscreen) adminLockscreen.style.display = 'block';
+                if (adminDashboard) adminDashboard.style.display = 'none';
+                if (adminLogoutBtn) adminLogoutBtn.style.display = 'none';
+                const emailGroup = document.getElementById('admin-email-group');
+                if (emailGroup) emailGroup.style.display = 'block';
+            }
+        });
+    }
+
     if (passcodeBtn && passcodeField) {
         passcodeBtn.addEventListener('click', handleAuth);
         passcodeField.addEventListener('keydown', (e) => {
@@ -443,14 +488,65 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
-    function handleAuth() {
-        if (passcodeField.value === 'magic123') {
-            adminLockscreen.style.display = 'none';
-            adminDashboard.style.display = 'block';
-            renderAdminList();
-            renderAdminInquiries();
+    if (adminLogoutBtn) {
+        adminLogoutBtn.addEventListener('click', async () => {
+            if (window.fb && window.fb.isInitialized() && firebaseUser) {
+                if (confirm('로그아웃 하시겠습니까?')) {
+                    try {
+                        await window.fb.logout();
+                    } catch (e) {
+                        alert('로그아웃 실패: ' + e.message);
+                    }
+                }
+            } else {
+                if (confirm('로컬 관리자 세션을 종료하시겠습니까?')) {
+                    window.location.reload();
+                }
+            }
+        });
+    }
+
+    async function handleAuth() {
+        const email = adminEmailField ? adminEmailField.value.trim() : '';
+        const passcode = passcodeField.value.trim();
+
+        // 1. Firebase Auth Mode (If email is entered)
+        if (window.fb && window.fb.isInitialized() && email !== '') {
+            try {
+                const originalText = passcodeBtn.innerText;
+                passcodeBtn.innerText = '로그인 중...';
+                passcodeBtn.disabled = true;
+
+                await window.fb.login(email, passcode);
+
+                passcodeBtn.innerText = originalText;
+                passcodeBtn.disabled = false;
+                return;
+            } catch (e) {
+                alert('Firebase 로그인 실패: ' + e.message);
+                passcodeBtn.innerText = '인증 및 로그인';
+                passcodeBtn.disabled = false;
+                passcodeField.value = '';
+                passcodeField.focus();
+                return;
+            }
+        }
+
+        // 2. Local Storage Passcode Bypass Mode
+        if (passcode === 'magic123') {
+            if (adminLockscreen) adminLockscreen.style.display = 'none';
+            if (adminDashboard) adminDashboard.style.display = 'block';
+            if (adminLogoutBtn) {
+                adminLogoutBtn.style.display = 'block';
+                adminLogoutBtn.innerText = '로컬 세션 종료';
+            }
+            const emailGroup = document.getElementById('admin-email-group');
+            if (emailGroup) emailGroup.style.display = 'none';
+
+            await renderAdminList();
+            await renderAdminInquiries();
         } else {
-            alert('비밀번호가 올바르지 않습니다. 다시 입력해주세요.');
+            alert('비밀번호 또는 이메일 정보가 올바르지 않습니다.');
             passcodeField.value = '';
             passcodeField.focus();
         }
@@ -488,7 +584,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Form submit inside admin
     const adminForm = document.getElementById('admin-form');
     if (adminForm) {
-        adminForm.addEventListener('submit', (e) => {
+        adminForm.addEventListener('submit', async (e) => {
             e.preventDefault();
 
             const programVal = document.getElementById('admin-post-prog').value;
@@ -504,12 +600,26 @@ document.addEventListener('DOMContentLoaded', async () => {
                 date: dateVal,
                 location: locVal,
                 description: descVal,
-                image: loadedBase64
+                image: loadedBase64,
+                hidden: false
             };
 
-            const currentList = getHistoryData();
-            currentList.unshift(newPost); // Add to beginning
-            localStorage.setItem('insaeng_history', JSON.stringify(currentList));
+            // Firestore Write
+            if (window.fb && window.fb.isInitialized()) {
+                try {
+                    await window.fb.saveHistory(newPost);
+                } catch (err) {
+                    alert('Firestore 저장 실패: ' + err.message);
+                    return;
+                }
+            }
+
+            // Sync with local storage
+            const currentList = await getHistoryData();
+            if (!currentList.some(p => p.id === newPost.id)) {
+                currentList.unshift(newPost);
+                localStorage.setItem('insaeng_history', JSON.stringify(currentList));
+            }
 
             alert('공연 히스토리가 성공적으로 등록되었습니다.');
 
@@ -520,7 +630,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             if (imgPreviewBox) imgPreviewBox.style.display = 'none';
             if (imgPreview) imgPreview.src = '';
 
-            renderAdminList();
+            await renderAdminList();
         });
     }
 
@@ -528,9 +638,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     const adminListBox = document.getElementById('admin-list-box');
     const postsCount = document.getElementById('posts-count');
 
-    function renderAdminList() {
+    async function renderAdminList() {
         if (!adminListBox) return;
-        const posts = getHistoryData();
+        const posts = await getHistoryData();
         adminListBox.innerHTML = '';
         if (postsCount) postsCount.innerText = `${posts.length}개`;
 
@@ -578,23 +688,45 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
-    function togglePostVisibility(id) {
-        const posts = getHistoryData();
+    async function togglePostVisibility(id) {
+        const posts = await getHistoryData();
+        const postToUpdate = posts.find(p => p.id === id);
+        if (!postToUpdate) return;
+        const newHidden = !postToUpdate.hidden;
+
+        if (window.fb && window.fb.isInitialized()) {
+            try {
+                await window.fb.updateHistoryHidden(id, newHidden);
+            } catch (err) {
+                alert('Firestore 상태 업데이트 실패: ' + err.message);
+                return;
+            }
+        }
+
         const updated = posts.map(p => {
             if (p.id === id) {
-                p.hidden = !p.hidden;
+                p.hidden = newHidden;
             }
             return p;
         });
         localStorage.setItem('insaeng_history', JSON.stringify(updated));
-        renderAdminList();
+        await renderAdminList();
     }
 
-    function deletePost(id) {
-        const posts = getHistoryData();
+    async function deletePost(id) {
+        if (window.fb && window.fb.isInitialized()) {
+            try {
+                await window.fb.deleteHistory(id);
+            } catch (err) {
+                alert('Firestore 삭제 실패: ' + err.message);
+                return;
+            }
+        }
+
+        const posts = await getHistoryData();
         const filtered = posts.filter(p => p.id !== id);
         localStorage.setItem('insaeng_history', JSON.stringify(filtered));
-        renderAdminList();
+        await renderAdminList();
     }
 
     // Data Export/Import
@@ -602,8 +734,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     const importInput = document.getElementById('admin-import-file');
 
     if (exportBtn) {
-        exportBtn.addEventListener('click', () => {
-            const dataStr = localStorage.getItem('insaeng_history') || JSON.stringify(defaultHistory);
+        exportBtn.addEventListener('click', async () => {
+            const posts = await getHistoryData();
+            const dataStr = JSON.stringify(posts);
             const dataUri = 'data:application/json;charset=utf-8,' + encodeURIComponent(dataStr);
 
             const exportFileDefaultName = 'insaeng_masul_history_backup.json';
@@ -616,23 +749,28 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     if (importInput) {
-        importInput.addEventListener('change', (e) => {
+        importInput.addEventListener('change', async (e) => {
             const file = e.target.files[0];
             if (!file) return;
 
             const reader = new FileReader();
-            reader.onload = (event) => {
+            reader.onload = async (event) => {
                 try {
                     const parsed = JSON.parse(event.target.result);
                     if (Array.isArray(parsed)) {
+                        if (window.fb && window.fb.isInitialized()) {
+                            for (const item of parsed) {
+                                await window.fb.saveHistory(item);
+                            }
+                        }
                         localStorage.setItem('insaeng_history', JSON.stringify(parsed));
                         alert('데이터 복원이 성공적으로 완료되었습니다.');
-                        renderAdminList();
+                        await renderAdminList();
                     } else {
                         alert('올바른 백업 파일 포맷이 아닙니다.');
                     }
                 } catch (err) {
-                    alert('파일 해석 중 오류가 발생했습니다.');
+                    alert('파일 해석 중 오류가 발생했습니다: ' + err.message);
                 }
             };
             reader.readAsText(file);
@@ -666,7 +804,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     if (inquiryForm) {
-        inquiryForm.addEventListener('submit', (e) => {
+        inquiryForm.addEventListener('submit', async (e) => {
             e.preventDefault();
 
             // Collect inquiry data
@@ -699,9 +837,22 @@ document.addEventListener('DOMContentLoaded', async () => {
                 read: false
             };
 
+            // Firestore Write
+            if (window.fb && window.fb.isInitialized()) {
+                try {
+                    await window.fb.saveInquiry(newInquiry);
+                } catch (err) {
+                    alert('Firestore 문의 접수 실패: ' + err.message);
+                    return;
+                }
+            }
+
+            // Sync with local storage
             const inquiries = JSON.parse(localStorage.getItem('insaeng_inquiries') || '[]');
-            inquiries.unshift(newInquiry);
-            localStorage.setItem('insaeng_inquiries', JSON.stringify(inquiries));
+            if (!inquiries.some(i => i.id === newInquiry.id)) {
+                inquiries.unshift(newInquiry);
+                localStorage.setItem('insaeng_inquiries', JSON.stringify(inquiries));
+            }
 
             // Fire canvas particle explosion
             explodeMagicParticles();
@@ -719,22 +870,30 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Inquiries management functions for Admin Dashboard
     const btnTabInquiry = document.getElementById('btn-tab-inquiry');
     if (btnTabInquiry) {
-        btnTabInquiry.addEventListener('click', () => {
-            renderAdminInquiries();
+        btnTabInquiry.addEventListener('click', async () => {
+            await renderAdminInquiries();
         });
     }
 
-    function getInquiriesData() {
+    async function getInquiriesData() {
+        if (window.fb && window.fb.isInitialized()) {
+            try {
+                const list = await window.fb.getInquiries();
+                return list || [];
+            } catch (err) {
+                console.error("Firebase read failed, using localStorage fallback:", err);
+            }
+        }
         const data = localStorage.getItem('insaeng_inquiries');
         return data ? JSON.parse(data) : [];
     }
 
-    function renderAdminInquiries() {
+    async function renderAdminInquiries() {
         const inquiryListContainer = document.getElementById('admin-inquiry-list');
         const inquiriesCount = document.getElementById('inquiries-count');
         if (!inquiryListContainer) return;
 
-        const inquiries = getInquiriesData();
+        const inquiries = await getInquiriesData();
         inquiryListContainer.innerHTML = '';
         if (inquiriesCount) inquiriesCount.innerText = `${inquiries.length}개`;
 
@@ -809,23 +968,45 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
-    function toggleInquiryRead(id) {
-        const inquiries = getInquiriesData();
+    async function toggleInquiryRead(id) {
+        const inquiries = await getInquiriesData();
+        const inqToUpdate = inquiries.find(inq => inq.id === id);
+        if (!inqToUpdate) return;
+        const newRead = !inqToUpdate.read;
+
+        if (window.fb && window.fb.isInitialized()) {
+            try {
+                await window.fb.updateInquiryRead(id, newRead);
+            } catch (err) {
+                alert('Firestore 읽음 처리 실패: ' + err.message);
+                return;
+            }
+        }
+
         const updated = inquiries.map(inq => {
             if (inq.id === id) {
-                inq.read = !inq.read;
+                inq.read = newRead;
             }
             return inq;
         });
         localStorage.setItem('insaeng_inquiries', JSON.stringify(updated));
-        renderAdminInquiries();
+        await renderAdminInquiries();
     }
 
-    function deleteInquiry(id) {
-        const inquiries = getInquiriesData();
+    async function deleteInquiry(id) {
+        if (window.fb && window.fb.isInitialized()) {
+            try {
+                await window.fb.deleteInquiry(id);
+            } catch (err) {
+                alert('Firestore 문의 삭제 실패: ' + err.message);
+                return;
+            }
+        }
+
+        const inquiries = await getInquiriesData();
         const filtered = inquiries.filter(inq => inq.id !== id);
         localStorage.setItem('insaeng_inquiries', JSON.stringify(filtered));
-        renderAdminInquiries();
+        await renderAdminInquiries();
     }
 
     // CANVAS PARTICLES ENGINE
