@@ -7,7 +7,6 @@ let db = null;
 let auth = null;
 
 try {
-    // firebaseConfig가 올바르게 설정되어 있는지 체크 (기본 템플릿 값이 아니면 초기화)
     if (typeof firebaseConfig !== 'undefined' && 
         firebaseConfig.apiKey && 
         firebaseConfig.apiKey !== "YOUR_API_KEY") {
@@ -25,12 +24,13 @@ try {
 
 // 글로벌 네임스페이스 fb 객체 정의
 window.fb = {
-    // 상태 조회
     isInitialized: () => db !== null && auth !== null,
     getDb: () => db,
     getAuth: () => auth,
 
-    // Firebase Auth 관련 래퍼 함수
+    // =========================================================================
+    // Firebase Auth
+    // =========================================================================
     login: (email, password) => {
         if (!auth) throw new Error("Firebase Auth가 초기화되지 않았습니다.");
         return auth.signInWithEmailAndPassword(email, password);
@@ -40,23 +40,20 @@ window.fb = {
         return auth.signOut();
     },
     onAuthStateChanged: (callback) => {
-        if (!auth) return () => {}; // 더미 언서브스크라이브 반환
+        if (!auth) return () => {};
         return auth.onAuthStateChanged(callback);
     },
-    getCurrentUser: () => {
-        return auth ? auth.currentUser : null;
-    },
+    getCurrentUser: () => auth ? auth.currentUser : null,
 
-    // Cloud Firestore - 공연 히스토리 CRUD
+    // =========================================================================
+    // 공연 히스토리 CRUD
+    // =========================================================================
     getHistory: async () => {
         if (!db) return null;
         try {
-            // 날짜 최신순 정렬하여 로드
             const snapshot = await db.collection('history').orderBy('date', 'desc').get();
             const list = [];
-            snapshot.forEach(doc => {
-                list.push(doc.data());
-            });
+            snapshot.forEach(doc => list.push(doc.data()));
             return list;
         } catch (e) {
             console.error("Firestore getHistory 에러:", e);
@@ -66,7 +63,6 @@ window.fb = {
     saveHistory: async (post) => {
         if (!db) return null;
         try {
-            // post.id를 문서 ID로 지정하여 저장
             await db.collection('history').doc(post.id.toString()).set(post);
             return true;
         } catch (e) {
@@ -77,7 +73,7 @@ window.fb = {
     updateHistoryHidden: async (id, hidden) => {
         if (!db) return null;
         try {
-            await db.collection('history').doc(id.toString()).update({ hidden: hidden });
+            await db.collection('history').doc(id.toString()).update({ hidden });
             return true;
         } catch (e) {
             console.error("Firestore updateHistoryHidden 에러:", e);
@@ -95,16 +91,50 @@ window.fb = {
         }
     },
 
-    // Cloud Firestore - 문의 신청/예약 CRUD
+    // 특정 프로그램의 최근 히스토리 게시글 조회 (program 필드 매칭)
+    getHistoryByProgram: async (programTitle, limitCount = 6) => {
+        if (!db) return null;
+        try {
+            const snapshot = await db.collection('history')
+                .where('program', '==', programTitle)
+                .where('hidden', '==', false)
+                .orderBy('date', 'desc')
+                .limit(limitCount)
+                .get();
+            const list = [];
+            snapshot.forEach(doc => list.push(doc.data()));
+            return list;
+        } catch (e) {
+            console.error("Firestore getHistoryByProgram 에러:", e);
+            // 복합 쿼리 인덱스 미생성 시 폴백: hidden 필터 없이 재시도
+            try {
+                const snapshot2 = await db.collection('history')
+                    .where('program', '==', programTitle)
+                    .orderBy('date', 'desc')
+                    .limit(limitCount)
+                    .get();
+                const list2 = [];
+                snapshot2.forEach(doc => {
+                    const d = doc.data();
+                    if (!d.hidden) list2.push(d);
+                });
+                return list2;
+            } catch (e2) {
+                console.error("Firestore getHistoryByProgram 폴백 에러:", e2);
+                return [];
+            }
+        }
+    },
+
+    // =========================================================================
+    // 문의 신청/예약 CRUD
+    // =========================================================================
     getInquiries: async () => {
         if (!db) return null;
         try {
-            // 최신 문의 순으로 정렬하여 로드
             const snapshot = await db.collection('inquiries').orderBy('id', 'desc').get();
             const list = [];
-            snapshot.forEach(doc => {
-                list.push(doc.data());
-            });
+            snapshot.forEach(doc => list.push(doc.data()));
             return list;
         } catch (e) {
             console.error("Firestore getInquiries 에러:", e);
@@ -124,7 +154,7 @@ window.fb = {
     updateInquiryRead: async (id, read) => {
         if (!db) return null;
         try {
-            await db.collection('inquiries').doc(id.toString()).update({ read: read });
+            await db.collection('inquiries').doc(id.toString()).update({ read });
             return true;
         } catch (e) {
             console.error("Firestore updateInquiryRead 에러:", e);
@@ -138,6 +168,75 @@ window.fb = {
             return true;
         } catch (e) {
             console.error("Firestore deleteInquiry 에러:", e);
+            throw e;
+        }
+    },
+
+    // =========================================================================
+    // 프로그램 CRUD
+    // =========================================================================
+
+    // 카테고리별 프로그램 목록 조회 (null이면 전체)
+    getPrograms: async (category = null) => {
+        if (!db) return null;
+        try {
+            let snapshot;
+            if (category) {
+                snapshot = await db.collection('programs')
+                    .where('category', '==', category)
+                    .orderBy('order', 'asc')
+                    .get();
+            } else {
+                snapshot = await db.collection('programs')
+                    .orderBy('order', 'asc')
+                    .get();
+            }
+            const list = [];
+            snapshot.forEach(doc => list.push({ docId: doc.id, ...doc.data() }));
+            return list;
+        } catch (e) {
+            console.error("Firestore getPrograms 에러:", e);
+            throw e;
+        }
+    },
+
+    // 단일 프로그램 조회
+    getProgramById: async (id) => {
+        if (!db) return null;
+        try {
+            const doc = await db.collection('programs').doc(id).get();
+            if (doc.exists) return { docId: doc.id, ...doc.data() };
+            return null;
+        } catch (e) {
+            console.error("Firestore getProgramById 에러:", e);
+            throw e;
+        }
+    },
+
+    // 프로그램 저장 (등록/수정)
+    saveProgram: async (program) => {
+        if (!db) return null;
+        try {
+            const docId = program.id || db.collection('programs').doc().id;
+            program.id = docId;
+            program.updatedAt = new Date().toISOString();
+            if (!program.createdAt) program.createdAt = program.updatedAt;
+            await db.collection('programs').doc(docId).set(program);
+            return docId;
+        } catch (e) {
+            console.error("Firestore saveProgram 에러:", e);
+            throw e;
+        }
+    },
+
+    // 프로그램 삭제
+    deleteProgram: async (id) => {
+        if (!db) return null;
+        try {
+            await db.collection('programs').doc(id).delete();
+            return true;
+        } catch (e) {
+            console.error("Firestore deleteProgram 에러:", e);
             throw e;
         }
     }

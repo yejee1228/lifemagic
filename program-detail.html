@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>인생마술 | 프로그램 상세</title>
+    <meta name="description" content="인생마술 공연 프로그램 상세 정보">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <!-- INTEGRATED HEADER NAV -->
+    <header></header>
+
+    <!-- PROGRAM DETAIL PAGE -->
+    <main class="detail-page" id="detail-main">
+
+        <!-- Hero Section (image only, no title) -->
+        <div class="detail-hero" id="detail-hero">
+            <img class="detail-hero-img" id="detail-hero-img" src="images/program1.jpg" alt="">
+            <div class="detail-hero-overlay"></div>
+            <a href="program.html" class="detail-back-btn">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+                프로그램 목록으로
+            </a>
+        </div>
+
+        <!-- Content Area -->
+        <div class="detail-content-wrap">
+
+            <!-- Title Row: left = tag + title, right = program switcher -->
+            <div class="detail-title-row">
+                <div class="detail-title-left">
+                    <span class="detail-hero-tag" id="detail-hero-tag"></span>
+                    <h1 class="detail-hero-title" id="detail-hero-title">로딩 중...</h1>
+                </div>
+                <div class="detail-title-right">
+                    <label class="detail-switcher-label">다른 프로그램 보기</label>
+                    <select id="detail-prog-switch" class="detail-prog-switcher">
+                        <option value="">— 프로그램 선택 —</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Gallery Section -->
+            <section class="detail-gallery-section" id="detail-gallery-section" style="display:none;">
+                <h2 class="detail-section-label">공연 갤러리</h2>
+                <div class="detail-gallery-grid" id="detail-gallery-grid"></div>
+            </section>
+
+            <!-- Description Section -->
+            <section class="detail-desc-section">
+                <h2 class="detail-section-label">공연 소개</h2>
+                <div class="detail-block-content" id="detail-block-content">
+                    <div class="detail-empty-state">공연 소개를 불러오는 중입니다...</div>
+                </div>
+            </section>
+
+            <!-- Timetable Section -->
+            <section class="detail-timetable-section" id="detail-timetable-section" style="display:none;">
+                <h2 class="detail-section-label">타임테이블</h2>
+                <div class="detail-timetable" id="detail-timetable"></div>
+            </section>
+
+            <!-- Recent History Section -->
+            <section class="detail-history-section">
+                <h2 class="detail-section-label">이 공연의 최근 실적</h2>
+                <div class="detail-history-grid" id="detail-history-grid">
+                    <div class="detail-empty-state" style="grid-column:span 3;">관련 공연 기록을 불러오는 중...</div>
+                </div>
+            </section>
+
+            <!-- CTA Section -->
+            <div class="detail-cta-section">
+                <p>이 공연에 관심이 있으신가요? 지금 바로 문의해 보세요!</p>
+                <a href="inquiry.html" id="detail-inquiry-btn" class="btn-gold" style="font-size:1.05rem; padding:14px 40px;">공연 문의하기</a>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Image Lightbox -->
+    <div class="detail-lightbox" id="detail-lightbox">
+        <button class="detail-lightbox-close" id="detail-lightbox-close">&times;</button>
+        <img src="" alt="확대 이미지" id="detail-lightbox-img">
+    </div>
+
+    <!-- INTEGRATED FOOTER -->
+    <footer></footer>
+
+    <!-- Firebase SDK Compat -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+    <script src="firebase-config.js"></script>
+    <script src="firebase.js"></script>
+    <!-- Global Javascript -->
+    <script src="main.js"></script>
+</body>
+
+</html>
