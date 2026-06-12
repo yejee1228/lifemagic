@@ -272,6 +272,10 @@ header {
     .sec-inquiry-intro {
         background-image: linear-gradient(rgba(7, 6, 10, 0.45), rgba(7, 6, 10, 0.75)), url('images/bg3_land.jpg');
     }
+
+    .sec-connect {
+        background-image: linear-gradient(rgba(7, 6, 10, 0.75), rgba(7, 6, 10, 0.95)), url('images/bg1_land.jpg');
+    }
 }
 
 @media (orientation: portrait) {
@@ -286,6 +290,10 @@ header {
     .sec-inquiry-intro {
         background-image: linear-gradient(rgba(7, 6, 10, 0.55), rgba(7, 6, 10, 0.85)), url('images/bg3_port.jpg');
     }
+
+    .sec-connect {
+        background-image: linear-gradient(rgba(7, 6, 10, 0.8), rgba(7, 6, 10, 0.97)), url('images/bg1_port.jpg');
+    }
 }
 
 /* Section Specific Overlays */
@@ -296,6 +304,123 @@ header {
     opacity: 0;
     transform: translateY(30px);
     animation: fadeInUp 1.2s forwards cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+.hero-btn-group {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    margin-top: 20px;
+    flex-wrap: wrap;
+}
+
+/* ==========================================
+   SECTION 4: CONNECT (index.html)
+   ========================================== */
+.sec-connect {
+    height: auto;
+    min-height: 100vh;
+    justify-content: flex-start;
+}
+
+.connect-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    max-width: 600px;
+    z-index: 10;
+    opacity: 0;
+    transform: translateY(30px);
+    transition: var(--transition-smooth);
+}
+
+.snap-section.active .connect-content {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.connect-title {
+    font-family: var(--font-serif);
+    font-size: 2.2rem;
+    margin-bottom: 14px;
+    color: var(--color-text-light);
+    word-break: keep-all;
+    text-wrap: balance;
+}
+
+.connect-desc {
+    font-size: 1rem;
+    color: var(--color-text-muted);
+    margin-bottom: 32px;
+    line-height: 1.7;
+    word-break: keep-all;
+}
+
+.connect-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+}
+
+.connect-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    padding: 22px 16px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 16px;
+    color: var(--color-text-light);
+    transition: var(--transition-smooth);
+}
+
+.connect-card:hover {
+    background: rgba(212, 175, 55, 0.1);
+    border-color: rgba(212, 175, 55, 0.35);
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+}
+
+.connect-icon {
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    background: rgba(212, 175, 55, 0.1);
+    border: 1px solid rgba(212, 175, 55, 0.25);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-primary-gold);
+    margin-bottom: 2px;
+}
+
+.connect-icon svg {
+    width: 20px;
+    height: 20px;
+    fill: currentColor;
+}
+
+.connect-label {
+    font-size: 0.95rem;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+}
+
+.connect-handle {
+    font-size: 0.78rem;
+    color: var(--color-text-muted);
+}
+
+/* Footer anchored inside last snap-section, breaks out of section's horizontal padding */
+.snap-footer {
+    align-self: stretch;
+    margin-left: -24px;
+    margin-right: -24px;
+    margin-top: auto;
 }
 
 .hero-subtitle {
@@ -362,6 +487,8 @@ header {
     font-size: 2.2rem;
     margin-bottom: 20px;
     color: var(--color-text-light);
+    word-break: keep-all;
+    text-wrap: balance;
 }
 
 .intro-glass-card p {
@@ -371,6 +498,7 @@ header {
     color: var(--color-text-muted);
     margin-bottom: 35px;
     word-break: keep-all;
+    overflow-wrap: break-word;
 }
 
 /* ==========================================
@@ -1609,13 +1737,51 @@ footer {
 
     /* Hero Text size */
     .hero-title {
-        font-size: 1.8rem;
-        line-height: 1.5;
+        font-size: 1.5rem;
+        line-height: 1.65;
+        letter-spacing: 0.5px;
+        margin-bottom: 28px;
     }
 
     .hero-subtitle {
-        font-size: 1.1rem;
+        font-size: 1rem;
         letter-spacing: 2px;
+    }
+
+    /* Hero buttons - stack vertically on narrow screens */
+    .hero-btn-group {
+        flex-direction: column;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .hero-btn-group .btn-gold,
+    .hero-btn-group .btn-glass {
+        width: 220px;
+        text-align: center;
+    }
+
+    /* Section title */
+    .section-title {
+        font-size: 1.8rem;
+        letter-spacing: 1px;
+        margin-bottom: 36px;
+    }
+
+    /* Intro glass card */
+    .intro-glass-card {
+        padding: 28px 22px;
+    }
+
+    .intro-glass-card h2 {
+        font-size: 1.45rem;
+        line-height: 1.55;
+    }
+
+    .intro-glass-card p {
+        font-size: 0.95rem;
+        line-height: 1.75;
+        margin-bottom: 24px;
     }
 
     /* Timeline Mobile */
@@ -1707,6 +1873,100 @@ footer {
     .detail-title-left .detail-hero-title {
         font-size: 1.7rem;
     }
+
+    /* Connect section mobile — 아이콘만 1줄 배치 */
+    .connect-title {
+        font-size: 1.4rem;
+        margin-bottom: 10px;
+    }
+
+    .connect-desc {
+        font-size: 0.88rem;
+        margin-bottom: 20px;
+    }
+
+    .connect-grid {
+        grid-template-columns: repeat(4, 1fr);
+        gap: 12px;
+    }
+
+    .connect-card {
+        padding: 14px 8px;
+        gap: 0;
+        border-radius: 14px;
+    }
+
+    .connect-label,
+    .connect-handle {
+        display: none;
+    }
+
+    .connect-icon {
+        width: 40px;
+        height: 40px;
+        margin-bottom: 0;
+    }
+}
+
+/* 375×667 등 화면 높이가 낮은 기기 추가 압축 */
+@media (max-height: 700px) and (orientation: portrait) {
+    .sec-connect {
+        padding-top: 100px;
+        padding-bottom: 16px;
+    }
+
+    .connect-content {
+        padding-top: 0;
+    }
+
+    .connect-title {
+        font-size: 1.2rem;
+        margin-bottom: 6px;
+    }
+
+    .connect-desc {
+        font-size: 0.8rem;
+        margin-bottom: 14px;
+        line-height: 1.5;
+    }
+
+    .connect-grid {
+        gap: 8px;
+    }
+
+    .connect-card {
+        padding: 12px 6px;
+    }
+
+    .connect-icon {
+        width: 34px;
+        height: 34px;
+    }
+
+    .connect-icon svg {
+        width: 15px;
+        height: 15px;
+    }
+
+    footer {
+        padding-top: 18px;
+        padding-bottom: 12px;
+    }
+
+    .footer-container {
+        margin-bottom: 12px;
+        gap: 14px;
+    }
+
+    .footer-biz-details {
+        font-size: 0.76rem;
+        line-height: 1.55;
+    }
+
+    .footer-copyright {
+        padding-top: 12px;
+        font-size: 0.66rem;
+    }
 }
 
 /* ==========================================
@@ -1738,7 +1998,7 @@ footer {
 .detail-hero-overlay {
     position: absolute;
     inset: 0;
-    background: linear-gradient(to top, rgba(7,6,10,0.85) 0%, rgba(7,6,10,0.3) 55%, transparent 100%);
+    background: linear-gradient(to top, rgba(7, 6, 10, 0.85) 0%, rgba(7, 6, 10, 0.3) 55%, transparent 100%);
 }
 
 .detail-hero-tag {
@@ -1766,7 +2026,7 @@ footer {
     display: flex;
     align-items: center;
     gap: 8px;
-    color: rgba(255,255,255,0.7);
+    color: rgba(255, 255, 255, 0.7);
     font-size: 0.9rem;
     cursor: pointer;
     transition: color 0.2s;
@@ -1776,8 +2036,14 @@ footer {
     text-decoration: none;
 }
 
-.detail-back-btn:hover { color: var(--color-primary-gold); }
-.detail-back-btn svg { width: 18px; height: 18px; }
+.detail-back-btn:hover {
+    color: var(--color-primary-gold);
+}
+
+.detail-back-btn svg {
+    width: 18px;
+    height: 18px;
+}
 
 /* Main Content Area */
 .detail-content-wrap {
@@ -1823,7 +2089,7 @@ footer {
 .detail-lightbox {
     position: fixed;
     inset: 0;
-    background: rgba(0,0,0,0.9);
+    background: rgba(0, 0, 0, 0.9);
     z-index: 9999;
     display: flex;
     align-items: center;
@@ -1944,7 +2210,7 @@ footer {
     color: var(--color-text-light);
     margin-bottom: 20px;
     padding-bottom: 12px;
-    border-bottom: 1px solid rgba(255,255,255,0.08);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
     display: flex;
     align-items: center;
     gap: 10px;
@@ -2005,19 +2271,19 @@ footer {
 .detail-block-content table th,
 .detail-block-content table td {
     padding: 12px 16px;
-    border: 1px solid rgba(255,255,255,0.1);
+    border: 1px solid rgba(255, 255, 255, 0.1);
     text-align: left;
     vertical-align: top;
 }
 
 .detail-block-content table th {
-    background: rgba(212,175,55,0.1);
+    background: rgba(212, 175, 55, 0.1);
     color: var(--color-primary-gold);
     font-weight: 600;
 }
 
 .detail-block-content table tr:nth-child(even) td {
-    background: rgba(255,255,255,0.03);
+    background: rgba(255, 255, 255, 0.03);
 }
 
 /* Timetable */
@@ -2046,7 +2312,7 @@ footer {
     top: 0;
     bottom: 0;
     width: 2px;
-    background: linear-gradient(to bottom, rgba(212,175,55,0.6), rgba(138,43,226,0.4));
+    background: linear-gradient(to bottom, rgba(212, 175, 55, 0.6), rgba(138, 43, 226, 0.4));
 }
 
 .detail-timetable-time {
@@ -2117,8 +2383,8 @@ footer {
 
 .detail-history-card:hover {
     transform: translateY(-5px);
-    border-color: rgba(212,175,55,0.3);
-    box-shadow: 0 12px 30px rgba(0,0,0,0.5);
+    border-color: rgba(212, 175, 55, 0.3);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.5);
 }
 
 .detail-history-thumb {
@@ -2147,7 +2413,7 @@ footer {
     align-items: center;
     justify-content: center;
     background: linear-gradient(135deg, #1a1528, #110e1a);
-    color: rgba(212,175,55,0.3);
+    color: rgba(212, 175, 55, 0.3);
     font-size: 2rem;
 }
 
@@ -2185,7 +2451,7 @@ footer {
 .detail-cta-section {
     text-align: center;
     padding: 60px 0 40px;
-    border-top: 1px solid rgba(255,255,255,0.06);
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
 }
 
 .detail-cta-section p {
@@ -2200,7 +2466,7 @@ footer {
     padding: 40px;
     color: var(--color-text-muted);
     font-size: 0.95rem;
-    background: rgba(255,255,255,0.02);
+    background: rgba(255, 255, 255, 0.02);
     border-radius: 12px;
     border: var(--border-glass);
 }
@@ -2222,7 +2488,7 @@ footer {
 
 /* Editor.js container styling */
 .codex-editor {
-    background: rgba(255,255,255,0.03);
+    background: rgba(255, 255, 255, 0.03);
     border-radius: 10px;
     border: var(--border-glass);
     padding: 12px;
@@ -2247,22 +2513,26 @@ footer {
     color: var(--color-text-light);
 }
 
-.ce-toolbar__plus, .ce-toolbar__settings-btn {
+.ce-toolbar__plus,
+.ce-toolbar__settings-btn {
     color: var(--color-primary-gold) !important;
 }
 
-.ce-toolbox, .ce-settings {
-    background: rgba(18,16,26,0.98) !important;
+.ce-toolbox,
+.ce-settings {
+    background: rgba(18, 16, 26, 0.98) !important;
     border: var(--border-glass) !important;
     border-radius: 10px !important;
 }
 
-.ce-toolbox__button, .cdx-settings-button {
+.ce-toolbox__button,
+.cdx-settings-button {
     color: var(--color-text-muted) !important;
 }
 
-.ce-toolbox__button:hover, .cdx-settings-button:hover {
-    background: rgba(212,175,55,0.15) !important;
+.ce-toolbox__button:hover,
+.cdx-settings-button:hover {
+    background: rgba(212, 175, 55, 0.15) !important;
     color: var(--color-primary-gold) !important;
 }
 
@@ -2292,7 +2562,7 @@ footer {
     position: absolute;
     top: 4px;
     right: 4px;
-    background: rgba(255,0,0,0.8);
+    background: rgba(255, 0, 0, 0.8);
     color: #fff;
     border: none;
     border-radius: 50%;
@@ -2328,9 +2598,9 @@ footer {
 }
 
 .admin-timetable-remove {
-    background: rgba(255,255,255,0.05);
+    background: rgba(255, 255, 255, 0.05);
     border: var(--border-glass);
-    color: rgba(255,100,100,0.8);
+    color: rgba(255, 100, 100, 0.8);
     border-radius: 6px;
     width: 32px;
     height: 32px;
@@ -2344,7 +2614,7 @@ footer {
 }
 
 .admin-timetable-remove:hover {
-    background: rgba(255,100,100,0.15);
+    background: rgba(255, 100, 100, 0.15);
 }
 
 /* Program list in admin */
@@ -2353,21 +2623,21 @@ footer {
     align-items: center;
     gap: 12px;
     padding: 14px 16px;
-    border-bottom: 1px solid rgba(255,255,255,0.05);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
     transition: background 0.2s;
 }
 
 .admin-prog-list-item:hover {
-    background: rgba(255,255,255,0.03);
+    background: rgba(255, 255, 255, 0.03);
 }
 
 .admin-prog-list-item .prog-category-badge {
     font-size: 0.72rem;
     padding: 3px 10px;
     border-radius: 20px;
-    background: rgba(138,43,226,0.2);
+    background: rgba(138, 43, 226, 0.2);
     color: var(--color-mystic-purple);
-    border: 1px solid rgba(138,43,226,0.3);
+    border: 1px solid rgba(138, 43, 226, 0.3);
     white-space: nowrap;
     flex-shrink: 0;
 }
@@ -2394,19 +2664,19 @@ footer {
 }
 
 .btn-edit-prog {
-    background: rgba(212,175,55,0.1);
+    background: rgba(212, 175, 55, 0.1);
     color: var(--color-primary-gold);
 }
 
 .btn-edit-prog:hover {
-    background: rgba(212,175,55,0.25);
+    background: rgba(212, 175, 55, 0.25);
 }
 
 .btn-delete-prog {
-    background: rgba(255,80,80,0.1);
+    background: rgba(255, 80, 80, 0.1);
     color: #ff6060;
 }
 
 .btn-delete-prog:hover {
-    background: rgba(255,80,80,0.25);
+    background: rgba(255, 80, 80, 0.25);
 }
