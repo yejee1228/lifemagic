@@ -597,22 +597,22 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
-    async function populateAdminProgSelect() {
-        const select = document.getElementById('admin-post-prog');
+    async function populateProgramSelect(select, defaultLabel) {
         if (!select) return;
         const programs = await getProgramsData(null);
         const catOrder = ['어린이', '극장', '행사', '기업', '부가'];
+        const catLabels = { '어린이': '어린이 프로그램', '극장': '극장 프로그램', '행사': '행사 / 버스킹 프로그램', '기업': '기업 / 기관 프로그램', '부가': '부가 프로그램' };
         const grouped = {};
         programs.forEach(p => {
             if (!grouped[p.category]) grouped[p.category] = [];
             grouped[p.category].push(p);
         });
         const currentVal = select.value;
-        select.innerHTML = '<option value="">작품 선택</option>';
+        select.innerHTML = `<option value="">${defaultLabel}</option>`;
         catOrder.forEach(cat => {
             if (!grouped[cat]) return;
             const group = document.createElement('optgroup');
-            group.label = cat;
+            group.label = catLabels[cat] || cat;
             grouped[cat].sort((a, b) => (a.order || 99) - (b.order || 99));
             grouped[cat].forEach(p => {
                 const opt = document.createElement('option');
@@ -622,6 +622,23 @@ document.addEventListener('DOMContentLoaded', async () => {
                 group.appendChild(opt);
             });
             select.appendChild(group);
+        });
+    }
+
+    async function populateAdminProgSelect() {
+        await populateProgramSelect(document.getElementById('admin-post-prog'), '작품 선택');
+    }
+
+    // 문의 페이지 프로그램 select 자동 로드 + URL param 자동 선택
+    const inqProgramSelectEl = document.getElementById('inq-program');
+    if (inqProgramSelectEl) {
+        populateProgramSelect(inqProgramSelectEl, '프로그램 선택 (선택사항)').then(() => {
+            const params = new URLSearchParams(window.location.search);
+            const programParam = params.get('program');
+            if (programParam) {
+                const opt = Array.from(inqProgramSelectEl.options).find(o => o.value === programParam);
+                if (opt) inqProgramSelectEl.value = programParam;
+            }
         });
     }
 
@@ -1004,22 +1021,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         await renderAdminInquiries();
     }
 
-    /* ==========================================================================
-       7b. INQUIRY URL PARAM AUTO-SELECT
-       ========================================================================== */
-    const inqProgramSelect = document.getElementById('inq-program');
-    if (inqProgramSelect) {
-        const params = new URLSearchParams(window.location.search);
-        const programParam = params.get('program');
-        if (programParam) {
-            const opt = Array.from(inqProgramSelect.options).find(o => o.value === programParam);
-            if (opt) inqProgramSelect.value = programParam;
-        }
-    }
-
     // Also include program field in inquiry submit
     if (inquiryForm) {
-        const origSubmit = inquiryForm.onsubmit;
         inquiryForm.addEventListener('submit', () => {
             const progVal = document.getElementById('inq-program');
             if (progVal) {
@@ -1139,48 +1142,20 @@ document.addEventListener('DOMContentLoaded', async () => {
     /* ==========================================================================
        8. PROGRAM.HTML — DYNAMIC CARD RENDERING FROM FIRESTORE / LOCALSTORAGE
        ========================================================================== */
-    const defaultPrograms = [
-        // 어린이 프로그램 (1-1 ~ 1-5)
-        { id: 'magic-balloon-show',        category: '어린이', title: '매직벌룬쇼',                              tag: 'Balloon & Magic',    shortDesc: '신기한 마술공연과 신나는 벌룬쇼가 결합된 무대로, 메가풍선 퍼포먼스를 비롯한 대형 풍선 작품 선물들이 쉴 새 없이 이어져 어린이날 등 특별한 행사에 추천하는 공연입니다.', images: ['images/program/program1-1.jpg'], order: 1 },
-        { id: 'led-magic-show',            category: '어린이', title: 'LED매직쇼',                              tag: 'LED & Glow',         shortDesc: '빛과 그림자, LED, 레이저를 활용해 몽환적이고 환상적인 공간을 연출하며, 로고나 브랜드명 커스터마이징 및 특별한 메시지 전달이 가능한 미래형 시각 마술쇼입니다.', images: ['images/program/program1-2.jpg'], order: 2 },
-        { id: 'magic-bubble-show',         category: '어린이', title: '매직버블쇼',                             tag: 'Bubble & Magic',     shortDesc: '클래식 마술공연과 다채로운 비눗방울 쇼의 만남! 온 가족이 함께 참여하고 즐기는 놀이터를 선사합니다.',                                                             images: ['images/program/program1-3.jpg'], order: 3 },
-        { id: 'magic-bubble-balloon-show', category: '어린이', title: '매직버블벌룬쇼',                          tag: 'Bubble & Balloon',   shortDesc: '어린이들의 도파민과 아드레날린을 폭발시킬 매직벌룬쇼와 매직버블쇼의 콜라보레이션으로, 풍성한 볼거리와 역동적인 퍼포먼스를 모두 모은 인기 공연입니다.',         images: ['images/program/program1-4.jpg'], order: 4 },
-        { id: 'white-magic-christmas',     category: '어린이', title: '제리 아저씨의 화이트 매직 크리스마스',     tag: 'Christmas Special',  shortDesc: '크리스마스 시즌 특별 제작 공연으로, 동심을 지켜주는 마술과 크리스마스 시즌 전용 풍선 아트 공연이 어우러져 아이들에게 잊지 못할 겨울의 추억을 선물합니다.',   images: ['images/program/program1-5.jpg'], order: 5 },
-        // 극장 프로그램 (2-1 ~ 2-2)
-        { id: 'magicians-room',            category: '극장',   title: '반짝반짝 빛나는 마술사의 방',              tag: 'Storytelling Show',  shortDesc: "조수 앨리스와 함께 '꿈'이라는 주제를 아름다운 이야기로 전달하는 관객 참여형 극장식 매직극입니다.",                                                           images: ['images/program/program2-1.jpg'], order: 1 },
-        { id: 'magicians-room-christmas',  category: '극장',   title: '반짝반짝 빛나는 마술사의 방: 크리스마스의 비밀', tag: 'Christmas Theater', shortDesc: '설렘과 상상이 가득한 크리스마스의 기다림을 마술사의 어린 시절 꿈과 연결한 겨울 특화 쇼입니다.',                                                                 images: ['images/program/program2-2.jpg'], order: 2 },
-        // 행사 프로그램 (3-1 ~ 3-2)
-        { id: 'hello-stranger',            category: '행사',   title: '안녕, 낯선이 (Hello Stranger)',           tag: 'Street Performance', shortDesc: '거리 위의 평범한 시민을 영화 속 주인공으로 만들어가는 참여형 1인극으로, 에딘버러 프린지(2018)와 춘천마임축제(2019) 등 국내외 무대에서 각광받은 작품입니다.', images: ['images/program/program3-1.jpg'], order: 1 },
-        { id: 'delivered-show',            category: '행사',   title: '당신 앞으로 도착한 공연',                  tag: 'Interactive Street', shortDesc: '자전거를 탄 집배원이 거리 위 관객에게 편지와 소포를 열어 마술, 풍선, 저글링 등의 짧은 환상을 배달하는 거리 퍼포먼스입니다.',                                 images: ['images/program/program3-2.jpg'], order: 2 },
-        // 기업 프로그램 (4-1)
-        { id: 'family-magic-festival',     category: '기업',   title: '패밀리 매직 페스티벌',                    tag: 'Premium Custom',     shortDesc: '극장식 무대 배경막, 특수 조명, 음향 장비를 직접 세팅하여 기업 패밀리 데이를 풍성하게 꾸미는 60분 간의 고품격 관객 소통 콘서트입니다.',                   images: ['images/program/program4-1.jpg'], order: 1 },
-        // 부가 프로그램 (5-1 ~ 5-4)
-        { id: 'bubble-experience',         category: '부가',   title: '버블 체험',                              tag: 'Experience',         shortDesc: '직접 비눗방울을 만져볼 수 있는 체험형 프로그램',                                                                                                          images: ['images/program/program5-1.jpg'], order: 1 },
-        { id: 'magic-lecture',             category: '부가',   title: '마술 강의',                              tag: 'Lecture',            shortDesc: '초보자 맞춤형 마술 클래스',                                                                                                                           images: ['images/program/program5-2.jpg'], order: 2 },
-        { id: 'career-lecture',            category: '부가',   title: '직업 강의',                              tag: 'Education',          shortDesc: '마술사와 무대예술기획자 진로 탐색 강연',                                                                                                               images: ['images/program/program5-3.jpg'], order: 3 },
-        { id: 'equipment-rental',          category: '부가',   title: '장비 렌탈',                              tag: 'Rental Service',     shortDesc: '팝콘 기계 렌탈 서비스 및 네컷 포토부스 대여 서비스',                                                                                                   images: ['images/program/program5-4.jpg'], order: 4 },
-    ];
-
     async function getProgramsData(category) {
         if (window.fb && window.fb.isInitialized()) {
             try {
                 const list = await window.fb.getPrograms(null);
                 if (list !== null) {
-                    // Firestore에 없는 기본 프로그램은 defaults에서 병합
-                    const firestoreIds = new Set(list.map(p => p.id || p.docId));
-                    const merged = [...list];
-                    defaultPrograms.forEach(dp => {
-                        if (!firestoreIds.has(dp.id)) merged.push(dp);
-                    });
-                    merged.sort((a, b) => (a.order || 99) - (b.order || 99));
-                    return category ? merged.filter(p => p.category === category) : merged;
+                    list.sort((a, b) => (a.order || 99) - (b.order || 99));
+                    return category ? list.filter(p => p.category === category) : list;
                 }
             } catch (e) {
-                console.error('Firebase getPrograms failed, using defaults:', e);
+                console.error('Firebase getPrograms failed:', e);
             }
         }
         const stored = localStorage.getItem('insaeng_programs');
-        const all = stored ? JSON.parse(stored) : defaultPrograms;
+        const all = stored ? JSON.parse(stored) : [];
         return category ? all.filter(p => p.category === category) : all;
     }
 
@@ -1199,7 +1174,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 </div>
             </div>`;
         container.addEventListener('click', () => {
-            window.location.href = `program-detail.html?id=${encodeURIComponent(prog.id || prog.docId)}`;
+            window.location.href = `program-detail.html?id=${encodeURIComponent(prog.docId || prog.id)}`;
         });
         return container;
     }
@@ -1257,7 +1232,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 }
                 if (!prog) {
                     const stored = localStorage.getItem('insaeng_programs');
-                    const all = stored ? JSON.parse(stored) : defaultPrograms;
+                    const all = stored ? JSON.parse(stored) : [];
                     prog = all.find(p => p.id === programId || p.docId === programId) || null;
                 }
             }
@@ -1587,7 +1562,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                     }
                 } else {
                     if (!program.id) program.id = 'prog-' + Date.now();
-                    const stored = JSON.parse(localStorage.getItem('insaeng_programs') || 'null') || defaultPrograms;
+                    const stored = JSON.parse(localStorage.getItem('insaeng_programs') || '[]');
                     const idx = stored.findIndex(p => p.id === program.id);
                     if (idx >= 0) stored[idx] = program; else stored.push(program);
                     localStorage.setItem('insaeng_programs', JSON.stringify(stored));
@@ -1623,25 +1598,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         const progFormResetBtn = document.getElementById('prog-form-reset-btn');
         if (progFormResetBtn) progFormResetBtn.addEventListener('click', resetProgForm);
 
-        async function seedMissingDefaultPrograms() {
-            if (!window.fb || !window.fb.isInitialized()) return;
-            try {
-                const list = await window.fb.getPrograms(null);
-                if (list === null) return;
-                const firestoreIds = new Set(list.map(p => p.id || p.docId));
-                for (const dp of defaultPrograms) {
-                    if (!firestoreIds.has(dp.id)) {
-                        await window.fb.saveProgram({ ...dp });
-                    }
-                }
-            } catch (e) {
-                console.warn('기본 프로그램 시딩 실패:', e);
-            }
-        }
-
         async function renderAdminProgList() {
             if (!adminProgList) return;
-            await seedMissingDefaultPrograms();
             const programs = await getProgramsData(null);
             const countEl = document.getElementById('prog-list-count');
             if (countEl) countEl.textContent = `${programs.length}개`;
@@ -1667,10 +1625,10 @@ document.addEventListener('DOMContentLoaded', async () => {
                 item.querySelector('.btn-delete-prog').addEventListener('click', async () => {
                     if (!confirm(`"${prog.title}" 프로그램을 삭제하시겠습니까?`)) return;
                     if (window.fb && window.fb.isInitialized()) {
-                        try { await window.fb.deleteProgram(prog.id || prog.docId); } catch (err) { alert('삭제 실패: ' + err.message); return; }
+                        try { await window.fb.deleteProgram(prog.docId || prog.id); } catch (err) { alert('삭제 실패: ' + err.message); return; }
                     } else {
-                        const stored = JSON.parse(localStorage.getItem('insaeng_programs') || 'null') || defaultPrograms;
-                        const filtered = stored.filter(p => p.id !== (prog.id || prog.docId));
+                        const stored = JSON.parse(localStorage.getItem('insaeng_programs') || '[]');
+                        const filtered = stored.filter(p => p.id !== (prog.docId || prog.id));
                         localStorage.setItem('insaeng_programs', JSON.stringify(filtered));
                     }
                     await renderAdminProgList();
@@ -1681,7 +1639,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
 
         async function loadProgForEdit(prog) {
-            editingProgId = prog.id || prog.docId;
+            editingProgId = prog.docId || prog.id;
             document.getElementById('prog-edit-id').value = editingProgId;
             document.getElementById('prog-category').value = prog.category || '어린이';
             document.getElementById('prog-title').value = prog.title || '';

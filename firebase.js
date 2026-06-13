@@ -176,7 +176,7 @@ window.fb = {
     // 프로그램 CRUD
     // =========================================================================
 
-    // 카테고리별 프로그램 목록 조회 (null이면 전체)
+    // 카테고리별 프로그램 목록 조회 (null이면 전체) — orderBy 제거, 클라이언트 정렬
     getPrograms: async (category = null) => {
         if (!db) return null;
         try {
@@ -184,15 +184,15 @@ window.fb = {
             if (category) {
                 snapshot = await db.collection('programs')
                     .where('category', '==', category)
-                    .orderBy('order', 'asc')
                     .get();
             } else {
-                snapshot = await db.collection('programs')
-                    .orderBy('order', 'asc')
-                    .get();
+                snapshot = await db.collection('programs').get();
             }
             const list = [];
-            snapshot.forEach(doc => list.push({ docId: doc.id, ...doc.data() }));
+            snapshot.forEach(doc => {
+                const data = doc.data();
+                list.push({ ...data, docId: doc.id, id: doc.id });
+            });
             return list;
         } catch (e) {
             console.error("Firestore getPrograms 에러:", e);
@@ -205,7 +205,10 @@ window.fb = {
         if (!db) return null;
         try {
             const doc = await db.collection('programs').doc(id).get();
-            if (doc.exists) return { docId: doc.id, ...doc.data() };
+            if (doc.exists) {
+                const data = doc.data();
+                return { ...data, docId: doc.id, id: doc.id };
+            }
             return null;
         } catch (e) {
             console.error("Firestore getProgramById 에러:", e);
@@ -213,15 +216,20 @@ window.fb = {
         }
     },
 
-    // 프로그램 저장 (등록/수정)
+    // 프로그램 저장 (등록/수정) — docId 우선, id/docId 필드 항상 docId와 일치시킴
     saveProgram: async (program) => {
         if (!db) return null;
         try {
-            const docId = program.id || db.collection('programs').doc().id;
-            program.id = docId;
-            program.updatedAt = new Date().toISOString();
-            if (!program.createdAt) program.createdAt = program.updatedAt;
-            await db.collection('programs').doc(docId).set(program);
+            const docId = program.docId || program.id || db.collection('programs').doc().id;
+            const now = new Date().toISOString();
+            const toSave = {
+                ...program,
+                id: docId,
+                docId: docId,
+                updatedAt: now,
+                createdAt: program.createdAt || now,
+            };
+            await db.collection('programs').doc(docId).set(toSave);
             return docId;
         } catch (e) {
             console.error("Firestore saveProgram 에러:", e);
