@@ -17,5 +17,13 @@ service cloud.firestore {
       // 오직 로그인한 인증된 관리자 계정만 전체 목록 조회(Read), 읽음 처리(Update), 문의 글 삭제(Delete) 가능
       allow read, update, delete: if request.auth != null;
     }
+
+    // 3. 공연 프로그램 컬렉션 보안 규칙
+    match /programs/{programId} {
+      // 비로그인 사용자도 프로그램 목록/상세 조회 가능
+      allow read: if true;
+      // 오직 로그인한 인증된 관리자 계정만 등록/수정/삭제 가능
+      allow write, update, delete: if request.auth != null;
+    }
   }
 }

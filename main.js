@@ -199,6 +199,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (tabButtons.length > 0 && tabContents.length > 0) {
         tabButtons.forEach(btn => {
             btn.addEventListener('click', () => {
+                const scrollY = window.scrollY;
                 const targetTab = btn.getAttribute('data-tab');
 
                 tabButtons.forEach(b => b.classList.remove('active'));
@@ -214,6 +215,9 @@ document.addEventListener('DOMContentLoaded', async () => {
                 if (targetTab === 'timeline-tab') {
                     triggerTimelineGrowth();
                 }
+
+                // 탭 전환 시 스크롤 위치 유지
+                window.scrollTo(0, scrollY);
             });
         });
 
@@ -441,11 +445,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     const adminLogoutBtn = document.getElementById('admin-logout-btn');
 
     // Subscribe to Firebase Auth state if available
-    let firebaseUser = null;
     if (window.fb && window.fb.isInitialized() && (adminLockscreen || adminDashboard)) {
         window.fb.onAuthStateChanged(async (user) => {
             if (user) {
-                firebaseUser = user;
                 if (adminLockscreen) adminLockscreen.style.display = 'none';
                 if (adminDashboard) adminDashboard.style.display = 'block';
                 if (adminLogoutBtn) {
@@ -457,8 +459,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 
                 await renderAdminList();
                 await renderAdminInquiries();
+                await populateAdminProgSelect();
             } else {
-                firebaseUser = null;
                 if (adminLockscreen) adminLockscreen.style.display = 'block';
                 if (adminDashboard) adminDashboard.style.display = 'none';
                 if (adminLogoutBtn) adminLogoutBtn.style.display = 'none';
@@ -477,17 +479,11 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     if (adminLogoutBtn) {
         adminLogoutBtn.addEventListener('click', async () => {
-            if (window.fb && window.fb.isInitialized() && firebaseUser) {
-                if (confirm('로그아웃 하시겠습니까?')) {
-                    try {
-                        await window.fb.logout();
-                    } catch (e) {
-                        alert('로그아웃 실패: ' + e.message);
-                    }
-                }
-            } else {
-                if (confirm('로컬 관리자 세션을 종료하시겠습니까?')) {
-                    window.location.reload();
+            if (confirm('로그아웃 하시겠습니까?')) {
+                try {
+                    await window.fb.logout();
+                } catch (e) {
+                    alert('로그아웃 실패: ' + e.message);
                 }
             }
         });
@@ -497,43 +493,23 @@ document.addEventListener('DOMContentLoaded', async () => {
         const email = adminEmailField ? adminEmailField.value.trim() : '';
         const passcode = passcodeField.value.trim();
 
-        // 1. Firebase Auth Mode (If email is entered)
-        if (window.fb && window.fb.isInitialized() && email !== '') {
-            try {
-                const originalText = passcodeBtn.innerText;
-                passcodeBtn.innerText = '로그인 중...';
-                passcodeBtn.disabled = true;
-
-                await window.fb.login(email, passcode);
-
-                passcodeBtn.innerText = originalText;
-                passcodeBtn.disabled = false;
-                return;
-            } catch (e) {
-                alert('Firebase 로그인 실패: ' + e.message);
-                passcodeBtn.innerText = '인증 및 로그인';
-                passcodeBtn.disabled = false;
-                passcodeField.value = '';
-                passcodeField.focus();
-                return;
-            }
+        if (!window.fb || !window.fb.isInitialized()) {
+            alert('Firebase가 초기화되지 않았습니다. 잠시 후 다시 시도해주세요.');
+            return;
         }
+        if (!email) { adminEmailField?.focus(); return; }
 
-        // 2. Local Storage Passcode Bypass Mode
-        if (passcode === 'magic123') {
-            if (adminLockscreen) adminLockscreen.style.display = 'none';
-            if (adminDashboard) adminDashboard.style.display = 'block';
-            if (adminLogoutBtn) {
-                adminLogoutBtn.style.display = 'block';
-                adminLogoutBtn.innerText = '로컬 세션 종료';
-            }
-            const emailGroup = document.getElementById('admin-email-group');
-            if (emailGroup) emailGroup.style.display = 'none';
-
-            await renderAdminList();
-            await renderAdminInquiries();
-        } else {
-            alert('비밀번호 또는 이메일 정보가 올바르지 않습니다.');
+        try {
+            const originalText = passcodeBtn.innerText;
+            passcodeBtn.innerText = '로그인 중...';
+            passcodeBtn.disabled = true;
+            await window.fb.login(email, passcode);
+            passcodeBtn.innerText = originalText;
+            passcodeBtn.disabled = false;
+        } catch (e) {
+            alert('Firebase 로그인 실패: ' + e.message);
+            passcodeBtn.innerText = '인증 및 로그인';
+            passcodeBtn.disabled = false;
             passcodeField.value = '';
             passcodeField.focus();
         }
@@ -618,6 +594,34 @@ document.addEventListener('DOMContentLoaded', async () => {
             if (imgPreview) imgPreview.src = '';
 
             await renderAdminList();
+        });
+    }
+
+    async function populateAdminProgSelect() {
+        const select = document.getElementById('admin-post-prog');
+        if (!select) return;
+        const programs = await getProgramsData(null);
+        const catOrder = ['어린이', '극장', '행사', '기업', '부가'];
+        const grouped = {};
+        programs.forEach(p => {
+            if (!grouped[p.category]) grouped[p.category] = [];
+            grouped[p.category].push(p);
+        });
+        const currentVal = select.value;
+        select.innerHTML = '<option value="">작품 선택</option>';
+        catOrder.forEach(cat => {
+            if (!grouped[cat]) return;
+            const group = document.createElement('optgroup');
+            group.label = cat;
+            grouped[cat].sort((a, b) => (a.order || 99) - (b.order || 99));
+            grouped[cat].forEach(p => {
+                const opt = document.createElement('option');
+                opt.value = p.title;
+                opt.textContent = p.title;
+                if (p.title === currentVal) opt.selected = true;
+                group.appendChild(opt);
+            });
+            select.appendChild(group);
         });
     }
 
@@ -1160,8 +1164,17 @@ document.addEventListener('DOMContentLoaded', async () => {
     async function getProgramsData(category) {
         if (window.fb && window.fb.isInitialized()) {
             try {
-                const list = await window.fb.getPrograms(category);
-                if (list) return list;
+                const list = await window.fb.getPrograms(null);
+                if (list !== null) {
+                    // Firestore에 없는 기본 프로그램은 defaults에서 병합
+                    const firestoreIds = new Set(list.map(p => p.id || p.docId));
+                    const merged = [...list];
+                    defaultPrograms.forEach(dp => {
+                        if (!firestoreIds.has(dp.id)) merged.push(dp);
+                    });
+                    merged.sort((a, b) => (a.order || 99) - (b.order || 99));
+                    return category ? merged.filter(p => p.category === category) : merged;
+                }
             } catch (e) {
                 console.error('Firebase getPrograms failed, using defaults:', e);
             }
@@ -1610,8 +1623,25 @@ document.addEventListener('DOMContentLoaded', async () => {
         const progFormResetBtn = document.getElementById('prog-form-reset-btn');
         if (progFormResetBtn) progFormResetBtn.addEventListener('click', resetProgForm);
 
+        async function seedMissingDefaultPrograms() {
+            if (!window.fb || !window.fb.isInitialized()) return;
+            try {
+                const list = await window.fb.getPrograms(null);
+                if (list === null) return;
+                const firestoreIds = new Set(list.map(p => p.id || p.docId));
+                for (const dp of defaultPrograms) {
+                    if (!firestoreIds.has(dp.id)) {
+                        await window.fb.saveProgram({ ...dp });
+                    }
+                }
+            } catch (e) {
+                console.warn('기본 프로그램 시딩 실패:', e);
+            }
+        }
+
         async function renderAdminProgList() {
             if (!adminProgList) return;
+            await seedMissingDefaultPrograms();
             const programs = await getProgramsData(null);
             const countEl = document.getElementById('prog-list-count');
             if (countEl) countEl.textContent = `${programs.length}개`;
