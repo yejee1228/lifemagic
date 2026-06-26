@@ -34,17 +34,19 @@
         </div>
 
         <!-- 2. MAIN DASHBOARD CONTENT (Hidden until auth) -->
-        <div class="admin-dashboard" id="admin-dashboard">
+        <div class="admin-authed-view" id="admin-authed-view">
 
             <!-- SUB TABS & LOGOUT BUTTON LAYOUT -->
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px; flex-wrap: wrap; gap: 20px;">
-                <div class="tab-nav-container" style="max-width: 700px; margin: 0;">
+            <div class="admin-tab-header">
+                <div class="tab-nav-container">
                     <button class="tab-btn active" data-tab="admin-tab-inquiry" id="btn-tab-inquiry">문의글 조회</button>
                     <button class="tab-btn" data-tab="admin-tab-history" id="btn-tab-history">공연 히스토리 관리</button>
                     <button class="tab-btn" data-tab="admin-tab-program" id="btn-tab-program">프로그램 관리</button>
                 </div>
-                <button type="button" class="btn-glass" id="admin-logout-btn" style="padding: 10px 20px; font-size: 0.9rem; border-color: rgba(255, 77, 77, 0.4); color: #ff4d4d;">로그아웃</button>
+                <button type="button" class="btn-glass" id="admin-logout-btn">로그아웃</button>
             </div>
+
+            <div class="admin-dashboard" id="admin-dashboard">
 
             <!-- Tab 1: History Management -->
             <div class="tab-content" id="admin-tab-history" style="max-width: 100%; padding: 0;">
@@ -53,7 +55,7 @@
                     <!-- Left: Form to Add Post -->
                     <div class="glass-panel">
                         <div class="admin-card-header">
-                            <span>새 공연 히스토리 등록</span>
+                            <span id="admin-form-header-text">새 공연 히스토리 등록</span>
                         </div>
                         <form class="admin-form" id="admin-form">
 
@@ -97,6 +99,10 @@
                                 <div id="image-preview-box" style="margin-top: 15px; display: none; text-align: center;">
                                     <img id="image-preview" src="" alt="미리보기"
                                         style="max-height: 150px; border-radius: 8px; border: var(--border-glass);">
+                                    <div>
+                                        <button type="button" id="image-remove-btn" class="btn-glass"
+                                            style="margin-top: 10px; padding: 6px 14px; font-size: 0.8rem; border-color: rgba(255, 77, 77, 0.4); color: #ff4d4d;">사진 제거</button>
+                                    </div>
                                 </div>
                             </div>
 
@@ -107,7 +113,10 @@
                                     placeholder="관객 반응, 공연 관련 에피소드 등 상세 후기를 적어주세요." required></textarea>
                             </div>
 
-                            <button type="submit" class="btn-gold" style="width: 100%; margin-top: 10px;">공연 등록하기</button>
+                            <div style="display: flex; gap: 10px; margin-top: 10px;">
+                                <button type="submit" id="admin-form-submit-btn" class="btn-gold" style="width: 100%;">공연 등록하기</button>
+                                <button type="button" id="admin-form-cancel-btn" class="btn-glass" style="width: 100%; display: none;">취소</button>
+                            </div>
                         </form>
                     </div>
 
@@ -130,8 +139,8 @@
                         </div>
                         <button type="button" class="btn-glass" id="admin-export-btn"
                             style="padding: 8px 18px; font-size: 0.85rem;">데이터 백업하기 (JSON)</button>
-                        <div class="btn-gold"
-                            style="position: relative; padding: 8px 18px; font-size: 0.85rem; cursor: pointer; color: var(--color-bg-dark);">
+                        <div class="btn-gold" id="admin-import-panel"
+                            style="position: relative; padding: 8px 18px; font-size: 0.85rem; cursor: pointer; color: var(--color-bg-dark); display: none;">
                             데이터 불러오기
                             <input type="file" id="admin-import-file" accept=".json"
                                 style="position: absolute; inset: 0; opacity: 0; cursor: pointer;">
@@ -236,6 +245,8 @@
                     </div>
 
                 </div>
+            </div>
+
             </div>
 
         </div>
