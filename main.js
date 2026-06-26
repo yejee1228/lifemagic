@@ -56,7 +56,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                     headerEl.innerHTML = await response.text();
                     loaded = true;
                 }
-            } catch (e) {}
+            } catch (e) { }
             if (!loaded) {
                 headerEl.innerHTML = `<div class="nav-container">
             <a href="index.html" class="logo">
@@ -90,7 +90,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 if (response.ok) {
                     footerContent = await response.text();
                 }
-            } catch (e) {}
+            } catch (e) { }
             if (!footerContent) {
                 footerContent = `<div class="footer-container">
     <div class="footer-info">
@@ -98,9 +98,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         <div class="footer-biz-details">
             <p>상호명: 인생마술 | 대표자: 이은재</p>
             <p>사업자등록번호: 305-37-51109</p>
-            <p>이메일: art4623@naver.com</p>
-            <p>주소: 경기도 부천시 원미구 상일로 69, 지12호</p>
-            <p>공연 및 예약 전화 문의: 010-4370-4623</p>
         </div>
     </div>
     <div class="footer-sns-box">
@@ -109,8 +106,8 @@ document.addEventListener('DOMContentLoaded', async () => {
             <a href="https://www.instagram.com/life___magic/" target="_blank" class="sns-circle-link" aria-label="인스타그램">
                 <svg viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.051.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.406-11.845a1.44 1.44 0 1 0 0 2.881 1.44 1.44 0 0 0 0-2.881z"/></svg>
             </a>
-            <a href="https://blog.naver.com/art4623" target="_blank" class="sns-circle-link" aria-label="블로그">
-                <svg viewBox="0 0 24 24"><path d="M22.5 0h-21C.672 0 0 .672 0 1.5v21C0 23.328.672 24 1.5 24h21c.828 0 1.5-.672 1.5-1.5v-21C24 .672 23.328 0 22.5 0zM9.85 9.92V17.89H12.05V9.92zM12.05 9.92L12.95 17.89H15.18L14.25 9.92zM15.18 9.92V17.89H17.43V9.92z"/></svg>
+            <a href="https://blog.naver.com/art4623" target="_blank" class="sns-circle-link" aria-label="네이버 블로그">
+                <svg class="icon-naver" viewBox="0 0 24 24"><path d="M16.273 12.845 7.376 0H0v24h7.726V11.155L16.624 24H24V0h-7.727z"/></svg>
             </a>
             <a href="http://pf.kakao.com/_AZExhG" target="_blank" class="sns-circle-link" aria-label="카카오톡">
                 <svg viewBox="0 0 24 24"><path d="M12 3c-4.97 0-9 3.185-9 7.115 0 2.557 1.707 4.8 4.27 6.054-.188.702-.68 2.531-.777 2.893-.118.438.148.433.31.325.127-.085 2.012-1.366 2.805-1.902.443.084.903.13 1.392.13 4.97 0 9-3.186 9-7.115C21 6.185 16.97 3 12 3z"/></svg>
@@ -134,7 +131,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     function highlightActiveNav() {
         const path = window.location.pathname;
         const page = path.substring(path.lastIndexOf('/') + 1);
-        
+
         let activePage = 'index'; // default
         if (page.includes('about.html')) activePage = 'about';
         else if (page.includes('program.html')) activePage = 'program';
@@ -988,11 +985,11 @@ document.addEventListener('DOMContentLoaded', async () => {
             const addrVal = document.getElementById('inq-addr').value;
             const audienceVal = document.getElementById('inq-audience').value;
             const budgetVal = document.getElementById('inq-budget').value;
-            
+
             // Collect ages
             const ageCheckboxes = document.querySelectorAll('input[name="inq-age"]:checked');
             const agesVal = Array.from(ageCheckboxes).map(cb => cb.value);
-            
+
             const descVal = document.getElementById('inq-desc').value;
 
             const programSelectEl = document.getElementById('inq-program');
@@ -1089,8 +1086,8 @@ document.addEventListener('DOMContentLoaded', async () => {
             card.style.boxShadow = 'var(--shadow-premium)';
             card.style.background = 'rgba(18, 16, 26, 0.4)';
 
-            const ageBadges = inq.ages && inq.ages.length > 0 
-                ? inq.ages.map(age => `<span style="background: rgba(138, 43, 226, 0.15); border: 1px solid rgba(138, 43, 226, 0.3); color: #d1b3ff; font-size: 0.8rem; padding: 3px 10px; border-radius: 12px; margin-right: 8px; display: inline-block; margin-bottom: 5px;">${age}</span>`).join('') 
+            const ageBadges = inq.ages && inq.ages.length > 0
+                ? inq.ages.map(age => `<span style="background: rgba(138, 43, 226, 0.15); border: 1px solid rgba(138, 43, 226, 0.3); color: #d1b3ff; font-size: 0.8rem; padding: 3px 10px; border-radius: 12px; margin-right: 8px; display: inline-block; margin-bottom: 5px;">${age}</span>`).join('')
                 : '<span style="color: var(--color-text-muted); font-size: 0.85rem;">선택 없음</span>';
 
             card.innerHTML = `
@@ -1393,7 +1390,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
             if (programId) {
                 if (window.fb && window.fb.isInitialized()) {
-                    try { prog = await window.fb.getProgramById(programId); } catch (e) {}
+                    try { prog = await window.fb.getProgramById(programId); } catch (e) { }
                 }
                 if (!prog) {
                     const stored = localStorage.getItem('insaeng_programs');
@@ -1468,7 +1465,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 prog.images.forEach((src, i) => {
                     const item = document.createElement('div');
                     item.className = 'detail-gallery-item';
-                    item.innerHTML = `<img src="${src}" alt="공연 이미지 ${i+1}">`;
+                    item.innerHTML = `<img src="${src}" alt="공연 이미지 ${i + 1}">`;
                     item.addEventListener('click', () => openLightbox(src));
                     galGrid.appendChild(item);
                 });
@@ -1537,7 +1534,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
             let posts = [];
             if (window.fb && window.fb.isInitialized()) {
-                try { posts = await window.fb.getHistoryByProgram(programTitle, 6); } catch (e) {}
+                try { posts = await window.fb.getHistoryByProgram(programTitle, 6); } catch (e) { }
             }
             if (!posts || posts.length === 0) {
                 const stored = localStorage.getItem('insaeng_history');
@@ -1653,7 +1650,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             progImages.forEach((src, i) => {
                 const thumb = document.createElement('div');
                 thumb.className = 'admin-img-thumb';
-                thumb.innerHTML = `<img src="${src}" alt="이미지 ${i+1}">
+                thumb.innerHTML = `<img src="${src}" alt="이미지 ${i + 1}">
                     <button type="button" class="admin-img-thumb-remove" data-idx="${i}">&times;</button>`;
                 thumb.querySelector('.admin-img-thumb-remove').addEventListener('click', () => {
                     progImages.splice(i, 1);
@@ -1705,7 +1702,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
                 let editorContent = null;
                 if (editorInstance) {
-                    try { editorContent = await editorInstance.save(); } catch (e) {}
+                    try { editorContent = await editorInstance.save(); } catch (e) { }
                 }
 
                 const program = {
@@ -1828,7 +1825,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             if (resetBtn) resetBtn.style.display = '';
 
             if (editorInstance && prog.content && prog.content.blocks) {
-                try { await editorInstance.render(prog.content); } catch (e) {}
+                try { await editorInstance.render(prog.content); } catch (e) { }
             }
 
             document.querySelector('.admin-program-grid')?.scrollIntoView({ behavior: 'smooth' });

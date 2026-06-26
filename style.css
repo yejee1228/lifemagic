@@ -51,6 +51,10 @@ body {
     overflow-x: hidden;
 }
 
+body > * {
+    min-width: 0;
+}
+
 a {
     color: inherit;
     text-decoration: none;
@@ -404,6 +408,10 @@ header {
     width: 20px;
     height: 20px;
     fill: currentColor;
+}
+
+.icon-naver {
+    transform: scale(0.75);
 }
 
 .connect-label {
@@ -1203,22 +1211,26 @@ header {
     margin-bottom: 25px;
 }
 
-.admin-input {
+.admin-input,
+.admin-select {
+    display: block;
     width: 100%;
     padding: 14px 20px;
     border-radius: 8px;
     background: rgba(255, 255, 255, 0.05);
     border: var(--border-glass);
     color: #fff;
+    font-family: var(--font-sans);
     font-size: 1rem;
     margin-bottom: 20px;
     outline: none;
     transition: var(--transition-fast);
 }
 
-.admin-input:focus {
+.admin-input:focus,
+.admin-select:focus {
     border-color: var(--color-primary-gold);
-    background: rgba(255, 255, 255, 0.08);
+    background-color: rgba(255, 255, 255, 0.08);
     box-shadow: 0 0 10px rgba(212, 175, 55, 0.2);
 }
 
@@ -1291,6 +1303,7 @@ header {
 
 .admin-form-group {
     margin-bottom: 20px;
+    min-width: 0;
 }
 
 .admin-form-group label {
@@ -1302,13 +1315,19 @@ header {
 }
 
 .admin-select {
-    width: 100%;
-    padding: 12px;
-    background: rgba(7, 6, 10, 0.6);
-    border: var(--border-glass);
-    border-radius: 8px;
+    -webkit-appearance: none;
+    appearance: none;
+    cursor: pointer;
+    padding-right: 44px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23b5b3be' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 16px center;
+    background-size: 16px;
+}
+
+.admin-select option {
+    background-color: #161320;
     color: #fff;
-    outline: none;
 }
 
 .admin-textarea {
@@ -1811,8 +1830,9 @@ footer {
     .nav-links {
         position: fixed;
         top: 0;
-        right: -100%;
+        right: 0;
         width: 280px;
+        max-width: 100%;
         height: 100vh;
         background: rgba(7, 6, 10, 0.98);
         backdrop-filter: blur(25px);
@@ -1820,13 +1840,14 @@ footer {
         justify-content: center;
         align-items: center;
         gap: 40px;
+        transform: translateX(100%);
         transition: var(--transition-smooth);
         border-left: var(--border-glass);
         z-index: 999;
     }
 
     .nav-links.active {
-        right: 0;
+        transform: translateX(0);
     }
 
     .hamburger {
