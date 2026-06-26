@@ -39,6 +39,8 @@ html {
     background-color: var(--color-bg-dark);
     color: var(--color-text-light);
     overflow-x: hidden;
+    overflow-y: scroll;
+    scrollbar-gutter: stable;
 }
 
 body {
@@ -1036,6 +1038,52 @@ header {
     overflow: hidden;
 }
 
+/* History list pagination */
+.history-pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 50px;
+}
+
+.history-page-btn {
+    min-width: 42px;
+    height: 42px;
+    padding: 0 8px;
+    border-radius: 50%;
+    border: var(--border-glass);
+    background: rgba(255, 255, 255, 0.03);
+    color: var(--color-text-muted);
+    font-family: var(--font-sans);
+    font-weight: 500;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: var(--transition-fast);
+}
+
+.history-page-btn:hover:not(:disabled) {
+    border-color: var(--color-primary-gold);
+    color: var(--color-text-light);
+}
+
+.history-page-btn.active {
+    background: linear-gradient(135deg, rgba(212, 175, 55, 0.2), rgba(138, 43, 226, 0.2));
+    border-color: rgba(212, 175, 55, 0.4);
+    color: var(--color-primary-gold);
+    text-shadow: 0 0 8px var(--color-gold-glow);
+}
+
+.history-page-btn.history-page-arrow {
+    font-size: 1.1rem;
+}
+
+.history-page-btn:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+}
+
 /* Post Detailed Popup Modal */
 .modal-overlay {
     position: fixed;
@@ -1136,6 +1184,7 @@ header {
 .admin-page {
     padding-top: 120px;
     flex: 1;
+    width: 100%;
     max-width: 900px;
     margin: 0 auto 80px;
     padding: 0 24px;
@@ -1173,9 +1222,51 @@ header {
     box-shadow: 0 0 10px rgba(212, 175, 55, 0.2);
 }
 
-.admin-dashboard {
+.admin-authed-view {
     display: none;
     animation: fadeIn 0.6s forwards;
+}
+
+/* Admin tab row: every dimension here is an explicit fixed value, never
+   "auto"/content-based — so nothing about it (which tab is active, how
+   long a label is, how wide the browser window is at any point above the
+   768px breakpoint) can change its size or position. Below 768px it
+   switches to one other fixed, stacked layout (see media query). */
+.admin-tab-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: nowrap;
+    gap: 16px;
+    margin-bottom: 40px;
+}
+
+.admin-tab-header .tab-nav-container {
+    flex: 0 0 auto;
+    width: 540px;
+    max-width: 100%;
+    margin: 0;
+    display: flex;
+    gap: 6px;
+}
+
+.admin-tab-header .tab-nav-container .tab-btn {
+    flex: 1 1 0%;
+    padding: 12px 12px;
+    font-size: 0.9rem;
+    letter-spacing: 0;
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.admin-tab-header #admin-logout-btn {
+    flex: 0 0 auto;
+    padding: 10px 20px;
+    font-size: 0.9rem;
+    border-color: rgba(255, 77, 77, 0.4);
+    color: #ff4d4d;
 }
 
 .admin-grid-layout {
@@ -1292,6 +1383,26 @@ header {
 
 .admin-delete-btn:hover {
     background: rgba(255, 77, 77, 0.1);
+    transform: scale(1.1);
+}
+
+.admin-edit-btn {
+    background: none;
+    border: none;
+    color: var(--color-text-muted);
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 4px;
+    transition: var(--transition-fast);
+    margin-right: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.admin-edit-btn:hover {
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--color-primary-gold);
     transform: scale(1.1);
 }
 
@@ -1918,34 +2029,31 @@ footer {
         padding-right: 16px;
     }
 
-    .admin-dashboard > div:first-child {
+    .admin-tab-header {
         flex-direction: column;
         align-items: stretch;
-        gap: 14px;
+        gap: 12px;
         margin-bottom: 24px;
     }
 
-    .tab-nav-container {
-        overflow-x: auto;
-        white-space: nowrap;
-        border-radius: 14px;
-        justify-content: flex-start;
-        padding: 5px;
-        gap: 6px;
+    .admin-tab-header .tab-nav-container {
+        width: 100%;
         max-width: 100%;
-        margin-bottom: 0;
+        border-radius: 14px;
+        padding: 5px;
+        gap: 4px;
     }
 
-    .tab-btn {
-        flex: none;
-        padding: 10px 16px;
-        font-size: 0.88rem;
+    .admin-tab-header .tab-nav-container .tab-btn {
+        padding: 10px 6px;
+        font-size: 0.78rem;
         letter-spacing: 0;
     }
 
-    #admin-logout-btn {
+    .admin-tab-header #admin-logout-btn {
         width: 100%;
         text-align: center;
+        padding: 12px 20px;
     }
 
     .admin-card-header {
@@ -1992,6 +2100,20 @@ footer {
 
     .inquiry-grid-2col {
         grid-template-columns: 1fr !important;
+    }
+
+    .admin-multi-img-grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 8px;
+    }
+
+    .admin-timetable-row {
+        flex-wrap: wrap;
+    }
+
+    .admin-timetable-row .label-input {
+        flex: 1 1 100%;
+        order: 3;
     }
 }
 

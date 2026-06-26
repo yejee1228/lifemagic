@@ -5,6 +5,39 @@
 
 document.addEventListener('DOMContentLoaded', async () => {
 
+    // 이미지 압축 헬퍼 함수 (Canvas 기반)
+    function compressImage(file, maxWidth = 1000, quality = 0.7) {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const img = new Image();
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    let width = img.width;
+                    let height = img.height;
+
+                    if (width > maxWidth) {
+                        height = Math.round((height * maxWidth) / width);
+                        width = maxWidth;
+                    }
+
+                    canvas.width = width;
+                    canvas.height = height;
+
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, width, height);
+
+                    const dataUrl = canvas.toDataURL('image/jpeg', quality);
+                    resolve(dataUrl);
+                };
+                img.onerror = () => reject(new Error("이미지 로드 실패"));
+                img.src = e.target.result;
+            };
+            reader.onerror = () => reject(new Error("파일 읽기 실패"));
+            reader.readAsDataURL(file);
+        });
+    }
+
     /* ==========================================================================
        0. DYNAMIC HEADER & FOOTER COMPONENT LOADER
        ========================================================================== */
@@ -294,8 +327,13 @@ document.addEventListener('DOMContentLoaded', async () => {
        5. SHOW HISTORY BOARD & MODAL DETAILED VIEWER (history.html)
        ========================================================================== */
     const historyGrid = document.getElementById('history-grid');
+    const historyPagination = document.getElementById('history-pagination');
     const modalOverlay = document.getElementById('modal-overlay');
     const modalClose = document.getElementById('modal-close');
+
+    const HISTORY_PAGE_SIZE = 15;
+    let historyPosts = [];
+    let historyCurrentPage = 1;
 
     // Prepopulated stunning mock history data
     const defaultHistory = [
@@ -331,14 +369,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     async function getHistoryData() {
         if (window.fb && window.fb.isInitialized()) {
             try {
-                let posts = await window.fb.getHistory();
-                if (posts && posts.length === 0) {
-                    console.log("Firestore history collection is empty. Auto-populating initial data...");
-                    for (const item of defaultHistory) {
-                        await window.fb.saveHistory(item);
-                    }
-                    posts = await window.fb.getHistory();
-                }
+                const posts = await window.fb.getHistory();
                 return posts || defaultHistory;
             } catch (e) {
                 console.error("Firebase read failed, using localStorage fallback:", e);
@@ -356,15 +387,26 @@ document.addEventListener('DOMContentLoaded', async () => {
     async function renderHistoryBoard() {
         if (!historyGrid) return;
         const allPosts = await getHistoryData();
-        const posts = allPosts.filter(p => !p.hidden);
+        historyPosts = allPosts.filter(p => !p.hidden);
+        historyCurrentPage = 1;
+        renderHistoryPage();
+    }
+
+    function renderHistoryPage() {
         historyGrid.innerHTML = '';
 
-        if (posts.length === 0) {
+        if (historyPosts.length === 0) {
             historyGrid.innerHTML = `<div class="glass-panel" style="grid-column: span 3; text-align: center; padding: 50px; color: var(--color-text-muted);">아직 등록된 공연 실적이 없습니다. 관리자 화면에서 게시글을 작성해주세요.</div>`;
+            if (historyPagination) historyPagination.innerHTML = '';
             return;
         }
 
-        posts.forEach(post => {
+        const totalPages = Math.max(1, Math.ceil(historyPosts.length / HISTORY_PAGE_SIZE));
+        if (historyCurrentPage > totalPages) historyCurrentPage = totalPages;
+        const start = (historyCurrentPage - 1) * HISTORY_PAGE_SIZE;
+        const pagePosts = historyPosts.slice(start, start + HISTORY_PAGE_SIZE);
+
+        pagePosts.forEach(post => {
             const card = document.createElement('div');
             card.className = 'history-item-card glass-panel';
             card.innerHTML = `
@@ -387,6 +429,45 @@ document.addEventListener('DOMContentLoaded', async () => {
             card.addEventListener('click', () => openModal(post));
             historyGrid.appendChild(card);
         });
+
+        renderHistoryPagination(totalPages);
+    }
+
+    function renderHistoryPagination(totalPages) {
+        if (!historyPagination) return;
+        historyPagination.innerHTML = '';
+        if (totalPages <= 1) return;
+
+        const goToPage = (page) => {
+            historyCurrentPage = page;
+            renderHistoryPage();
+            historyGrid.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        };
+
+        const prevBtn = document.createElement('button');
+        prevBtn.type = 'button';
+        prevBtn.className = 'history-page-btn history-page-arrow';
+        prevBtn.innerText = '‹';
+        prevBtn.disabled = historyCurrentPage === 1;
+        prevBtn.addEventListener('click', () => goToPage(historyCurrentPage - 1));
+        historyPagination.appendChild(prevBtn);
+
+        for (let i = 1; i <= totalPages; i++) {
+            const pageBtn = document.createElement('button');
+            pageBtn.type = 'button';
+            pageBtn.className = `history-page-btn${i === historyCurrentPage ? ' active' : ''}`;
+            pageBtn.innerText = i;
+            pageBtn.addEventListener('click', () => goToPage(i));
+            historyPagination.appendChild(pageBtn);
+        }
+
+        const nextBtn = document.createElement('button');
+        nextBtn.type = 'button';
+        nextBtn.className = 'history-page-btn history-page-arrow';
+        nextBtn.innerText = '›';
+        nextBtn.disabled = historyCurrentPage === totalPages;
+        nextBtn.addEventListener('click', () => goToPage(historyCurrentPage + 1));
+        historyPagination.appendChild(nextBtn);
     }
 
     function openModal(post) {
@@ -438,18 +519,18 @@ document.addEventListener('DOMContentLoaded', async () => {
        6. CLIENT-SIDE LOCAL ADMIN MANAGEMENT & FIREBASE AUTH (admin.html)
        ========================================================================== */
     const adminLockscreen = document.getElementById('admin-lockscreen');
-    const adminDashboard = document.getElementById('admin-dashboard');
+    const adminAuthedView = document.getElementById('admin-authed-view');
     const passcodeBtn = document.getElementById('lock-submit-btn');
     const passcodeField = document.getElementById('passcode-input');
     const adminEmailField = document.getElementById('admin-email-input');
     const adminLogoutBtn = document.getElementById('admin-logout-btn');
 
     // Subscribe to Firebase Auth state if available
-    if (window.fb && window.fb.isInitialized() && (adminLockscreen || adminDashboard)) {
+    if (window.fb && window.fb.isInitialized() && (adminLockscreen || adminAuthedView)) {
         window.fb.onAuthStateChanged(async (user) => {
             if (user) {
                 if (adminLockscreen) adminLockscreen.style.display = 'none';
-                if (adminDashboard) adminDashboard.style.display = 'block';
+                if (adminAuthedView) adminAuthedView.style.display = 'block';
                 if (adminLogoutBtn) {
                     adminLogoutBtn.style.display = 'block';
                     adminLogoutBtn.innerText = '로그아웃';
@@ -457,12 +538,17 @@ document.addEventListener('DOMContentLoaded', async () => {
                 const emailGroup = document.getElementById('admin-email-group');
                 if (emailGroup) emailGroup.style.display = 'none';
 
+                const importPanel = document.getElementById('admin-import-panel');
+                if (importPanel) {
+                    importPanel.style.display = (user.email === 'yejee1228@gmail.com') ? 'block' : 'none';
+                }
+
                 await renderAdminList();
                 await renderAdminInquiries();
                 await populateAdminProgSelect();
             } else {
                 if (adminLockscreen) adminLockscreen.style.display = 'block';
-                if (adminDashboard) adminDashboard.style.display = 'none';
+                if (adminAuthedView) adminAuthedView.style.display = 'none';
                 if (adminLogoutBtn) adminLogoutBtn.style.display = 'none';
                 const emailGroup = document.getElementById('admin-email-group');
                 if (emailGroup) emailGroup.style.display = 'block';
@@ -520,27 +606,41 @@ document.addEventListener('DOMContentLoaded', async () => {
     const fileLabelText = document.getElementById('file-label-text');
     const imgPreviewBox = document.getElementById('image-preview-box');
     const imgPreview = document.getElementById('image-preview');
+    const imgRemoveBtn = document.getElementById('image-remove-btn');
     let loadedBase64 = '';
+    let editingPostId = null;
+
+    if (imgRemoveBtn) {
+        imgRemoveBtn.addEventListener('click', () => {
+            loadedBase64 = '';
+            fileInput.value = '';
+            if (fileLabelText) fileLabelText.innerText = '여기를 눌러 사진 선택';
+            if (imgPreview) imgPreview.src = '';
+            if (imgPreviewBox) imgPreviewBox.style.display = 'none';
+        });
+    }
 
     if (fileInput) {
-        fileInput.addEventListener('change', (e) => {
+        fileInput.addEventListener('change', async (e) => {
             const file = e.target.files[0];
             if (!file) return;
 
-            if (file.size > 2.5 * 1024 * 1024) {
-                alert('사진 용량이 너무 큽니다. 2.5MB 이하의 이미지를 업로드해주세요.');
+            if (file.size > 5 * 1024 * 1024) {
+                alert('사진 용량이 너무 큽니다. 5MB 이하의 이미지를 업로드해주세요.');
                 fileInput.value = '';
                 return;
             }
 
             fileLabelText.innerText = file.name;
-            const reader = new FileReader();
-            reader.onload = (event) => {
-                loadedBase64 = event.target.result;
+            try {
+                loadedBase64 = await compressImage(file, 1000, 0.7);
                 if (imgPreview) imgPreview.src = loadedBase64;
                 if (imgPreviewBox) imgPreviewBox.style.display = 'block';
-            };
-            reader.readAsDataURL(file);
+            } catch (err) {
+                console.error("이미지 압축 실패:", err);
+                alert("이미지 처리 중 오류가 발생했습니다.");
+                fileInput.value = '';
+            }
         });
     }
 
@@ -556,15 +656,19 @@ document.addEventListener('DOMContentLoaded', async () => {
             const titleVal = document.getElementById('admin-post-title').value;
             const descVal = document.getElementById('admin-post-desc').value;
 
+            const isEditing = editingPostId !== null;
+            const currentList = await getHistoryData();
+            const existingPost = isEditing ? currentList.find(p => p.id === editingPostId) : null;
+
             const newPost = {
-                id: Date.now(),
+                id: isEditing ? editingPostId : Date.now(),
                 program: programVal,
                 title: titleVal,
                 date: dateVal,
                 location: locVal,
                 description: descVal,
                 image: loadedBase64,
-                hidden: false
+                hidden: existingPost ? existingPost.hidden : false
             };
 
             // Firestore Write
@@ -578,22 +682,69 @@ document.addEventListener('DOMContentLoaded', async () => {
             }
 
             // Sync with local storage
-            const currentList = await getHistoryData();
-            if (!currentList.some(p => p.id === newPost.id)) {
+            if (isEditing) {
+                const updatedList = currentList.map(p => p.id === editingPostId ? newPost : p);
+                localStorage.setItem('insaeng_history', JSON.stringify(updatedList));
+            } else if (!currentList.some(p => p.id === newPost.id)) {
                 currentList.unshift(newPost);
                 localStorage.setItem('insaeng_history', JSON.stringify(currentList));
             }
 
-            alert('공연 히스토리가 성공적으로 등록되었습니다.');
+            alert(isEditing ? '공연 히스토리가 성공적으로 수정되었습니다.' : '공연 히스토리가 성공적으로 등록되었습니다.');
 
-            // Reset form
-            adminForm.reset();
-            loadedBase64 = '';
-            if (fileLabelText) fileLabelText.innerText = '여기를 눌러 사진 선택';
-            if (imgPreviewBox) imgPreviewBox.style.display = 'none';
-            if (imgPreview) imgPreview.src = '';
-
+            exitEditMode();
             await renderAdminList();
+        });
+    }
+
+    function exitEditMode() {
+        editingPostId = null;
+        adminForm.reset();
+        loadedBase64 = '';
+        if (fileLabelText) fileLabelText.innerText = '여기를 눌러 사진 선택';
+        if (imgPreviewBox) imgPreviewBox.style.display = 'none';
+        if (imgPreview) imgPreview.src = '';
+        if (adminFormHeaderText) adminFormHeaderText.innerText = '새 공연 히스토리 등록';
+        if (adminFormSubmitBtn) adminFormSubmitBtn.innerText = '공연 등록하기';
+        if (adminFormCancelBtn) adminFormCancelBtn.style.display = 'none';
+    }
+
+    async function startEditPost(post) {
+        editingPostId = post.id;
+
+        await populateAdminProgSelect();
+        const progSelect = document.getElementById('admin-post-prog');
+        if (progSelect) progSelect.value = post.program;
+
+        const dateField = document.getElementById('admin-post-date');
+        const locField = document.getElementById('admin-post-loc');
+        const titleField = document.getElementById('admin-post-title');
+        const descField = document.getElementById('admin-post-desc');
+        if (dateField) dateField.value = post.date;
+        if (locField) locField.value = post.location;
+        if (titleField) titleField.value = post.title;
+        if (descField) descField.value = post.description;
+
+        loadedBase64 = post.image || '';
+        if (post.image) {
+            if (fileLabelText) fileLabelText.innerText = '기존 사진 유지 중 (변경하려면 다시 선택)';
+            if (imgPreview) imgPreview.src = post.image;
+            if (imgPreviewBox) imgPreviewBox.style.display = 'block';
+        }
+
+        if (adminFormHeaderText) adminFormHeaderText.innerText = '공연 히스토리 수정';
+        if (adminFormSubmitBtn) adminFormSubmitBtn.innerText = '수정 완료';
+        if (adminFormCancelBtn) adminFormCancelBtn.style.display = 'block';
+
+        if (adminForm) adminForm.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    const adminFormHeaderText = document.getElementById('admin-form-header-text');
+    const adminFormSubmitBtn = document.getElementById('admin-form-submit-btn');
+    const adminFormCancelBtn = document.getElementById('admin-form-cancel-btn');
+    if (adminFormCancelBtn) {
+        adminFormCancelBtn.addEventListener('click', () => {
+            exitEditMode();
         });
     }
 
@@ -673,6 +824,9 @@ document.addEventListener('DOMContentLoaded', async () => {
                     <p>📅 ${post.date} | 📍 ${post.location}</p>
                 </div>
                 <div style="display: flex; align-items: center;">
+                    <button type="button" class="admin-edit-btn" aria-label="수정">
+                        <svg style="width: 20px; height: 20px;" fill="currentColor" viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34a.9959.9959 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
+                    </button>
                     <button type="button" class="admin-hide-btn" aria-label="${post.hidden ? '보이기' : '숨기기'}">
                         ${post.hidden ? eyeClosedSvg : eyeOpenSvg}
                     </button>
@@ -681,6 +835,10 @@ document.addEventListener('DOMContentLoaded', async () => {
                     </button>
                 </div>
             `;
+
+            item.querySelector('.admin-edit-btn').addEventListener('click', () => {
+                startEditPost(post);
+            });
 
             item.querySelector('.admin-hide-btn').addEventListener('click', () => {
                 togglePostVisibility(post.id);
@@ -760,6 +918,13 @@ document.addEventListener('DOMContentLoaded', async () => {
         importInput.addEventListener('change', async (e) => {
             const file = e.target.files[0];
             if (!file) return;
+
+            const currentUser = window.fb && window.fb.isInitialized() ? window.fb.getCurrentUser?.() : null;
+            if (!currentUser || currentUser.email !== 'yejee1228@gmail.com') {
+                alert('이 기능은 허용된 계정에서만 사용할 수 있습니다.');
+                e.target.value = '';
+                return;
+            }
 
             const reader = new FileReader();
             reader.onload = async (event) => {
@@ -1458,18 +1623,26 @@ document.addEventListener('DOMContentLoaded', async () => {
         const progImagesInput = document.getElementById('prog-images-input');
         const progImagesPreview = document.getElementById('prog-images-preview');
 
+        const MAX_PROG_IMAGES = 10;
+
         if (progImagesInput) {
-            progImagesInput.addEventListener('change', (e) => {
+            progImagesInput.addEventListener('change', async (e) => {
                 const files = Array.from(e.target.files);
-                files.forEach(file => {
-                    if (file.size > 1.2 * 1024 * 1024) { alert(`${file.name} 파일이 1MB를 초과합니다.`); return; }
-                    const reader = new FileReader();
-                    reader.onload = (ev) => {
-                        progImages.push(ev.target.result);
+                for (const file of files) {
+                    if (progImages.length >= MAX_PROG_IMAGES) {
+                        alert(`이미지는 최대 ${MAX_PROG_IMAGES}장까지 등록할 수 있습니다.`);
+                        break;
+                    }
+                    if (file.size > 5 * 1024 * 1024) { alert(`${file.name} 파일이 5MB를 초과합니다.`); continue; }
+                    try {
+                        const compressedBase64 = await compressImage(file, 1000, 0.7);
+                        progImages.push(compressedBase64);
                         renderProgImagesPreview();
-                    };
-                    reader.readAsDataURL(file);
-                });
+                    } catch (err) {
+                        console.error("이미지 압축 실패:", err);
+                        alert(`${file.name} 이미지 처리 중 오류가 발생했습니다.`);
+                    }
+                }
                 e.target.value = '';
             });
         }
