@@ -1970,15 +1970,22 @@ footer {
     /* Native date/time controls don't shrink below their own intrinsic
        content width on iOS Safari, so they can overflow narrow phones
        even with width:100% set. Loosen the box so it can shrink, and
-       trim padding/font-size to fit the native widget inside it. */
+       trim padding/font-size to fit the native widget inside it.
+       iOS Safari also ignores the shared padding/line-height box model
+       for these two types unless their native appearance is reset,
+       which is why they render shorter than the other inputs. */
     input[type="date"].admin-input,
     input[type="time"].admin-input {
+        -webkit-appearance: none;
+        appearance: none;
         min-width: 0;
         width: 100%;
         max-width: 100%;
+        min-height: 52px;
         padding-left: 12px;
         padding-right: 12px;
         font-size: 0.92rem;
+        line-height: 1.4;
     }
 
     /* Program Detail Mobile */
