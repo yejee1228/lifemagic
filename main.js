@@ -3,6 +3,31 @@
  * Main JavaScript Controller
  */
 
+// < > & " 를 포함한 문자열을 innerHTML 에 안전하게 삽입할 때 사용.
+function escHtml(str) {
+    return String(str == null ? '' : str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+}
+
+// Naver blog CDN 등 외부 URL은 핫링크 차단으로 깨질 수 있으므로
+// <img onerror="window._hImg(this)"> 로 걸어두면 SVG placeholder로 대체된다.
+window._hImg = function(img) {
+    const parent = img.parentElement;
+    if (!parent) { img.style.display = 'none'; return; }
+    img.style.display = 'none';
+    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    svg.setAttribute('class', img.dataset.svgClass || 'history-img-placeholder-svg');
+    if (img.dataset.svgStyle) svg.setAttribute('style', img.dataset.svgStyle);
+    svg.setAttribute('viewBox', '0 0 24 24');
+    const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    path.setAttribute('d', 'M12 3c-4.97 0-9 3.185-9 7.115 0 2.557 1.707 4.8 4.27 6.054-.188.702-.68 2.531-.777 2.893-.118.438.148.433.31.325.127-.085 2.012-1.366 2.805-1.902.443.084.903.13 1.392.13 4.97 0 9-3.186 9-7.115C21 6.185 16.97 3 12 3zm0 13c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z');
+    svg.appendChild(path);
+    parent.appendChild(svg);
+};
+
 document.addEventListener('DOMContentLoaded', async () => {
 
     // 이미지 압축 헬퍼 함수 (Canvas 기반)
@@ -408,7 +433,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             card.className = 'history-item-card glass-panel';
             card.innerHTML = `
                 <div class="history-img-box">
-                    ${post.image ? `<img src="${post.image}" alt="공연 현장">` : `
+                    ${post.image ? `<img src="${post.image}" alt="공연 현장" onerror="window._hImg(this)">` : `
                     <svg class="history-img-placeholder-svg" viewBox="0 0 24 24">
                         <path d="M12 3c-4.97 0-9 3.185-9 7.115 0 2.557 1.707 4.8 4.27 6.054-.188.702-.68 2.531-.777 2.893-.118.438.148.433.31.325.127-.085 2.012-1.366 2.805-1.902.443.084.903.13 1.392.13 4.97 0 9-3.186 9-7.115C21 6.185 16.97 3 12 3zm0 13c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/>
                     </svg>`}
@@ -476,7 +501,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         const desc = document.getElementById('modal-content-text');
 
         if (imgContainer) {
-            imgContainer.innerHTML = post.image ? `<img src="${post.image}" alt="현장">` : `
+            imgContainer.innerHTML = post.image ? `<img src="${post.image}" alt="현장" data-svg-style="width:25%;height:25%;" onerror="window._hImg(this);this.parentElement.style.cssText='width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:#110e1a;'">` : `
             <div style="width:100%; height:100%; display:flex; align-items:center; justify-content:center; background:#110e1a;">
                 <svg class="history-img-placeholder-svg" style="width: 25%; height: 25%;" viewBox="0 0 24 24">
                     <path d="M12 3c-4.97 0-9 3.185-9 7.115 0 2.557 1.707 4.8 4.27 6.054-.188.702-.68 2.531-.777 2.893-.118.438.148.433.31.325.127-.085 2.012-1.366 2.805-1.902.443.084.903.13 1.392.13 4.97 0 9-3.186 9-7.115C21 6.185 16.97 3 12 3zm0 13c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/>
@@ -1327,12 +1352,12 @@ document.addEventListener('DOMContentLoaded', async () => {
         const imgSrc = (prog.images && prog.images.length > 0) ? prog.images[0] : 'images/program/program1.jpg';
         container.innerHTML = `
             <div class="tilt-card glass-panel js-tilt" style="cursor:pointer;">
-                <img class="card-bg-img" src="${imgSrc}" alt="${prog.title}">
+                <img class="card-bg-img" src="${imgSrc}" alt="${escHtml(prog.title)}">
                 <div class="card-pattern-overlay" style="background-color: rgba(138, 43, 226, 0.05);"></div>
                 <div class="card-content">
-                    <span class="card-tag">${prog.tag || ''}</span>
-                    <h4 class="card-title">${prog.title}</h4>
-                    <p class="card-desc">${prog.shortDesc || ''}</p>
+                    <span class="card-tag">${escHtml(prog.tag || '')}</span>
+                    <h4 class="card-title">${escHtml(prog.title)}</h4>
+                    <p class="card-desc">${escHtml(prog.shortDesc || '')}</p>
                 </div>
             </div>`;
         container.addEventListener('click', () => {
@@ -1551,7 +1576,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 const card = document.createElement('div');
                 card.className = 'detail-history-card';
                 const thumb = post.image
-                    ? `<img src="${post.image}" alt="">`
+                    ? `<img src="${post.image}" alt="" onerror="this.outerHTML='<div class=\\"detail-history-thumb-placeholder\\">✦</div>'">`
                     : `<div class="detail-history-thumb-placeholder">✦</div>`;
                 card.innerHTML = `
                     <div class="detail-history-thumb">${thumb}</div>
@@ -1591,6 +1616,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         let editorInstance = null;
         let progImages = [];
         let editingProgId = null;
+        let adminProgCurrentPage = 1;
+        const ADMIN_PROG_PAGE_SIZE = 10;
 
         function initProgramEditor() {
             if (editorInstance) return;
@@ -1775,17 +1802,35 @@ document.addEventListener('DOMContentLoaded', async () => {
             if (countEl) countEl.textContent = `${programs.length}개`;
 
             adminProgList.innerHTML = '';
+            const pagEl = document.getElementById('admin-prog-pagination');
+            if (pagEl) pagEl.innerHTML = '';
+
             if (programs.length === 0) {
                 adminProgList.innerHTML = `<div style="text-align:center;padding:30px;color:var(--color-text-muted);">등록된 프로그램이 없습니다.</div>`;
                 return;
             }
 
-            programs.forEach(prog => {
+            // program.html 과 동일한 순서: 카테고리 순 → order 오름차순
+            const PROG_CAT_ORDER = ['어린이', '극장', '행사', '기업', '부가'];
+            programs.sort((a, b) => {
+                const ci = PROG_CAT_ORDER.indexOf(a.category);
+                const cj = PROG_CAT_ORDER.indexOf(b.category);
+                const catDiff = (ci === -1 ? 999 : ci) - (cj === -1 ? 999 : cj);
+                if (catDiff !== 0) return catDiff;
+                return (a.order || 99) - (b.order || 99);
+            });
+
+            const totalPages = Math.max(1, Math.ceil(programs.length / ADMIN_PROG_PAGE_SIZE));
+            if (adminProgCurrentPage > totalPages) adminProgCurrentPage = totalPages;
+            const start = (adminProgCurrentPage - 1) * ADMIN_PROG_PAGE_SIZE;
+            const pageProg = programs.slice(start, start + ADMIN_PROG_PAGE_SIZE);
+
+            pageProg.forEach(prog => {
                 const item = document.createElement('div');
                 item.className = 'admin-prog-list-item';
                 item.innerHTML = `
-                    <span class="prog-category-badge">${prog.category}</span>
-                    <span class="prog-title">${prog.title}</span>
+                    <span class="prog-category-badge">${escHtml(prog.category)}</span>
+                    <span class="prog-title">${escHtml(prog.title)}</span>
                     <div class="admin-prog-list-actions">
                         <button type="button" class="btn-edit-prog">수정</button>
                         <button type="button" class="btn-delete-prog">삭제</button>
@@ -1806,6 +1851,39 @@ document.addEventListener('DOMContentLoaded', async () => {
 
                 adminProgList.appendChild(item);
             });
+
+            if (pagEl && totalPages > 1) {
+                const baseStyle = 'padding:5px 12px;border-radius:6px;cursor:pointer;font-size:0.85rem;';
+                const activeStyle = baseStyle + 'border:1px solid var(--color-primary-gold);background:rgba(212,175,55,0.2);color:var(--color-primary-gold);';
+                const inactiveStyle = baseStyle + 'border:1px solid rgba(255,255,255,0.2);background:transparent;color:#fff;';
+
+                if (adminProgCurrentPage > 1) {
+                    const prev = document.createElement('button');
+                    prev.type = 'button';
+                    prev.setAttribute('style', inactiveStyle);
+                    prev.textContent = '이전';
+                    prev.addEventListener('click', async () => { adminProgCurrentPage--; await renderAdminProgList(); });
+                    pagEl.appendChild(prev);
+                }
+
+                for (let i = 1; i <= totalPages; i++) {
+                    const btn = document.createElement('button');
+                    btn.type = 'button';
+                    btn.textContent = i;
+                    btn.setAttribute('style', i === adminProgCurrentPage ? activeStyle : inactiveStyle);
+                    btn.addEventListener('click', async () => { adminProgCurrentPage = i; await renderAdminProgList(); });
+                    pagEl.appendChild(btn);
+                }
+
+                if (adminProgCurrentPage < totalPages) {
+                    const next = document.createElement('button');
+                    next.type = 'button';
+                    next.setAttribute('style', inactiveStyle);
+                    next.textContent = '다음';
+                    next.addEventListener('click', async () => { adminProgCurrentPage++; await renderAdminProgList(); });
+                    pagEl.appendChild(next);
+                }
+            }
         }
 
         async function loadProgForEdit(prog) {
