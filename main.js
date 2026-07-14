@@ -1431,8 +1431,15 @@ document.addEventListener('DOMContentLoaded', async () => {
                 return;
             }
 
-            // Update page title
+            // Update page title & OG meta
             document.title = `인생마술 | ${prog.title}`;
+            const pageUrl = `https://www.lifemagic.art/program-detail.html?id=${encodeURIComponent(prog.docId || prog.id)}`;
+            const ogDesc = prog.shortDesc || '인생마술 공연 프로그램 상세 정보';
+            document.getElementById('og-url')?.setAttribute('content', pageUrl);
+            document.getElementById('og-title')?.setAttribute('content', `인생마술 | ${prog.title}`);
+            document.getElementById('og-desc')?.setAttribute('content', ogDesc);
+            document.getElementById('canonical')?.setAttribute('href', pageUrl);
+            document.querySelector('meta[name="description"]')?.setAttribute('content', ogDesc);
 
             // Hero
             document.getElementById('detail-hero-tag').textContent = prog.tag || '';
