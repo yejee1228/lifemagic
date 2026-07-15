@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="ko">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -16,27 +17,32 @@
             min-height: 100vh;
             margin: 0;
         }
+
         .pay-wrap {
             text-align: center;
             padding: 48px 24px;
         }
+
         .pay-logo {
             width: 72px;
             margin-bottom: 28px;
             opacity: 0.85;
         }
+
         .pay-title {
             color: #fff;
             font-size: 1.3rem;
             margin-bottom: 0.5em;
             font-family: var(--font-serif, serif);
         }
+
         .pay-desc {
-            color: rgba(255,255,255,0.45);
+            color: rgba(255, 255, 255, 0.45);
             font-size: 0.9rem;
             margin-bottom: 2.5em;
             line-height: 1.7;
         }
+
         .pay-btn {
             display: inline-block;
             padding: 18px 52px;
@@ -47,13 +53,15 @@
             font-size: 1.05rem;
             font-weight: 700;
             letter-spacing: 0.03em;
-            box-shadow: 0 4px 24px rgba(212,175,55,0.35);
+            box-shadow: 0 4px 24px rgba(212, 175, 55, 0.35);
             transition: opacity 0.2s, transform 0.2s;
         }
+
         .pay-btn:hover {
             opacity: 0.88;
             transform: translateY(-2px);
         }
+
         /* URL 미설정 시 버튼 비활성화 */
         .pay-btn[href="#"] {
             opacity: 0.4;
@@ -62,18 +70,16 @@
         }
     </style>
 </head>
+
 <body>
     <div class="pay-wrap">
         <img src="images/logo.png" alt="인생마술 로고" class="pay-logo">
-        <h1 class="pay-title">인생마술 결제</h1>
+        <h1 class="pay-title">개인 결제</h1>
         <p class="pay-desc">아래 버튼을 눌러 결제를 진행해 주세요.</p>
-        <!--
-            결제 URL을 아래 href에 붙여넣으세요.
-            예) href="https://payhere.in/xxxxx"
-        -->
-        <a href="#" class="pay-btn" id="pay-link" target="_blank" rel="noopener noreferrer">
+        <a href="https://store.payhere.in/art4623" class="pay-btn" id="pay-link" target="_blank" rel="noopener noreferrer">
             결제하기
         </a>
     </div>
 </body>
+
 </html>

@@ -3,6 +3,13 @@
  * Main JavaScript Controller
  */
 
+// 관리자 UID 목록 — Firestore rules의 isAdmin()과 동일하게 유지할 것
+const ADMIN_UIDS = [
+    'D9aXmROdxrXCls6A8z4Kas9gLgk1',
+    'U9w04qSVtCSgcKpuGtFgNFOPMSE3',
+    'zLx8fgpOuDNjXTnJ5X4pWKOzIUb2'
+];
+
 // < > & " 를 포함한 문자열을 innerHTML 에 안전하게 삽입할 때 사용.
 function escHtml(str) {
     return String(str == null ? '' : str)
@@ -562,7 +569,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
                 const importPanel = document.getElementById('admin-import-panel');
                 if (importPanel) {
-                    importPanel.style.display = (user.email === 'yejee1228@gmail.com') ? 'block' : 'none';
+                    importPanel.style.display = ADMIN_UIDS.includes(user.uid) ? 'block' : 'none';
                 }
 
                 await renderAdminList();
@@ -942,7 +949,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             if (!file) return;
 
             const currentUser = window.fb && window.fb.isInitialized() ? window.fb.getCurrentUser?.() : null;
-            if (!currentUser || currentUser.email !== 'yejee1228@gmail.com') {
+            if (!currentUser || !ADMIN_UIDS.includes(currentUser.uid)) {
                 alert('이 기능은 허용된 계정에서만 사용할 수 있습니다.');
                 e.target.value = '';
                 return;
@@ -1005,6 +1012,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             // Collect inquiry data
             const nameVal = document.getElementById('inq-name').value;
             const phoneVal = document.getElementById('inq-phone').value;
+            const emailVal = document.getElementById('inq-email').value;
             const dateVal = document.getElementById('inq-date').value;
             const timeVal = document.getElementById('inq-time').value;
             const addrVal = document.getElementById('inq-addr').value;
@@ -1025,6 +1033,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 program: programVal,
                 name: nameVal,
                 phone: phoneVal,
+                email: emailVal,
                 date: dateVal,
                 time: timeVal,
                 address: addrVal,
@@ -1119,8 +1128,9 @@ document.addEventListener('DOMContentLoaded', async () => {
                 <div style="display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 1px solid rgba(255, 255, 255, 0.08); padding-bottom: 15px; margin-bottom: 15px; flex-wrap: wrap; gap: 15px;">
                     <div>
                         <h4 style="font-size: 1.25rem; font-weight: 700; color: #fff; margin-bottom: 6px; display: flex; align-items: center; flex-wrap: wrap; gap: 10px;">
-                            ${inq.name} 
+                            ${inq.name}
                             <span style="font-size: 0.9rem; font-weight: 400; color: var(--color-text-muted);">📞 ${inq.phone}</span>
+                            ${inq.email ? `<span style="font-size: 0.9rem; font-weight: 400; color: var(--color-text-muted);">✉ ${inq.email}</span>` : ''}
                         </h4>
                         <div style="font-size: 0.8rem; color: var(--color-primary-gold);">신청일시: ${inq.timestamp}</div>
                     </div>
