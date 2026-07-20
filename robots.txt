@@ -1,8 +1,8 @@
 User-agent: *
 Allow: /
 
-Disallow: /pages/admin.html
-Disallow: /pages/pay.html
+Disallow: /pages/admin/
+Disallow: /pages/pay/
 Disallow: /scripts/
 
 Sitemap: https://www.lifemagic.art/sitemap.xml
