@@ -12,10 +12,10 @@ const https = require('https');
 const http = require('http');
 
 const DATA_FILE = path.join(__dirname, '..', 'history_import.json');
-const OUT_DIR = path.join(__dirname, '..', 'images', 'history');
-const GITHUB_PAGES_BASE = 'https://yejee1228.github.io/인생마술/images/history';
+const OUT_DIR = path.join(__dirname, '..', 'assets', 'images', 'history');
+const GITHUB_PAGES_BASE = 'https://www.lifemagic.art/assets/images/history';
 
-// images/history 폴더 생성
+// assets/images/history 폴더 생성
 if (!fs.existsSync(OUT_DIR)) fs.mkdirSync(OUT_DIR, { recursive: true });
 
 const posts = JSON.parse(fs.readFileSync(DATA_FILE, 'utf-8'));

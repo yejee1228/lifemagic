@@ -268,37 +268,37 @@ header {
 /* ORIENTATION MEDIA QUERIES FOR BACKGROUND IMAGES */
 @media (orientation: landscape) {
     .sec-hero {
-        background-image: linear-gradient(rgba(7, 6, 10, 0.45), rgba(7, 6, 10, 0.75)), url('images/bg1_land.jpg');
+        background-image: linear-gradient(rgba(7, 6, 10, 0.45), rgba(7, 6, 10, 0.75)), url('../images/bg1_land.jpg');
     }
 
     .sec-program-intro {
-        background-image: linear-gradient(rgba(7, 6, 10, 0.55), rgba(7, 6, 10, 0.85)), url('images/bg2_land.jpg');
+        background-image: linear-gradient(rgba(7, 6, 10, 0.55), rgba(7, 6, 10, 0.85)), url('../images/bg2_land.jpg');
     }
 
     .sec-inquiry-intro {
-        background-image: linear-gradient(rgba(7, 6, 10, 0.45), rgba(7, 6, 10, 0.75)), url('images/bg3_land.jpg');
+        background-image: linear-gradient(rgba(7, 6, 10, 0.45), rgba(7, 6, 10, 0.75)), url('../images/bg3_land.jpg');
     }
 
     .sec-connect {
-        background-image: linear-gradient(rgba(7, 6, 10, 0.75), rgba(7, 6, 10, 0.95)), url('images/bg1_land.jpg');
+        background-image: linear-gradient(rgba(7, 6, 10, 0.75), rgba(7, 6, 10, 0.95)), url('../images/bg1_land.jpg');
     }
 }
 
 @media (orientation: portrait) {
     .sec-hero {
-        background-image: linear-gradient(rgba(7, 6, 10, 0.55), rgba(7, 6, 10, 0.85)), url('images/bg1_port.jpg');
+        background-image: linear-gradient(rgba(7, 6, 10, 0.55), rgba(7, 6, 10, 0.85)), url('../images/bg1_port.jpg');
     }
 
     .sec-program-intro {
-        background-image: linear-gradient(rgba(7, 6, 10, 0.65), rgba(7, 6, 10, 0.95)), url('images/bg2_port.jpg');
+        background-image: linear-gradient(rgba(7, 6, 10, 0.65), rgba(7, 6, 10, 0.95)), url('../images/bg2_port.jpg');
     }
 
     .sec-inquiry-intro {
-        background-image: linear-gradient(rgba(7, 6, 10, 0.55), rgba(7, 6, 10, 0.85)), url('images/bg3_port.jpg');
+        background-image: linear-gradient(rgba(7, 6, 10, 0.55), rgba(7, 6, 10, 0.85)), url('../images/bg3_port.jpg');
     }
 
     .sec-connect {
-        background-image: linear-gradient(rgba(7, 6, 10, 0.8), rgba(7, 6, 10, 0.97)), url('images/bg1_port.jpg');
+        background-image: linear-gradient(rgba(7, 6, 10, 0.8), rgba(7, 6, 10, 0.97)), url('../images/bg1_port.jpg');
     }
 }
 
@@ -1500,13 +1500,13 @@ header {
 
 @media (orientation: landscape) {
     .inquiry-bg-overlay {
-        background-image: url('images/bg3_land.jpg');
+        background-image: url('../images/bg3_land.jpg');
     }
 }
 
 @media (orientation: portrait) {
     .inquiry-bg-overlay {
-        background-image: url('images/bg3_port.jpg');
+        background-image: url('../images/bg3_port.jpg');
     }
 }
 
