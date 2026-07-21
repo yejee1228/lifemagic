@@ -225,7 +225,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     if (scrollContainer && snapSections.length > 0) {
         const observerOptions = {
-            root: scrollContainer,
+            root: null,
             threshold: 0.5
         };
 

@@ -51,6 +51,11 @@ body {
     overflow-x: hidden;
 }
 
+/* index.html은 내부 div가 아니라 브라우저 네이티브 스크롤로 섹션 스냅을 구현한다 */
+html:has(body.home-snap-scroll) {
+    scroll-snap-type: y mandatory;
+}
+
 body > * {
     min-width: 0;
 }
@@ -241,12 +246,6 @@ header {
 /* ==========================================
    4. SCROLL SNAPPING HERO PAGE (index.html)
    ========================================== */
-.scroll-container {
-    height: 100vh;
-    overflow-y: scroll;
-    scroll-snap-type: y mandatory;
-    scroll-behavior: smooth;
-}
 
 .snap-section {
     height: 100vh;
@@ -309,7 +308,36 @@ header {
     z-index: 10;
     opacity: 0;
     transform: translateY(30px);
-    animation: fadeInUp 1.2s forwards cubic-bezier(0.25, 0.8, 0.25, 1);
+    transition: opacity 1.1s cubic-bezier(0.25, 0.8, 0.25, 1), transform 1.1s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+.snap-section.active .hero-content {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Inner text rises up in staggered sequence alongside the card */
+.hero-content>* {
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity 1.1s cubic-bezier(0.25, 0.8, 0.25, 1), transform 1.1s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+.snap-section.active .hero-content>* {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.hero-content>*:nth-child(1) {
+    transition-delay: 0.05s;
+}
+
+.hero-content>*:nth-child(2) {
+    transition-delay: 0.2s;
+}
+
+.hero-content>*:nth-child(3) {
+    transition-delay: 0.35s;
 }
 
 .hero-btn-group {
@@ -340,12 +368,40 @@ header {
     z-index: 10;
     opacity: 0;
     transform: translateY(30px);
-    transition: var(--transition-smooth);
+    transition: opacity 1.1s cubic-bezier(0.25, 0.8, 0.25, 1), transform 1.1s cubic-bezier(0.25, 0.8, 0.25, 1);
 }
 
 .snap-section.active .connect-content {
     opacity: 1;
     transform: translateY(0);
+}
+
+/* Inner text rises up in staggered sequence alongside the card */
+.connect-content>* {
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity 1.1s cubic-bezier(0.25, 0.8, 0.25, 1), transform 1.1s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+.snap-section.active .connect-content>* {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.connect-content>*:nth-child(1) {
+    transition-delay: 0.05s;
+}
+
+.connect-content>*:nth-child(2) {
+    transition-delay: 0.2s;
+}
+
+.connect-content>*:nth-child(3) {
+    transition-delay: 0.35s;
+}
+
+.connect-content>*:nth-child(4) {
+    transition-delay: 0.5s;
 }
 
 .connect-title {
@@ -446,7 +502,7 @@ header {
     font-family: var(--font-sans);
     font-size: 2.8rem;
     font-weight: 500;
-    line-height: 1.6;
+    line-height: 1.28;
     letter-spacing: 1px;
     margin-bottom: 40px;
     word-break: keep-all;
@@ -484,12 +540,40 @@ header {
     z-index: 10;
     opacity: 0;
     transform: translateY(30px);
-    transition: var(--transition-smooth);
+    transition: opacity 1.1s cubic-bezier(0.25, 0.8, 0.25, 1), transform 1.1s cubic-bezier(0.25, 0.8, 0.25, 1);
 }
 
 .snap-section.active .intro-glass-card {
     opacity: 1;
     transform: translateY(0);
+}
+
+/* Inner text rises up in staggered sequence alongside the card */
+.intro-glass-card>* {
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity 1.1s cubic-bezier(0.25, 0.8, 0.25, 1), transform 1.1s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+.snap-section.active .intro-glass-card>* {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.intro-glass-card>*:nth-child(1) {
+    transition-delay: 0.05s;
+}
+
+.intro-glass-card>*:nth-child(2) {
+    transition-delay: 0.2s;
+}
+
+.intro-glass-card>*:nth-child(3) {
+    transition-delay: 0.35s;
+}
+
+.intro-glass-card>*:nth-child(4) {
+    transition-delay: 0.5s;
 }
 
 .intro-glass-card h2 {
@@ -1870,7 +1954,7 @@ footer {
     /* Hero Text size */
     .hero-title {
         font-size: 1.5rem;
-        line-height: 1.65;
+        line-height: 1.32;
         letter-spacing: 0.5px;
         margin-bottom: 28px;
     }
