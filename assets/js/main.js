@@ -10,6 +10,39 @@ const ADMIN_UIDS = [
     'zLx8fgpOuDNjXTnJ5X4pWKOzIUb2'
 ];
 
+// EmailJS 설정 — emailjs.com 대시보드에서 발급받은 값으로 채울 것 (Public Key는 노출돼도 안전한 값)
+const EMAILJS_CONFIG = {
+    publicKey: '8M970yOZK6iNsobvW',
+    serviceId: 'service_rzaazho',
+    templateId: 'template_6v1nr0m'
+};
+if (typeof emailjs !== 'undefined' && !EMAILJS_CONFIG.publicKey.startsWith('YOUR_')) {
+    emailjs.init({ publicKey: EMAILJS_CONFIG.publicKey });
+}
+
+// 새 문의 접수 시 관리자에게 알림 이메일 발송. 실패해도 문의 접수 자체는 이미 끝난 뒤이므로 조용히 무시한다.
+async function sendInquiryNotificationEmail(inquiry) {
+    if (typeof emailjs === 'undefined' || EMAILJS_CONFIG.publicKey.startsWith('YOUR_')) return;
+    try {
+        await emailjs.send(EMAILJS_CONFIG.serviceId, EMAILJS_CONFIG.templateId, {
+            program: inquiry.program || '(선택 안 함)',
+            name: inquiry.name,
+            phone: inquiry.phone,
+            email: inquiry.email,
+            date: inquiry.date,
+            time: inquiry.time,
+            address: inquiry.address,
+            audience: inquiry.audience,
+            budget: inquiry.budget,
+            ages: (inquiry.ages || []).join(', ') || '(선택 안 함)',
+            description: inquiry.description || '(없음)',
+            timestamp: inquiry.timestamp
+        });
+    } catch (err) {
+        console.error('문의 알림 이메일 발송 실패:', err);
+    }
+}
+
 // < > & " 를 포함한 문자열을 innerHTML 에 안전하게 삽입할 때 사용.
 function escHtml(str) {
     return String(str == null ? '' : str)
@@ -1126,6 +1159,9 @@ document.addEventListener('DOMContentLoaded', async () => {
                     return;
                 }
             }
+
+            // 관리자 알림 이메일 (실패해도 문의 접수 흐름은 계속 진행)
+            sendInquiryNotificationEmail(newInquiry);
 
             // Sync with local storage
             const inquiries = JSON.parse(localStorage.getItem('insaeng_inquiries') || '[]');
