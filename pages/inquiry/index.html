@@ -36,7 +36,7 @@
             <div class="inquiry-form-card glass-panel">
                 <p class="artist-tag" style="text-align: center; margin-bottom: 25px;">Magical Day Booking</p>
 
-                <form id="inquiry-form">
+                <form id="inquiry-form" novalidate>
                     <div class="inquiry-grid-2col">
 
                         <!-- 0. Program Select -->
@@ -206,7 +206,10 @@
                 <br><br>
                 귀하는 본 동의를 거부하실 수 있으나, 거부 시 정상적인 견적 상담 및 계약 예약이 어려울 수 있습니다.
             </div>
-            <button type="button" class="btn-gold" id="terms-close-btn" style="width: 100%;">확인 및 닫기</button>
+            <div style="display: flex; gap: 12px;">
+                <button type="button" class="btn-glass" id="terms-disagree-btn" style="flex: 1;">동의하지 않음</button>
+                <button type="button" class="btn-gold" id="terms-close-btn" style="flex: 1;">확인 및 닫기</button>
+            </div>
         </div>
     </div>
 
@@ -219,8 +222,8 @@
             <div class="success-magic-icon">✦</div>
             <h3>예약 신청이 접수되었습니다!</h3>
             <p>
-                인생마술 기획사업부에 마법 같은 하루 예약이 안전하게 전달되었습니다.<br>
-                적어주신 연락처로 24시간 이내에 담당자가 친절하게 연락드리겠습니다.
+                마법 같은 하루 예약이 안전하게 전달되었습니다.<br>
+                적어주신 연락처로 24시간 이내에 <br>담당자가 친절하게 연락드리겠습니다.
             </p>
             <a href="/" class="btn-gold">홈으로 돌아가기</a>
         </div>

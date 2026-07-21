@@ -19,6 +19,26 @@ function escHtml(str) {
         .replace(/"/g, '&quot;');
 }
 
+// alert() 대신 화면 하단에 잠깐 떴다 사라지는 토스트 메시지를 띄운다.
+function showToast(message) {
+    let container = document.getElementById('toast-container');
+    if (!container) {
+        container = document.createElement('div');
+        container.id = 'toast-container';
+        document.body.appendChild(container);
+    }
+    const toast = document.createElement('div');
+    toast.className = 'toast-message';
+    toast.textContent = message;
+    container.appendChild(toast);
+
+    requestAnimationFrame(() => toast.classList.add('show'));
+    setTimeout(() => {
+        toast.classList.remove('show');
+        setTimeout(() => toast.remove(), 300);
+    }, 3000);
+}
+
 // Naver blog CDN 등 외부 URL은 핫링크 차단으로 깨질 수 있으므로
 // <img onerror="window._hImg(this)"> 로 걸어두면 SVG placeholder로 대체된다.
 window._hImg = function(img) {
@@ -990,7 +1010,26 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Terms modal control
     const termsOpen = document.getElementById('terms-open-btn');
     const termsClose = document.getElementById('terms-close-btn');
+    const termsDisagree = document.getElementById('terms-disagree-btn');
     const termsModal = document.getElementById('terms-modal');
+    const inqAgreeCheckbox = document.getElementById('inq-agree');
+
+    // YYYY-MM-DD in local time (avoids UTC off-by-one near midnight KST)
+    function toLocalDateStr(d) {
+        const yyyy = d.getFullYear();
+        const mm = String(d.getMonth() + 1).padStart(2, '0');
+        const dd = String(d.getDate()).padStart(2, '0');
+        return `${yyyy}-${mm}-${dd}`;
+    }
+
+    // 달력 위젯에서 오늘 이전 날짜는 아예 선택하지 못하도록 표시만 한다.
+    // (form에 novalidate가 있어 제출 자체를 막지는 않음 — 실제 검증은 submit 핸들러에서)
+    const inqDateInput = document.getElementById('inq-date');
+    if (inqDateInput) {
+        const tomorrow = new Date();
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        inqDateInput.min = toLocalDateStr(tomorrow);
+    }
 
     if (termsOpen && termsModal && termsClose) {
         termsOpen.addEventListener('click', (e) => {
@@ -998,8 +1037,15 @@ document.addEventListener('DOMContentLoaded', async () => {
             termsModal.style.display = 'flex';
         });
         termsClose.addEventListener('click', () => {
+            if (inqAgreeCheckbox) inqAgreeCheckbox.checked = true;
             termsModal.style.display = 'none';
         });
+        if (termsDisagree) {
+            termsDisagree.addEventListener('click', () => {
+                if (inqAgreeCheckbox) inqAgreeCheckbox.checked = false;
+                termsModal.style.display = 'none';
+            });
+        }
         termsModal.addEventListener('click', (e) => {
             if (e.target === termsModal) termsModal.style.display = 'none';
         });
@@ -1008,6 +1054,15 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (inquiryForm) {
         inquiryForm.addEventListener('submit', async (e) => {
             e.preventDefault();
+
+            // novalidate로 브라우저 자동 검증을 껐으므로 필수 항목을 직접 확인한다.
+            for (const field of inquiryForm.querySelectorAll('[required]')) {
+                if (!field.checkValidity()) {
+                    showToast('필수 항목을 모두 올바르게 입력해주세요.');
+                    field.focus();
+                    return;
+                }
+            }
 
             // Collect inquiry data
             const nameVal = document.getElementById('inq-name').value;
@@ -1018,6 +1073,23 @@ document.addEventListener('DOMContentLoaded', async () => {
             const addrVal = document.getElementById('inq-addr').value;
             const audienceVal = document.getElementById('inq-audience').value;
             const budgetVal = document.getElementById('inq-budget').value;
+
+            // Phone format check (e.g. 010-0000-0000, 02-000-0000)
+            const phoneRegex = /^0\d{1,2}-?\d{3,4}-?\d{4}$/;
+            if (!phoneRegex.test(phoneVal.trim())) {
+                showToast('올바른 연락처 형식이 아닙니다. 예: 010-0000-0000');
+                document.getElementById('inq-phone').focus();
+                return;
+            }
+
+            // Event date must be strictly after today
+            if (dateVal <= toLocalDateStr(new Date())) {
+                showToast('지난 날짜는 선택이 불가능합니다.');
+                const dateInput = document.getElementById('inq-date');
+                dateInput.value = '';
+                dateInput.focus();
+                return;
+            }
 
             // Collect ages
             const ageCheckboxes = document.querySelectorAll('input[name="inq-age"]:checked');
