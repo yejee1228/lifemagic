@@ -150,10 +150,10 @@ document.addEventListener('DOMContentLoaded', async () => {
             <nav>
                 <ul class="nav-links" id="nav-links">
                     <li><a href="/" data-page="index">홈</a></li>
-                    <li><a href="/pages/about/" data-page="about">회사소개</a></li>
-                    <li><a href="/pages/program/" data-page="program">프로그램</a></li>
-                    <li><a href="/pages/history/" data-page="history">히스토리</a></li>
-                    <li><a href="/pages/inquiry/" data-page="inquiry">문의</a></li>
+                    <li><a href="/about/" data-page="about">회사소개</a></li>
+                    <li><a href="/program/" data-page="program">프로그램</a></li>
+                    <li><a href="/history/" data-page="history">히스토리</a></li>
+                    <li><a href="/inquiry/" data-page="inquiry">문의</a></li>
                 </ul>
             </nav>
             <button class="hamburger" id="hamburger" aria-label="메뉴 토글">
@@ -1479,7 +1479,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 </div>
             </div>`;
         container.addEventListener('click', () => {
-            window.location.href = `/pages/program-detail/?id=${encodeURIComponent(prog.docId || prog.id)}`;
+            window.location.href = `/program-detail/?id=${encodeURIComponent(prog.docId || prog.id)}`;
         });
         return container;
     }
@@ -1544,14 +1544,14 @@ document.addEventListener('DOMContentLoaded', async () => {
 
             if (!prog) {
                 detailHeroTitle.textContent = '프로그램을 찾을 수 없습니다.';
-                document.getElementById('detail-block-content').innerHTML = `<div class="detail-empty-state">해당 프로그램 정보가 없습니다. <a href="/pages/program/" class="gold-glow-text">목록으로 돌아가기</a></div>`;
+                document.getElementById('detail-block-content').innerHTML = `<div class="detail-empty-state">해당 프로그램 정보가 없습니다. <a href="/program/" class="gold-glow-text">목록으로 돌아가기</a></div>`;
                 document.getElementById('detail-history-grid').innerHTML = '';
                 return;
             }
 
             // Update page title & OG meta
             document.title = `인생마술 | ${prog.title}`;
-            const pageUrl = `https://www.lifemagic.art/pages/program-detail/?id=${encodeURIComponent(prog.docId || prog.id)}`;
+            const pageUrl = `https://www.lifemagic.art/program-detail/?id=${encodeURIComponent(prog.docId || prog.id)}`;
             const ogDesc = prog.shortDesc || '인생마술 공연 프로그램 상세 정보';
             document.getElementById('og-url')?.setAttribute('content', pageUrl);
             document.getElementById('og-title')?.setAttribute('content', `인생마술 | ${prog.title}`);
@@ -1570,7 +1570,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
             // CTA inquiry button
             const inquiryBtn = document.getElementById('detail-inquiry-btn');
-            if (inquiryBtn) inquiryBtn.href = `/pages/inquiry/?program=${encodeURIComponent(prog.title)}`;
+            if (inquiryBtn) inquiryBtn.href = `/inquiry/?program=${encodeURIComponent(prog.title)}`;
 
             // Populate program switcher dropdown
             const switcherEl = document.getElementById('detail-prog-switch');
@@ -1602,7 +1602,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
                 switcherEl.addEventListener('change', () => {
                     if (switcherEl.value) {
-                        window.location.href = `/pages/program-detail/?id=${encodeURIComponent(switcherEl.value)}`;
+                        window.location.href = `/program-detail/?id=${encodeURIComponent(switcherEl.value)}`;
                     }
                 });
             }
