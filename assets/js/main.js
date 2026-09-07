@@ -306,6 +306,90 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 
     /* ==========================================================================
+       2b. FULL-PAGE WHEEL/TOUCH SNAP NAVIGATION (index.html)
+       살짝만 스크롤/스와이프해도 즉시 다음 섹션 전체로 넘어가도록 스크롤을 가로챈다.
+       ========================================================================== */
+    if (scrollContainer && snapSections.length > 0) {
+        const sections = Array.from(snapSections);
+        const lastSection = sections[sections.length - 1];
+        const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+        let isSnapping = false;
+        let snapTimeout = null;
+
+        const unlock = () => {
+            isSnapping = false;
+        };
+
+        const getCurrentIndex = () => {
+            const y = window.scrollY;
+            let closest = 0;
+            let minDist = Infinity;
+            sections.forEach((sec, i) => {
+                const dist = Math.abs(sec.offsetTop - y);
+                if (dist < minDist) {
+                    minDist = dist;
+                    closest = i;
+                }
+            });
+            return closest;
+        };
+
+        const goToSection = (index) => {
+            const target = sections[Math.max(0, Math.min(sections.length - 1, index))];
+            isSnapping = true;
+            target.scrollIntoView({ behavior: prefersReducedMotion ? 'auto' : 'smooth', block: 'start' });
+            clearTimeout(snapTimeout);
+            snapTimeout = setTimeout(unlock, 900);
+        };
+
+        // 마지막 섹션은 푸터를 담기 위해 100vh보다 길 수 있어, 그 안에서 아래로 스크롤할 땐 네이티브 스크롤을 허용한다
+        const withinScrollableLastSection = () => {
+            return window.scrollY >= lastSection.offsetTop - 2 && lastSection.offsetHeight > window.innerHeight;
+        };
+
+        scrollContainer.addEventListener('wheel', (e) => {
+            if (Math.abs(e.deltaY) < 4) return;
+            if (e.deltaY > 0 && withinScrollableLastSection()) return;
+
+            e.preventDefault();
+            if (isSnapping) return;
+
+            const currentIndex = getCurrentIndex();
+            const nextIndex = e.deltaY > 0 ? currentIndex + 1 : currentIndex - 1;
+            if (nextIndex === currentIndex) return;
+            goToSection(nextIndex);
+        }, { passive: false });
+
+        let touchStartY = 0;
+        scrollContainer.addEventListener('touchstart', (e) => {
+            touchStartY = e.touches[0].clientY;
+        }, { passive: true });
+
+        scrollContainer.addEventListener('touchmove', (e) => {
+            const touchY = e.touches[0].clientY;
+            const deltaY = touchStartY - touchY;
+
+            if (Math.abs(deltaY) < 40) return;
+            if (deltaY > 0 && withinScrollableLastSection()) return;
+
+            if (isSnapping) {
+                e.preventDefault();
+                return;
+            }
+
+            e.preventDefault();
+            const currentIndex = getCurrentIndex();
+            const nextIndex = deltaY > 0 ? currentIndex + 1 : currentIndex - 1;
+            if (nextIndex !== currentIndex) {
+                goToSection(nextIndex);
+            }
+            touchStartY = touchY;
+        }, { passive: false });
+    }
+
+
+    /* ==========================================================================
        3. ABOUT PAGE SUB-TABS & GROWING TIMELINE (about.html)
        ========================================================================== */
     const tabButtons = document.querySelectorAll('.tab-btn');
