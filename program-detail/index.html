@@ -76,9 +76,20 @@
 
             <!-- Recent History Section -->
             <section class="detail-history-section">
-                <h2 class="detail-section-label">이 공연의 최근 실적</h2>
+                <h2 class="detail-section-label">
+                    이 공연의 최근 실적
+                    <span class="detail-history-nav" id="detail-history-nav" hidden>
+                        <button type="button" class="detail-history-arrow" id="detail-history-prev" aria-label="이전 실적">
+                            <svg viewBox="0 0 24 24"><path d="M15.41 7.41 14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg>
+                        </button>
+                        <button type="button" class="detail-history-arrow" id="detail-history-next" aria-label="다음 실적">
+                            <svg viewBox="0 0 24 24"><path d="M10 6 8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>
+                        </button>
+                    </span>
+                </h2>
+                <!-- 한 줄 가로 슬라이드 (터치 스와이프 / 화살표) -->
                 <div class="detail-history-grid" id="detail-history-grid">
-                    <div class="detail-empty-state" style="grid-column:span 3;">관련 공연 기록을 불러오는 중...</div>
+                    <div class="detail-empty-state">관련 공연 기록을 불러오는 중...</div>
                 </div>
             </section>
 

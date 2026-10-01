@@ -247,5 +247,89 @@ window.fb = {
             console.error("Firestore deleteProgram 에러:", e);
             throw e;
         }
+    },
+
+    // =========================================================================
+    // PDF 다운로드 클릭 수 집계 (downloadStats/{fileId})
+    // =========================================================================
+    // 총 클릭 수, 일자별(YYYY-MM-DD, 한국시간)·지역별·기기별 클릭 수를 1씩 증가시키고 클릭 로그를 남긴다.
+    // visitor = { region: '경기 성남시', device: 'PC' | '모바일' | '태블릿', source: '/christmas/' 등 클릭한 페이지 }
+    trackDownload: async (fileId, label, visitor) => {
+        if (!db) return null;
+        try {
+            const FV = firebase.firestore.FieldValue;
+            const inc = FV.increment(1);
+            const today = new Date().toLocaleDateString('sv-SE', { timeZone: 'Asia/Seoul' });
+            const batch = db.batch();
+            batch.set(db.collection('downloadStats').doc(fileId), {
+                label,
+                count: inc,
+                daily: { [today]: inc },
+                regions: { [visitor.region]: inc },
+                devices: { [visitor.device]: inc },
+                sources: { [visitor.source]: inc },
+                lastClickedAt: FV.serverTimestamp()
+            }, { merge: true });
+            batch.set(db.collection('downloadLogs').doc(), {
+                fileId,
+                region: visitor.region,
+                device: visitor.device,
+                source: visitor.source,
+                createdAt: FV.serverTimestamp()
+            });
+            await batch.commit();
+            return true;
+        } catch (e) {
+            console.error("Firestore trackDownload 에러:", e);
+            return false;
+        }
+    },
+
+    getDownloadStats: async () => {
+        if (!db) return null;
+        try {
+            const snapshot = await db.collection('downloadStats').get();
+            const list = [];
+            snapshot.forEach(doc => list.push({ id: doc.id, ...doc.data() }));
+            return list;
+        } catch (e) {
+            console.error("Firestore getDownloadStats 에러:", e);
+            throw e;
+        }
+    },
+
+    getDownloadLogs: async (limitCount = 30) => {
+        if (!db) return null;
+        try {
+            const snapshot = await db.collection('downloadLogs')
+                .orderBy('createdAt', 'desc')
+                .limit(limitCount)
+                .get();
+            const list = [];
+            snapshot.forEach(doc => list.push({ id: doc.id, ...doc.data() }));
+            return list;
+        } catch (e) {
+            console.error("Firestore getDownloadLogs 에러:", e);
+            throw e;
+        }
+    },
+
+    // 집계 문서와 해당 파일의 클릭 로그를 함께 삭제한다
+    resetDownloadStats: async (fileId) => {
+        if (!db) return null;
+        try {
+            const logs = await db.collection('downloadLogs').where('fileId', '==', fileId).get();
+            const refs = [db.collection('downloadStats').doc(fileId)];
+            logs.forEach(doc => refs.push(doc.ref));
+            for (let i = 0; i < refs.length; i += 450) {
+                const batch = db.batch();
+                refs.slice(i, i + 450).forEach(ref => batch.delete(ref));
+                await batch.commit();
+            }
+            return true;
+        } catch (e) {
+            console.error("Firestore resetDownloadStats 에러:", e);
+            throw e;
+        }
     }
 };

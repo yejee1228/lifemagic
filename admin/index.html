@@ -45,6 +45,7 @@
                     <button class="tab-btn active" data-tab="admin-tab-inquiry" id="btn-tab-inquiry">문의글 조회</button>
                     <button class="tab-btn" data-tab="admin-tab-history" id="btn-tab-history">공연 히스토리 관리</button>
                     <button class="tab-btn" data-tab="admin-tab-program" id="btn-tab-program">프로그램 관리</button>
+                    <button class="tab-btn" data-tab="admin-tab-stats" id="btn-tab-stats">통계</button>
                 </div>
                 <button type="button" class="btn-glass" id="admin-logout-btn">로그아웃</button>
             </div>
@@ -163,6 +164,24 @@
                     
                     <div class="admin-list-box" id="admin-inquiry-list" style="max-height: 700px;">
                         <!-- Dynamic Inquiries loaded here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab: Stats -->
+            <div class="tab-content" id="admin-tab-stats" style="max-width: 100%; padding: 0;">
+                <!-- 통계 항목이 늘어나면 여기에 버튼과 admin-stats-panel 을 추가 -->
+                <div class="admin-stats-subnav">
+                    <button type="button" class="admin-stats-subtab active" data-stats-panel="admin-stats-downloads">PDF 다운로드</button>
+                </div>
+
+                <div class="glass-panel admin-stats-panel active" id="admin-stats-downloads" style="padding: 30px; margin-bottom: 30px;">
+                    <div class="admin-card-header" style="padding: 0 0 20px 0; margin-bottom: 20px; border-bottom: var(--border-glass);">
+                        <span>PDF 다운로드 클릭 수</span>
+                        <button type="button" class="btn-glass" id="admin-downloads-refresh" style="padding: 6px 16px; font-size: 0.85rem;">새로고침</button>
+                    </div>
+                    <div id="admin-downloads-list">
+                        <!-- Dynamic download stats loaded here -->
                     </div>
                 </div>
             </div>

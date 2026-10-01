@@ -217,8 +217,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         const path = window.location.pathname.replace(/\/+$/, '');
         const page = path.substring(path.lastIndexOf('/') + 1);
 
-        let activePage = 'index'; // default
-        if (page === 'about') activePage = 'about';
+        let activePage = ''; // 메뉴에 없는 페이지(시즌 페이지 등)는 아무 메뉴도 활성화하지 않는다
+        if (page === '' || page === 'index.html') activePage = 'index';
+        else if (page === 'about') activePage = 'about';
         else if (page === 'program') activePage = 'program';
         else if (page === 'history') activePage = 'history';
         else if (page === 'inquiry') activePage = 'inquiry';
@@ -386,6 +387,225 @@ document.addEventListener('DOMContentLoaded', async () => {
             }
             touchStartY = touchY;
         }, { passive: false });
+    }
+
+
+    /* ==========================================================================
+       2c. SEASON POPUP (index.html)
+       시즌 페이지는 홈 팝업으로만 진입한다. 시즌이 바뀌면 SEASON_POPUP 값만 교체할 것.
+       ========================================================================== */
+    const SEASON_POPUP = {
+        id: 'christmas-2026',
+        start: '2026-10-01',
+        end: '2026-12-31',
+        link: '/christmas/',
+        image: '/assets/images/program/program1-5.jpg',
+        badge: '🎄 CHRISTMAS 2026',
+        title: '크리스마스 공연<br>예약 마감 임박!',
+        desc: '12/1~12/11 평일 공연 예약 시<br><strong>전체금액 30% 할인</strong><br><span>오전 공연은 먼저 마감됩니다</span>',
+        cta: '자세히 보기'
+    };
+
+    if (document.body.classList.contains('home-snap-scroll')) {
+        initSeasonPopup(SEASON_POPUP);
+    }
+
+    function initSeasonPopup(cfg) {
+        const now = new Date();
+        const start = new Date(`${cfg.start}T00:00:00`);
+        const end = new Date(`${cfg.end}T23:59:59`);
+        if (now < start || now > end) return;
+
+        const hideKey = `season-popup-hide-${cfg.id}`;
+        const todayStr = `${now.getFullYear()}-${now.getMonth() + 1}-${now.getDate()}`;
+        try {
+            if (localStorage.getItem(hideKey) === todayStr) return;
+        } catch (e) { }
+
+        const overlay = document.createElement('div');
+        overlay.className = 'season-popup-overlay';
+        overlay.innerHTML = `
+            <div class="season-popup" role="dialog" aria-modal="true" aria-label="시즌 공연 안내">
+                <a href="${cfg.link}" class="season-popup-main">
+                    <div class="season-popup-img" style="background-image: url('${cfg.image}');"></div>
+                    <div class="season-popup-body">
+                        <span class="season-popup-badge">${cfg.badge}</span>
+                        <h2 class="season-popup-title">${cfg.title}</h2>
+                        <p class="season-popup-desc">${cfg.desc}</p>
+                        <span class="btn-gold season-popup-cta">${cfg.cta}</span>
+                    </div>
+                </a>
+                <div class="season-popup-footer">
+                    <button type="button" class="season-popup-hide-today">오늘 하루 보지 않기</button>
+                    <button type="button" class="season-popup-close">닫기</button>
+                </div>
+            </div>`;
+        document.body.appendChild(overlay);
+        document.documentElement.classList.add('season-popup-open');
+        requestAnimationFrame(() => overlay.classList.add('show'));
+
+        const close = () => {
+            overlay.classList.remove('show');
+            document.documentElement.classList.remove('season-popup-open');
+            document.removeEventListener('keydown', onKeydown);
+            setTimeout(() => overlay.remove(), 300);
+        };
+        const onKeydown = (e) => {
+            if (e.key === 'Escape') close();
+        };
+
+        overlay.querySelector('.season-popup-close').addEventListener('click', close);
+        overlay.querySelector('.season-popup-hide-today').addEventListener('click', () => {
+            try { localStorage.setItem(hideKey, todayStr); } catch (e) { }
+            close();
+        });
+        overlay.addEventListener('click', (e) => {
+            if (e.target === overlay) close();
+        });
+        document.addEventListener('keydown', onKeydown);
+    }
+
+
+    /* ==========================================================================
+       2d. PDF DOWNLOAD CLICK TRACKING
+       <a data-download-id="..." data-download-label="..."> 클릭 시 Firestore downloadStats 에 집계한다.
+       ========================================================================== */
+    // 관리자 통계에 표시할 다운로드 파일 목록. 페이지에 <a data-download-id="..."> 링크를 다시 만들면
+    // 클릭이 자동으로 집계되며, 여기에 id/label 을 추가하면 클릭 전에도 통계에 0으로 표시된다.
+    const DOWNLOAD_FILES = [
+        { id: 'pdf-white-magic-christmas', label: '제리아저씨의 화이트 매직 크리스마스 소개서' },
+        { id: 'pdf-led-magic-show', label: 'LED 매직쇼 소개서' }
+    ];
+
+    // 클릭한 페이지 구분용 (관리자 통계 '페이지별')
+    const DOWNLOAD_SOURCES = {
+        '/christmas/': '크리스마스 페이지',
+        '/program-detail/': '프로그램 상세'
+    };
+
+    // 동적으로 생성되는 버튼(프로그램 상세)도 잡히도록 위임 방식으로 처리
+    document.addEventListener('click', async (e) => {
+        const link = e.target.closest('[data-download-id]');
+        if (!link || !window.fb || !window.fb.isInitialized()) return;
+        const path = window.location.pathname.replace(/\/?$/, '/');
+        const visitor = {
+            region: await getVisitorRegion(),
+            device: getDeviceType(),
+            source: DOWNLOAD_SOURCES[path] ? path : '기타'
+        };
+        window.fb.trackDownload(link.dataset.downloadId, link.dataset.downloadLabel || link.dataset.downloadId, visitor);
+    });
+
+    function getDeviceType() {
+        const ua = navigator.userAgent;
+        // iPadOS 13+ 는 데스크톱 Safari UA 를 쓰므로 터치 지원 여부로 구분
+        if (/iPad|Tablet/i.test(ua) || (/Android/i.test(ua) && !/Mobile/i.test(ua))
+            || (/Macintosh/i.test(ua) && navigator.maxTouchPoints > 1)) return '태블릿';
+        if (/Mobi|iPhone|iPod|Android/i.test(ua)) return '모바일';
+        return 'PC';
+    }
+
+    // IP 기반 대략적인 지역('경기 성남시', '서울' 등). IP 자체는 저장하지 않는다.
+    // 모바일 데이터망은 통신사 서버 위치(주로 서울/경기)로 잡힐 수 있다.
+    async function getVisitorRegion() {
+        const cacheKey = 'visitor-region';
+        try {
+            const cached = sessionStorage.getItem(cacheKey);
+            if (cached) return cached;
+        } catch (e) { }
+
+        const fetchJson = async (url) => {
+            const ctrl = new AbortController();
+            const timer = setTimeout(() => ctrl.abort(), 2500);
+            try {
+                const res = await fetch(url, { signal: ctrl.signal });
+                if (!res.ok) throw new Error(res.status);
+                return await res.json();
+            } finally {
+                clearTimeout(timer);
+            }
+        };
+
+        let geo = null;
+        try {
+            const d = await fetchJson('https://ipapi.co/json/');
+            if (d.error) throw new Error(d.reason);
+            geo = { country: d.country_code, regionCode: d.region_code, region: d.region, city: d.city };
+        } catch (e) {
+            try {
+                const d = await fetchJson('https://ipwho.is/');
+                if (d.success === false) throw new Error(d.message);
+                geo = { country: d.country_code, regionCode: d.region_code, region: d.region, city: d.city };
+            } catch (e2) { }
+        }
+
+        const region = formatKoreanRegion(geo);
+        try { sessionStorage.setItem(cacheKey, region); } catch (e) { }
+        return region;
+    }
+
+    function formatKoreanRegion(geo) {
+        if (!geo || !geo.country) return '알 수 없음';
+        if (geo.country !== 'KR') return `해외(${geo.country})`;
+
+        // ISO 3166-2:KR 코드 → 시·도 (강원 51, 전북 52 는 특별자치도 전환 후 코드)
+        const PROVINCES = {
+            '11': '서울', '26': '부산', '27': '대구', '28': '인천', '29': '광주', '30': '대전', '31': '울산', '50': '세종',
+            '41': '경기', '42': '강원', '51': '강원', '43': '충북', '44': '충남', '45': '전북', '52': '전북',
+            '46': '전남', '47': '경북', '48': '경남', '49': '제주'
+        };
+        const PROVINCE_NAMES = {
+            seoul: '서울', busan: '부산', daegu: '대구', incheon: '인천', gwangju: '광주', daejeon: '대전', ulsan: '울산',
+            sejong: '세종', gyeonggi: '경기', gangwon: '강원', chungcheongbuk: '충북', northchungcheong: '충북',
+            chungcheongnam: '충남', southchungcheong: '충남', jeollabuk: '전북', northjeolla: '전북', jeollanam: '전남',
+            southjeolla: '전남', gyeongsangbuk: '경북', northgyeongsang: '경북', gyeongsangnam: '경남',
+            southgyeongsang: '경남', jeju: '제주'
+        };
+        // 'Seongnam-si' → 'seongnam', 'Gyeonggi-do' → 'gyeonggi' (하이픈/공백 뒤 행정단위만 제거해 'Daegu' 등은 보존)
+        const norm = (s) => String(s || '').toLowerCase().trim()
+            .replace(/[\s-]+(special self-governing (city|province)|special city|metropolitan city|province|city|do|si|gun|gu)$/, '')
+            .replace(/['’`\s-]/g, '');
+
+        const province = PROVINCES[String(geo.regionCode || '')] || PROVINCE_NAMES[norm(geo.region)];
+        if (!province) return '국내(지역 불명)';
+        // 특별·광역시와 세종은 시·도만 표시
+        if (['서울', '부산', '대구', '인천', '광주', '대전', '울산', '세종'].includes(province)) return province;
+
+        const CITIES = {
+            // 경기
+            suwon: '수원시', seongnam: '성남시', goyang: '고양시', yongin: '용인시', bucheon: '부천시', ansan: '안산시',
+            anyang: '안양시', namyangju: '남양주시', hwaseong: '화성시', pyeongtaek: '평택시', uijeongbu: '의정부시',
+            siheung: '시흥시', paju: '파주시', gimpo: '김포시', gwangmyeong: '광명시', gwangju: '광주시', gunpo: '군포시',
+            hanam: '하남시', osan: '오산시', icheon: '이천시', anseong: '안성시', uiwang: '의왕시', yangju: '양주시',
+            guri: '구리시', pocheon: '포천시', yeoju: '여주시', dongducheon: '동두천시', gwacheon: '과천시',
+            gapyeong: '가평군', yangpyeong: '양평군', yeoncheon: '연천군',
+            // 강원
+            chuncheon: '춘천시', wonju: '원주시', gangneung: '강릉시', donghae: '동해시', taebaek: '태백시', sokcho: '속초시',
+            samcheok: '삼척시',
+            // 충북
+            cheongju: '청주시', chungju: '충주시', jecheon: '제천시', jincheon: '진천군', eumseong: '음성군',
+            // 충남
+            cheonan: '천안시', gongju: '공주시', boryeong: '보령시', asan: '아산시', seosan: '서산시', nonsan: '논산시',
+            gyeryong: '계룡시', dangjin: '당진시', hongseong: '홍성군',
+            // 전북
+            jeonju: '전주시', gunsan: '군산시', iksan: '익산시', jeongeup: '정읍시', namwon: '남원시', gimje: '김제시',
+            wanju: '완주군',
+            // 전남
+            mokpo: '목포시', yeosu: '여수시', suncheon: '순천시', naju: '나주시', gwangyang: '광양시', muan: '무안군',
+            // 경북
+            pohang: '포항시', gyeongju: '경주시', gimcheon: '김천시', andong: '안동시', gumi: '구미시', yeongju: '영주시',
+            yeongcheon: '영천시', sangju: '상주시', mungyeong: '문경시', gyeongsan: '경산시', chilgok: '칠곡군',
+            // 경남
+            changwon: '창원시', jinju: '진주시', tongyeong: '통영시', sacheon: '사천시', gimhae: '김해시', miryang: '밀양시',
+            geoje: '거제시', yangsan: '양산시',
+            // 제주
+            jeju: '제주시', seogwipo: '서귀포시'
+        };
+        const cityKey = norm(geo.city);
+        if (!cityKey) return province;
+        if (CITIES[cityKey]) return `${province} ${CITIES[cityKey]}`;
+        if (cityKey === norm(geo.region)) return province;
+        return `${province} ${geo.city}`.slice(0, 39);
     }
 
 
@@ -953,8 +1173,13 @@ document.addEventListener('DOMContentLoaded', async () => {
             const params = new URLSearchParams(window.location.search);
             const programParam = params.get('program');
             if (programParam) {
-                const opt = Array.from(inqProgramSelectEl.options).find(o => o.value === programParam);
-                if (opt) inqProgramSelectEl.value = programParam;
+                // 시즌 페이지 등에서 넘어올 때 띄어쓰기 차이가 있어도 매칭되도록 공백을 무시하고 비교한다
+                const norm = (s) => s.replace(/\s+/g, '');
+                const target = norm(programParam);
+                const options = Array.from(inqProgramSelectEl.options).filter(o => o.value);
+                const opt = options.find(o => norm(o.value) === target)
+                    || options.find(o => norm(o.value).includes(target) || target.includes(norm(o.value)));
+                if (opt) inqProgramSelectEl.value = opt.value;
             }
         });
     }
@@ -1264,6 +1489,147 @@ document.addEventListener('DOMContentLoaded', async () => {
                     successCard.classList.add('active');
                 }, 100);
             }
+        });
+    }
+
+    // PDF 다운로드 통계 (Admin Dashboard)
+    // 아직 한 번도 클릭되지 않은 파일도 0으로 보이도록 DOWNLOAD_FILES 목록을 기준으로 표시한다.
+    const TRACKED_DOWNLOADS = DOWNLOAD_FILES.map(({ id, label }) => ({ id, label }));
+    const sourceLabel = (src) => DOWNLOAD_SOURCES[src] || src || '-';
+
+    const btnTabStats = document.getElementById('btn-tab-stats');
+    if (btnTabStats) {
+        btnTabStats.addEventListener('click', renderAdminDownloads);
+        document.getElementById('admin-downloads-refresh')?.addEventListener('click', renderAdminDownloads);
+
+        // 통계 탭 내부 하위 메뉴 전환
+        document.querySelectorAll('.admin-stats-subtab').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.admin-stats-subtab').forEach(b => b.classList.toggle('active', b === btn));
+                document.querySelectorAll('.admin-stats-panel').forEach(p => {
+                    p.classList.toggle('active', p.id === btn.dataset.statsPanel);
+                });
+                if (btn.dataset.statsPanel === 'admin-stats-downloads') renderAdminDownloads();
+            });
+        });
+    }
+
+    async function renderAdminDownloads() {
+        const container = document.getElementById('admin-downloads-list');
+        if (!container) return;
+        if (!window.fb || !window.fb.isInitialized()) {
+            container.innerHTML = `<div class="admin-dl-empty">Firebase가 연결되지 않아 통계를 불러올 수 없습니다.</div>`;
+            return;
+        }
+
+        container.innerHTML = `<div class="admin-dl-empty">불러오는 중...</div>`;
+        let stats, logs;
+        try {
+            [stats, logs] = await Promise.all([window.fb.getDownloadStats(), window.fb.getDownloadLogs(30)]);
+        } catch (e) {
+            const hint = e.code === 'permission-denied'
+                ? 'Firestore 보안 규칙에 downloadStats 권한이 없습니다. firestore.rules 내용을 Firebase 콘솔에 게시해 주세요.'
+                : e.message;
+            container.innerHTML = `<div class="admin-dl-empty">통계를 불러오지 못했습니다. (${escHtml(hint)})</div>`;
+            return;
+        }
+
+        const byId = Object.fromEntries((stats || []).map(s => [s.id, s]));
+        const items = TRACKED_DOWNLOADS.map(t => ({ ...t, ...(byId[t.id] || {}) }));
+        // 목록에 없는 문서(예전 링크 등)도 함께 보여준다
+        (stats || []).forEach(s => {
+            if (!TRACKED_DOWNLOADS.some(t => t.id === s.id)) items.push(s);
+        });
+
+        const kstDate = (d) => d.toLocaleDateString('sv-SE', { timeZone: 'Asia/Seoul' });
+        const recentDays = [];
+        for (let i = 13; i >= 0; i--) {
+            recentDays.push(kstDate(new Date(Date.now() - i * 86400000)));
+        }
+        const today = recentDays[recentDays.length - 1];
+
+        container.innerHTML = items.map(item => {
+            const daily = item.daily || {};
+            const total = item.count || 0;
+            const todayCount = daily[today] || 0;
+            const weekCount = recentDays.slice(-7).reduce((sum, d) => sum + (daily[d] || 0), 0);
+            const maxDay = Math.max(1, ...recentDays.map(d => daily[d] || 0));
+            const last = item.lastClickedAt && item.lastClickedAt.toDate
+                ? item.lastClickedAt.toDate().toLocaleString('ko-KR', { timeZone: 'Asia/Seoul' })
+                : '-';
+            const bars = recentDays.map(d => {
+                const c = daily[d] || 0;
+                return `<div class="admin-dl-bar" title="${d}: ${c}회">
+                    <span style="height: ${Math.round((c / maxDay) * 100)}%"></span>
+                    <em>${d.slice(5).replace('-', '/')}</em>
+                </div>`;
+            }).join('');
+
+            // 지역·기기별 클릭 수 (많은 순)
+            const breakdown = (map, limit) => {
+                const rows = Object.entries(map || {}).sort((a, b) => b[1] - a[1]).slice(0, limit);
+                if (rows.length === 0) return `<p class="admin-dl-none">아직 데이터가 없습니다.</p>`;
+                const max = rows[0][1];
+                return rows.map(([name, c]) => `<div class="admin-dl-row">
+                    <span class="admin-dl-row-name">${escHtml(name)}</span>
+                    <span class="admin-dl-row-bar"><i style="width: ${Math.round((c / max) * 100)}%"></i></span>
+                    <span class="admin-dl-row-num">${c.toLocaleString()}</span>
+                </div>`).join('');
+            };
+
+            return `<div class="admin-dl-card">
+                <div class="admin-dl-head">
+                    <div>
+                        <h4>${escHtml(item.label || item.id)}</h4>
+                        <p>마지막 클릭: ${escHtml(last)}</p>
+                    </div>
+                    ${total > 0 ? `<button type="button" class="admin-dl-reset" data-id="${escHtml(item.id)}">초기화</button>` : ''}
+                </div>
+                <div class="admin-dl-nums">
+                    <div><span>전체</span><strong>${total.toLocaleString()}</strong></div>
+                    <div><span>최근 7일</span><strong>${weekCount.toLocaleString()}</strong></div>
+                    <div><span>오늘</span><strong>${todayCount.toLocaleString()}</strong></div>
+                </div>
+                <div class="admin-dl-chart" aria-label="최근 14일 일자별 클릭 수">${bars}</div>
+                <div class="admin-dl-breakdown">
+                    <div><h5>지역별 (상위 10)</h5>${breakdown(item.regions, 10)}</div>
+                    <div><h5>기기별</h5>${breakdown(item.devices, 5)}</div>
+                    <div><h5>클릭한 페이지별</h5>${breakdown(Object.fromEntries(Object.entries(item.sources || {}).map(([k, v]) => [sourceLabel(k), v])), 5)}</div>
+                </div>
+            </div>`;
+        }).join('');
+
+        // 최근 클릭 목록
+        const labelOf = (id) => (items.find(i => i.id === id) || {}).label || id;
+        const logRows = (logs || []).map(log => {
+            const at = log.createdAt && log.createdAt.toDate
+                ? log.createdAt.toDate().toLocaleString('ko-KR', { timeZone: 'Asia/Seoul', month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' })
+                : '-';
+            return `<tr><td>${escHtml(at)}</td><td>${escHtml(labelOf(log.fileId))}</td><td>${escHtml(sourceLabel(log.source))}</td><td>${escHtml(log.region)}</td><td>${escHtml(log.device)}</td></tr>`;
+        }).join('');
+        container.insertAdjacentHTML('beforeend', `<div class="admin-dl-card">
+            <div class="admin-dl-head"><div>
+                <h4>최근 클릭 30건</h4>
+                <p>지역은 IP 기반 추정치입니다. 모바일 데이터망은 통신사 서버 위치(주로 서울·경기)로 잡힐 수 있습니다.</p>
+            </div></div>
+            ${logRows
+                ? `<div class="admin-dl-table-wrap"><table class="admin-dl-table">
+                    <thead><tr><th>일시</th><th>파일</th><th>페이지</th><th>지역</th><th>기기</th></tr></thead>
+                    <tbody>${logRows}</tbody></table></div>`
+                : `<p class="admin-dl-none">아직 클릭 기록이 없습니다.</p>`}
+        </div>`);
+
+        container.querySelectorAll('.admin-dl-reset').forEach(btn => {
+            btn.addEventListener('click', async () => {
+                if (!confirm('이 파일의 다운로드 클릭 수와 클릭 기록을 모두 삭제할까요? 되돌릴 수 없습니다.')) return;
+                try {
+                    await window.fb.resetDownloadStats(btn.dataset.id);
+                    showToast('초기화되었습니다.');
+                    renderAdminDownloads();
+                } catch (e) {
+                    showToast('초기화 실패: ' + e.message);
+                }
+            });
         });
     }
 
@@ -1735,67 +2101,206 @@ document.addEventListener('DOMContentLoaded', async () => {
             renderDetailHistory(prog.title);
         }
 
+        // 에디터에 마크다운을 붙여넣으면 줄마다 문단 블록으로 저장되므로('## 제목', '- 항목' 등이 글자 그대로 남음)
+        // 연속된 문단 블록의 줄들을 모아 마크다운으로 해석한다. 제목·표·이미지 블록은 그대로 출력.
         function renderEditorBlocks(blocks) {
-            return blocks.map(block => {
-                if (block.type === 'header') {
-                    const lvl = block.data.level || 2;
-                    return `<h${lvl}>${block.data.text}</h${lvl}>`;
-                }
+            const out = [];
+            let mdLines = [];
+            const flushMarkdown = () => {
+                if (mdLines.length) out.push(renderMarkdownLines(mdLines));
+                mdLines = [];
+            };
+
+            blocks.forEach(block => {
                 if (block.type === 'paragraph') {
-                    return `<p>${block.data.text}</p>`;
+                    mdLines.push(...String(block.data.text || '').split(/<br\s*\/?>/i));
+                    return;
                 }
-                if (block.type === 'table') {
-                    const rows = block.data.content || [];
-                    const hasHead = block.data.withHeadings;
-                    let html = '<table>';
-                    rows.forEach((row, ri) => {
-                        const tag = (hasHead && ri === 0) ? 'th' : 'td';
-                        html += '<tr>' + row.map(cell => `<${tag}>${cell}</${tag}>`).join('') + '</tr>';
-                    });
-                    html += '</table>';
-                    return html;
+                flushMarkdown();
+                out.push(renderStructuredBlock(block));
+            });
+            flushMarkdown();
+            return out.join('');
+        }
+
+        // 굵게/기울임/코드/링크 (Editor.js 가 저장한 <b>, <i>, <a> 등 HTML 은 그대로 둔다)
+        function renderInlineMarkdown(text) {
+            return text
+                .replace(/`([^`]+)`/g, '<code>$1</code>')
+                .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+                .replace(/__(.+?)__/g, '<strong>$1</strong>')
+                .replace(/(^|[^*\w])\*(?!\s)([^*]+?)\*(?!\*)/g, '$1<em>$2</em>')
+                .replace(/\[([^\]]+)\]\(((?:https?:\/\/|\/)[^\s)]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>');
+        }
+
+        function renderMarkdownLines(lines) {
+            const html = [];
+            let list = null; // { tag: 'ul' | 'ol', items: [] }
+            let table = null; // rows (string[][])
+
+            const flushList = () => {
+                if (list) html.push(`<${list.tag}>${list.items.map(i => `<li>${i}</li>`).join('')}</${list.tag}>`);
+                list = null;
+            };
+            const flushTable = () => {
+                if (table) {
+                    const [head, ...body] = table;
+                    html.push('<table><tr>' + head.map(c => `<th>${renderInlineMarkdown(c)}</th>`).join('') + '</tr>'
+                        + body.map(r => '<tr>' + r.map(c => `<td>${renderInlineMarkdown(c)}</td>`).join('') + '</tr>').join('')
+                        + '</table>');
                 }
-                if (block.type === 'image') {
-                    return `<img src="${block.data.file?.url || block.data.url || ''}" alt="${block.data.caption || ''}">`;
+                table = null;
+            };
+            const flushAll = () => { flushList(); flushTable(); };
+
+            lines.forEach(raw => {
+                const line = raw.replace(/&nbsp;/g, ' ').trim();
+                if (!line) return;
+                let m;
+
+                // 표: | a | b |  (구분선 |---|---| 은 건너뜀)
+                if (/^\|.*\|$/.test(line)) {
+                    flushList();
+                    if (/^\|[\s:|-]+\|$/.test(line)) return;
+                    table = table || [];
+                    table.push(line.slice(1, -1).split('|').map(c => c.trim()));
+                    return;
                 }
-                return '';
-            }).join('');
+                flushTable();
+
+                if ((m = line.match(/^[-*•]\s+(.*)$/))) {
+                    if (!list || list.tag !== 'ul') { flushList(); list = { tag: 'ul', items: [] }; }
+                    list.items.push(renderInlineMarkdown(m[1]));
+                    return;
+                }
+                if ((m = line.match(/^\d+[.)]\s+(.*)$/))) {
+                    if (!list || list.tag !== 'ol') { flushList(); list = { tag: 'ol', items: [] }; }
+                    list.items.push(renderInlineMarkdown(m[1]));
+                    return;
+                }
+                flushList();
+
+                if ((m = line.match(/^(#{1,4})\s+(.*)$/))) {
+                    // 페이지 제목이 h1 이므로 # 과 ## 모두 h2 로 표시
+                    const lvl = Math.max(2, m[1].length);
+                    html.push(`<h${lvl}>${renderInlineMarkdown(m[2])}</h${lvl}>`);
+                } else if (/^(-{3,}|\*{3,}|_{3,})$/.test(line)) {
+                    html.push('<hr>');
+                } else if ((m = line.match(/^(?:&gt;|>)\s?(.*)$/))) {
+                    html.push(`<blockquote>${renderInlineMarkdown(m[1])}</blockquote>`);
+                } else {
+                    html.push(`<p>${renderInlineMarkdown(line)}</p>`);
+                }
+            });
+            flushAll();
+            return html.join('');
+        }
+
+        function renderStructuredBlock(block) {
+            if (block.type === 'header') {
+                const lvl = block.data.level || 2;
+                return `<h${lvl}>${renderInlineMarkdown(block.data.text || '')}</h${lvl}>`;
+            }
+            if (block.type === 'table') {
+                const rows = block.data.content || [];
+                const hasHead = block.data.withHeadings;
+                let html = '<table>';
+                rows.forEach((row, ri) => {
+                    const tag = (hasHead && ri === 0) ? 'th' : 'td';
+                    html += '<tr>' + row.map(cell => `<${tag}>${cell}</${tag}>`).join('') + '</tr>';
+                });
+                html += '</table>';
+                return html;
+            }
+            if (block.type === 'image') {
+                return `<img src="${block.data.file?.url || block.data.url || ''}" alt="${block.data.caption || ''}">`;
+            }
+            return '';
         }
 
         async function renderDetailHistory(programTitle) {
             const grid = document.getElementById('detail-history-grid');
             if (!grid) return;
 
-            let posts = [];
+            // 히스토리의 program 값은 등록 당시 제목이라 현재 제목과 형식이 다를 수 있다
+            // (예: '<무지개 빛 마술> LED매직쇼' ↔ 'LED매직쇼 <무지개 빛 마술>').
+            // 부제(<…>, (…))와 공백을 뺀 공연 이름으로 비교한다.
+            // program+date 복합 색인 없이 동작하도록 전체를 날짜순으로 받아 여기서 거른다.
+            const showName = (t) => String(t || '').replace(/<[^>]*>|\([^)]*\)/g, '').replace(/\s+/g, '');
+            const target = showName(programTitle);
+            const isMatch = (p) => !p.hidden && showName(p.program) === target;
+            const HISTORY_LIMIT = 12;
+
+            let posts = null;
             if (window.fb && window.fb.isInitialized()) {
-                try { posts = await window.fb.getHistoryByProgram(programTitle, 6); } catch (e) { }
+                try {
+                    const all = await window.fb.getHistory();
+                    if (all) posts = all.filter(isMatch).slice(0, HISTORY_LIMIT);
+                } catch (e) { }
             }
-            if (!posts || posts.length === 0) {
+            if (posts === null) {
                 const stored = localStorage.getItem('insaeng_history');
                 const all = stored ? JSON.parse(stored) : defaultHistory;
-                posts = all.filter(p => !p.hidden && p.program === programTitle).slice(0, 6);
+                posts = all.filter(isMatch)
+                    .sort((a, b) => String(b.date).localeCompare(String(a.date)))
+                    .slice(0, HISTORY_LIMIT);
             }
 
             grid.innerHTML = '';
             if (posts.length === 0) {
-                grid.innerHTML = `<div class="detail-empty-state" style="grid-column:span 3;">이 공연의 등록된 공연 기록이 아직 없습니다.</div>`;
+                grid.innerHTML = `<div class="detail-empty-state">이 공연의 등록된 공연 기록이 아직 없습니다.</div>`;
                 return;
             }
             posts.forEach(post => {
                 const card = document.createElement('div');
                 card.className = 'detail-history-card';
-                const thumb = post.image
-                    ? `<img src="${post.image}" alt="" onerror="this.outerHTML='<div class=\\"detail-history-thumb-placeholder\\">✦</div>'">`
-                    : `<div class="detail-history-thumb-placeholder">✦</div>`;
                 card.innerHTML = `
-                    <div class="detail-history-thumb">${thumb}</div>
+                    <div class="detail-history-thumb"><div class="detail-history-thumb-placeholder">✦</div></div>
                     <div class="detail-history-body">
-                        <div class="detail-history-date">${post.date}</div>
-                        <div class="detail-history-title">${post.title}</div>
-                        <div class="detail-history-loc">📍 ${post.location}</div>
+                        <div class="detail-history-date">${escHtml(post.date)}</div>
+                        <div class="detail-history-title">${escHtml(post.title)}</div>
+                        <div class="detail-history-loc">📍 ${escHtml(post.location)}</div>
                     </div>`;
+                // 이미지가 있으면 placeholder 를 교체하고, 로드 실패 시 placeholder 를 유지
+                if (post.image) {
+                    const img = document.createElement('img');
+                    img.alt = '';
+                    img.addEventListener('load', () => {
+                        card.querySelector('.detail-history-thumb').replaceChildren(img);
+                    }, { once: true });
+                    img.src = post.image;
+                }
                 grid.appendChild(card);
             });
+            initHistorySlider(grid);
+        }
+
+        // 최근 실적 한 줄 슬라이드: 카드가 넘칠 때만 화살표를 보여주고, 끝에 닿으면 해당 방향 화살표를 비활성화
+        function initHistorySlider(track) {
+            const nav = document.getElementById('detail-history-nav');
+            const prev = document.getElementById('detail-history-prev');
+            const next = document.getElementById('detail-history-next');
+            if (!nav || !prev || !next) return;
+
+            const update = () => {
+                const max = track.scrollWidth - track.clientWidth;
+                nav.hidden = max <= 1;
+                prev.disabled = track.scrollLeft <= 1;
+                next.disabled = track.scrollLeft >= max - 1;
+            };
+            const step = () => {
+                const card = track.querySelector('.detail-history-card');
+                const gap = parseFloat(getComputedStyle(track).columnGap) || 0;
+                return card ? card.offsetWidth + gap : track.clientWidth;
+            };
+
+            prev.onclick = () => track.scrollBy({ left: -step(), behavior: 'smooth' });
+            next.onclick = () => track.scrollBy({ left: step(), behavior: 'smooth' });
+            track.addEventListener('scroll', update, { passive: true });
+            window.addEventListener('resize', update);
+            // 이미지 로딩 후 폭이 바뀔 수 있어 한 번 더 계산
+            requestAnimationFrame(update);
+            track.querySelectorAll('img').forEach(img => img.addEventListener('load', update, { once: true }));
         }
 
         // Lightbox

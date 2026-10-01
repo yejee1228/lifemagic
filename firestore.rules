@@ -28,5 +28,38 @@ service cloud.firestore {
       allow read: if true;
       allow write, update, delete: if isAdmin();
     }
+
+    // 4. PDF 다운로드 클릭 수 — 방문자는 1씩 증가만 가능, 조회·초기화는 관리자만
+    match /downloadStats/{fileId} {
+      allow read, delete: if isAdmin();
+      allow create: if request.resource.data.keys().hasOnly(['label', 'count', 'daily', 'regions', 'devices', 'sources', 'lastClickedAt'])
+                    && request.resource.data.count == 1
+                    && request.resource.data.label is string
+                    && request.resource.data.label.size() < 100
+                    && request.resource.data.daily.size() == 1
+                    && request.resource.data.get('regions', {}).size() <= 1
+                    && request.resource.data.get('devices', {}).size() <= 1
+                    && request.resource.data.get('sources', {}).size() <= 1;
+      allow update: if request.resource.data.diff(resource.data).affectedKeys().hasOnly(['count', 'daily', 'regions', 'devices', 'sources', 'lastClickedAt'])
+                    && request.resource.data.count == resource.data.count + 1
+                    && request.resource.data.daily.size() <= resource.data.daily.size() + 1
+                    && request.resource.data.get('regions', {}).size() <= resource.data.get('regions', {}).size() + 1
+                    && request.resource.data.get('devices', {}).size() <= resource.data.get('devices', {}).size() + 1
+                    && request.resource.data.get('sources', {}).size() <= resource.data.get('sources', {}).size() + 1;
+    }
+
+    // 5. PDF 다운로드 클릭 로그 — 방문자는 생성만 가능, 조회·삭제는 관리자만 (IP는 저장하지 않음)
+    match /downloadLogs/{logId} {
+      allow read, delete: if isAdmin();
+      allow create: if request.resource.data.keys().hasOnly(['fileId', 'region', 'device', 'source', 'createdAt'])
+                    && request.resource.data.fileId is string
+                    && request.resource.data.fileId.size() < 60
+                    && request.resource.data.region is string
+                    && request.resource.data.region.size() < 40
+                    && request.resource.data.device in ['PC', '모바일', '태블릿']
+                    && request.resource.data.get('source', '') is string
+                    && request.resource.data.get('source', '').size() < 40
+                    && request.resource.data.createdAt == request.time;
+    }
   }
 }
