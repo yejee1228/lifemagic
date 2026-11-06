@@ -88,6 +88,27 @@ window._hImg = function(img) {
     parent.appendChild(svg);
 };
 
+// 프로그램 카테고리 표시 순서. '크리스마스'(시즌 공연)는 평소엔 어린이 바로 아래,
+// 매년 10~12월에는 어린이보다 위(맨 앞)로 올린다.
+function isChristmasSeason(date = new Date()) {
+    return date.getMonth() >= 9; // 0-based: 9=10월, 10=11월, 11=12월
+}
+
+function getProgramCategoryOrder() {
+    return isChristmasSeason()
+        ? ['크리스마스', '어린이', '극장', '행사', '기업', '부가']
+        : ['어린이', '크리스마스', '극장', '행사', '기업', '부가'];
+}
+
+const PROGRAM_CATEGORY_LABELS = {
+    '크리스마스': '크리스마스 시즌 공연',
+    '어린이': '어린이 프로그램',
+    '극장': '극장 프로그램',
+    '행사': '행사 / 버스킹 프로그램',
+    '기업': '기업 / 기관 프로그램',
+    '부가': '부가 프로그램'
+};
+
 document.addEventListener('DOMContentLoaded', async () => {
 
     // 이미지 압축 헬퍼 함수 (Canvas 기반)
@@ -473,6 +494,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     // 관리자 통계에 표시할 다운로드 파일 목록. 페이지에 <a data-download-id="..."> 링크를 다시 만들면
     // 클릭이 자동으로 집계되며, 여기에 id/label 을 추가하면 클릭 전에도 통계에 0으로 표시된다.
     const DOWNLOAD_FILES = [
+        { id: 'pdf-christmas-brochure', label: '크리스마스 프로그램 소개서' },
         { id: 'pdf-white-magic-christmas', label: '제리아저씨의 화이트 매직 크리스마스 소개서' },
         { id: 'pdf-led-magic-show', label: 'LED 매직쇼 소개서' }
     ];
@@ -494,7 +516,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             source: DOWNLOAD_SOURCES[path] ? path : '기타'
         };
         window.fb.trackDownload(link.dataset.downloadId, link.dataset.downloadLabel || link.dataset.downloadId, visitor);
-        { id: 'pdf-christmas-brochure', label: '크리스마스 프로그램 소개서' },
     });
 
     function getDeviceType() {
@@ -1138,8 +1159,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     async function populateProgramSelect(select, defaultLabel) {
         if (!select) return;
         const programs = await getProgramsData(null);
-        const catOrder = ['어린이', '극장', '행사', '기업', '부가'];
-        const catLabels = { '어린이': '어린이 프로그램', '극장': '극장 프로그램', '행사': '행사 / 버스킹 프로그램', '기업': '기업 / 기관 프로그램', '부가': '부가 프로그램' };
+        const catOrder = getProgramCategoryOrder();
+        const catLabels = PROGRAM_CATEGORY_LABELS;
         const grouped = {};
         programs.forEach(p => {
             if (!grouped[p.category]) grouped[p.category] = [];
@@ -1939,10 +1960,23 @@ document.addEventListener('DOMContentLoaded', async () => {
         const grids = document.querySelectorAll('.program-grid[data-category]');
         if (grids.length === 0) return;
 
+        // 크리스마스 시즌(10~12월)에는 크리스마스 섹션을 어린이 섹션 위로 올린다
+        const xmasSection = document.getElementById('grid-크리스마스')?.closest('.program-category-section');
+        const kidsSection = document.getElementById('grid-어린이')?.closest('.program-category-section');
+        if (xmasSection && kidsSection && isChristmasSeason()) {
+            kidsSection.parentNode.insertBefore(xmasSection, kidsSection);
+        }
+
         for (const grid of grids) {
             const cat = grid.getAttribute('data-category');
             const programs = await getProgramsData(cat);
             grid.innerHTML = '';
+            // 시즌 공연(크리스마스)은 등록된 공연이 없으면 섹션 자체를 숨긴다
+            const section = grid.closest('.program-category-section');
+            if (cat === '크리스마스' && section) {
+                section.style.display = programs.length === 0 ? 'none' : '';
+                if (programs.length === 0) continue;
+            }
             if (programs.length === 0) {
                 grid.innerHTML = `<div class="glass-panel" style="padding:30px; text-align:center; color:var(--color-text-muted); grid-column:span 3;">등록된 프로그램이 없습니다.</div>`;
                 continue;
@@ -2029,7 +2063,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 const allProgs = await getProgramsData(null);
                 allProgs.sort((a, b) => (a.order || 99) - (b.order || 99));
 
-                const catOrder = ['어린이', '극장', '행사', '기업', '부가'];
+                const catOrder = getProgramCategoryOrder();
                 const grouped = {};
                 allProgs.forEach(p => {
                     if (!grouped[p.category]) grouped[p.category] = [];
@@ -2526,7 +2560,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             }
 
             // program.html 과 동일한 순서: 카테고리 순 → order 오름차순
-            const PROG_CAT_ORDER = ['어린이', '극장', '행사', '기업', '부가'];
+            const PROG_CAT_ORDER = getProgramCategoryOrder();
             programs.sort((a, b) => {
                 const ci = PROG_CAT_ORDER.indexOf(a.category);
                 const cj = PROG_CAT_ORDER.indexOf(b.category);
