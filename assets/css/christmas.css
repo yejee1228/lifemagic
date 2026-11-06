@@ -168,6 +168,26 @@
     flex-wrap: wrap;
 }
 
+/* 히어로 버튼 아래 소개서 다운로드 (위 두 버튼보다 한 단계 낮은 보조 버튼) */
+.xmas-hero-pdf {
+    display: inline-block;
+    margin-top: 16px;
+    padding: 12px 26px;
+    border-radius: 30px;
+    border: 1px dashed rgba(212, 175, 55, 0.6);
+    background: rgba(7, 6, 10, 0.45);
+    color: var(--color-gold-hover);
+    font-size: 1.02rem;
+    font-weight: 600;
+    transition: var(--transition-smooth);
+}
+
+.xmas-hero-pdf:hover {
+    border-style: solid;
+    border-color: var(--color-primary-gold);
+    background: rgba(212, 175, 55, 0.12);
+}
+
 /* ---------- 공통 섹션 ---------- */
 .xmas-section {
     max-width: 1180px;
@@ -339,7 +359,8 @@
 }
 
 /* ---------- 4. 추천 공연 ---------- */
-/* PC: 두 공연을 같은 높이의 카드로 나란히 (사진 위, 설명 아래) */
+/* PC: 4개 공연을 2×2 (사진 위, 설명 아래). 같은 줄의 두 카드만 높이를 맞추고,
+   줄마다 높이는 내용에 맞춰 아래 줄 카드에 빈 공간이 생기지 않게 한다 */
 .xmas-show-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -399,17 +420,27 @@
     display: block;
 }
 
+/* 이미지 위 배지: 기본은 차분한 다크·골드, NEW(신작)만 레드 강조 */
 .xmas-show-rank {
     position: absolute;
     top: 16px;
     left: 16px;
     padding: 6px 14px;
     border-radius: 20px;
-    background: var(--xmas-red);
-    color: #fff;
+    background: rgba(7, 6, 10, 0.72);
+    border: 1px solid rgba(212, 175, 55, 0.55);
+    color: var(--color-gold-hover);
     font-size: 0.9rem;
     font-weight: 800;
     letter-spacing: 1px;
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+}
+
+.xmas-show-rank-new {
+    background: var(--xmas-red);
+    border-color: var(--xmas-red);
+    color: #fff;
 }
 
 .xmas-show-tag {
@@ -515,11 +546,108 @@
     gap: 12px;
 }
 
-/* ---------- 5. 크리스마스 버전 공연 ---------- */
-.xmas-mini-grid {
+/* ---------- 4-B. 버전별 무대 구성 ---------- */
+/* 세 버전은 동일한 톤으로, 특정 버전을 강조하지 않는다 */
+.xmas-stage-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 22px;
+    align-items: stretch;
+}
+
+.xmas-stage {
+    display: flex;
+    flex-direction: column;
+    padding: 26px 24px 24px;
+    border-radius: 20px;
+    background: var(--color-bg-card);
+    border: 1px solid rgba(212, 175, 55, 0.3);
+    box-shadow: var(--shadow-premium);
+}
+
+.xmas-stage-head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px 10px;
+    margin-bottom: 6px;
+}
+
+.xmas-stage-en {
+    font-size: 0.95rem;
+    font-weight: 800;
+    letter-spacing: 2px;
+    color: var(--color-primary-gold);
+    padding-top: 4px;
+}
+
+.xmas-stage-space {
+    flex-shrink: 0;
+    padding: 5px 12px;
+    border-radius: 6px;
+    background: rgba(31, 138, 91, 0.2);
+    border: 1px solid rgba(31, 138, 91, 0.6);
+    color: #7fe0b0;
+    font-size: 0.9rem;
+    font-weight: 600;
+    text-align: right;
+    word-break: keep-all;
+}
+
+.xmas-stage-name {
+    font-size: 1.6rem;
+    font-weight: 800;
+    margin-bottom: 14px;
+    word-break: keep-all;
+}
+
+.xmas-stage-list {
+    margin-bottom: 20px;
+}
+
+.xmas-stage-list li {
+    position: relative;
+    padding: 7px 0 7px 24px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    color: var(--color-text-light);
+    font-size: 1.05rem;
+    line-height: 1.5;
+}
+
+.xmas-stage-list li::before {
+    content: '✦';
+    position: absolute;
+    left: 2px;
+    top: 7px;
+    color: var(--color-primary-gold);
+}
+
+/* 리스트 길이가 달라도 사진을 카드 하단에 같은 비율로 맞춘다 */
+.xmas-stage-media {
+    margin-top: auto;
+    border-radius: 14px;
+    overflow: hidden;
+    aspect-ratio: 4 / 3;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(212, 175, 55, 0.2);
+}
+
+.xmas-stage-media img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+/* ---------- 5. 크리스마스 버전 공연 ---------- */
+/* 카드 2개: 2열로 두고 폭을 줄여 가운데 정렬 */
+.xmas-mini-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 22px;
+    max-width: 860px;
+    margin: 0 auto;
 }
 
 .xmas-mini-card {
@@ -700,12 +828,14 @@
     margin-bottom: 40px;
 }
 
+/* 보조 문구 유무로 높이가 달라도 내용을 세로 가운데에 둬서 아래쪽만 비어 보이지 않게 한다 */
 .xmas-contact-card {
     display: flex;
     flex-direction: column;
     align-items: center;
+    justify-content: center;
     text-align: center;
-    padding: 30px 18px;
+    padding: 24px 18px;
     border-radius: 18px;
     background: var(--color-bg-card);
     border: 1px solid rgba(212, 175, 55, 0.25);
@@ -789,6 +919,48 @@
 .xmas-checklist li b {
     color: var(--color-text-light);
     margin-right: 8px;
+}
+
+/* 크리스마스 프로그램 소개서 다운로드 */
+.xmas-brochure {
+    display: flex;
+    align-items: center;
+    gap: 22px;
+    max-width: 860px;
+    margin: 24px auto 0;
+    padding: 26px 30px;
+    border-radius: 16px;
+    background: rgba(212, 175, 55, 0.08);
+    border: 1px solid rgba(212, 175, 55, 0.45);
+}
+
+.xmas-brochure-icon {
+    font-size: 2.4rem;
+    flex-shrink: 0;
+}
+
+.xmas-brochure-body {
+    flex: 1;
+}
+
+.xmas-brochure-body h3 {
+    font-size: 1.3rem;
+    margin-bottom: 6px;
+    word-break: keep-all;
+}
+
+.xmas-brochure-body p {
+    color: var(--xmas-muted);
+    font-size: 1.05rem;
+    line-height: 1.6;
+    word-break: keep-all;
+}
+
+.xmas-main .xmas-brochure .btn-gold {
+    flex-shrink: 0;
+    padding: 14px 26px;
+    font-size: 1.05rem;
+    white-space: nowrap;
 }
 
 /* ---------- 모바일 하단 고정 문의 바 ---------- */
@@ -893,6 +1065,15 @@
         grid-template-columns: 1fr;
     }
 
+    .xmas-stage-grid {
+        grid-template-columns: 1fr;
+        gap: 18px;
+    }
+
+    .xmas-stage {
+        padding: 22px 18px 18px;
+    }
+
     .xmas-addon-grid {
         grid-template-columns: 1fr;
         gap: 12px;
@@ -921,7 +1102,7 @@
     }
 
     .xmas-contact-card {
-        padding: 22px 12px;
+        padding: 18px 12px;
     }
 
     .xmas-contact-value {
@@ -930,6 +1111,18 @@
 
     .xmas-checklist {
         padding: 22px 18px;
+    }
+
+    .xmas-brochure {
+        flex-direction: column;
+        text-align: center;
+        gap: 12px;
+        padding: 24px 18px;
+    }
+
+    .xmas-main .xmas-brochure .btn-gold {
+        width: 100%;
+        white-space: normal;
     }
 
     .xmas-sticky-cta {

@@ -494,6 +494,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             source: DOWNLOAD_SOURCES[path] ? path : '기타'
         };
         window.fb.trackDownload(link.dataset.downloadId, link.dataset.downloadLabel || link.dataset.downloadId, visitor);
+        { id: 'pdf-christmas-brochure', label: '크리스마스 프로그램 소개서' },
     });
 
     function getDeviceType() {
