@@ -912,10 +912,17 @@ header {
     color: var(--color-text-muted);
 }
 
+/* 공연 프로그램 카드: PC 2열, 모바일 1열 */
 .program-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    grid-template-columns: repeat(2, 1fr);
     gap: 30px;
+}
+
+@media (max-width: 640px) {
+    .program-grid {
+        grid-template-columns: 1fr;
+    }
 }
 
 /* 3D TILT CARD COMPONENT */

@@ -1978,7 +1978,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 if (programs.length === 0) continue;
             }
             if (programs.length === 0) {
-                grid.innerHTML = `<div class="glass-panel" style="padding:30px; text-align:center; color:var(--color-text-muted); grid-column:span 3;">등록된 프로그램이 없습니다.</div>`;
+                grid.innerHTML = `<div class="glass-panel" style="padding:30px; text-align:center; color:var(--color-text-muted); grid-column:1 / -1;">등록된 프로그램이 없습니다.</div>`;
                 continue;
             }
             programs.sort((a, b) => (a.order || 99) - (b.order || 99));
