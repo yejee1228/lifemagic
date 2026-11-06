@@ -29,8 +29,18 @@
     <main class="program-page">
         <h1 class="section-title">공연 프로그램</h1>
 
+        <!-- 카테고리 탭: 순서·기본 탭은 JS가 시즌에 맞춰 정한다 (10~12월엔 크리스마스가 맨 앞) -->
+        <div class="program-tabs" id="program-tabs" role="tablist" aria-label="공연 카테고리">
+            <button type="button" class="program-tab" role="tab" data-tab="크리스마스">크리스마스</button>
+            <button type="button" class="program-tab" role="tab" data-tab="어린이">어린이</button>
+            <button type="button" class="program-tab" role="tab" data-tab="극장">극장공연</button>
+            <button type="button" class="program-tab" role="tab" data-tab="행사">버스킹</button>
+            <button type="button" class="program-tab" role="tab" data-tab="기업">기업/기관</button>
+            <button type="button" class="program-tab" role="tab" data-tab="부가">부가 프로그램</button>
+        </div>
+
         <!-- CATEGORY 1: 어린이 프로그램 -->
-        <div class="program-category-section">
+        <div class="program-category-section" data-section="어린이" role="tabpanel" hidden>
             <div class="category-header">
                 <h3>어린이 프로그램</h3>
                 <p>아이들의 상상력을 자극하고, 꿈과 희망을 선물하는 관객 참여형 키즈 마술쇼</p>
@@ -40,9 +50,8 @@
             </div>
         </div>
 
-        <!-- CATEGORY 1-B: 크리스마스 시즌 공연 (평소엔 어린이 아래, 10~12월엔 JS가 어린이 위로 이동)
-             등록된 공연이 있을 때만 JS가 표시한다 -->
-        <div class="program-category-section" style="display:none;">
+        <!-- CATEGORY 1-B: 크리스마스 시즌 공연 (등록된 공연이 없으면 탭과 함께 숨김) -->
+        <div class="program-category-section" data-section="크리스마스" role="tabpanel" hidden>
             <div class="category-header">
                 <h3>크리스마스 시즌 공연</h3>
                 <p>어린이집 · 유치원 · 학교 크리스마스 행사를 위한 시즌 한정 마술 공연</p>
@@ -53,7 +62,7 @@
         </div>
 
         <!-- CATEGORY 2: 극장 프로그램 -->
-        <div class="program-category-section">
+        <div class="program-category-section" data-section="극장" role="tabpanel" hidden>
             <div class="category-header">
                 <h3>극장 프로그램</h3>
                 <p>웅장한 사운드와 몰입도 높은 연출로 예술적 완성도를 극대화한 스토리텔링 일루전 매직쇼</p>
@@ -64,7 +73,7 @@
         </div>
 
         <!-- CATEGORY 3: 행사/버스킹 프로그램 -->
-        <div class="program-category-section">
+        <div class="program-category-section" data-section="행사" role="tabpanel" hidden>
             <div class="category-header">
                 <h3>버스킹 프로그램</h3>
                 <p>거리, 공원, 축제 현장 어디서나 야외 무대의 열기와 소통을 100% 보장하는 스트리트 쇼</p>
@@ -75,7 +84,7 @@
         </div>
 
         <!-- CATEGORY 4: 기업/기관 프로그램 -->
-        <div class="program-category-section">
+        <div class="program-category-section" data-section="기업" role="tabpanel" hidden>
             <div class="category-header">
                 <h3>기업 / 기관 프로그램</h3>
                 <p>조직의 비전, 브랜드 메시지를 세련되게 담아 행사의 품격을 높이는 고품격 런칭 및 연수 매직쇼</p>
@@ -86,7 +95,7 @@
         </div>
 
         <!-- CATEGORY 5: 부가 프로그램 -->
-        <div class="program-category-section">
+        <div class="program-category-section" data-section="부가" role="tabpanel" hidden>
             <div class="category-header">
                 <h3>부가 프로그램</h3>
                 <p>행사의 완성도를 한층 높여줄 특별한 체험, 강의, 장비 렌탈 등의 서브 솔루션</p>
@@ -96,6 +105,64 @@
             </div>
         </div>
     </main>
+
+    <!-- 카테고리 탭: Firebase·main.js 로딩을 기다리지 않고 바로 탭 순서와 열 탭을 정해
+         원래 목록이 먼저 보였다가 바뀌는 깜빡임을 막는다.
+         시즌 규칙(10~12월엔 크리스마스 맨 앞)은 main.js 의 getProgramCategoryOrder() 와 같게 유지할 것. -->
+    <script>
+        (function () {
+            var tabBar = document.getElementById('program-tabs');
+            if (!tabBar) return;
+            var sections = Array.prototype.slice.call(document.querySelectorAll('.program-category-section[data-section]'));
+            var container = sections.length ? sections[0].parentNode : null;
+            var order = new Date().getMonth() >= 9
+                ? ['크리스마스', '어린이', '극장', '행사', '기업', '부가']
+                : ['어린이', '크리스마스', '극장', '행사', '기업', '부가'];
+
+            function tabOf(cat) { return tabBar.querySelector('[data-tab="' + cat + '"]'); }
+            function visibleCats() { return order.filter(function (c) { return tabOf(c) && !tabOf(c).hidden; }); }
+
+            order.forEach(function (cat) {
+                var tab = tabOf(cat);
+                if (tab) tabBar.appendChild(tab);
+                var section = sections.filter(function (s) { return s.dataset.section === cat; })[0];
+                if (section && container) container.appendChild(section);
+            });
+
+            var active = null;
+            function activate(cat, updateHash) {
+                if (!tabOf(cat) || tabOf(cat).hidden) cat = visibleCats()[0];
+                active = cat;
+                Array.prototype.forEach.call(tabBar.querySelectorAll('[data-tab]'), function (t) {
+                    var on = t.dataset.tab === cat;
+                    t.classList.toggle('active', on);
+                    t.setAttribute('aria-selected', on ? 'true' : 'false');
+                });
+                sections.forEach(function (s) { s.hidden = s.dataset.section !== cat; });
+                if (updateHash) history.replaceState(null, '', '#' + encodeURIComponent(cat));
+            }
+
+            tabBar.addEventListener('click', function (e) {
+                var tab = e.target.closest('[data-tab]');
+                if (tab) activate(tab.dataset.tab, true);
+            });
+
+            var fromHash = decodeURIComponent(location.hash.slice(1));
+            activate(order.indexOf(fromHash) !== -1 ? fromHash : order[0]);
+
+            // main.js(renderProgramGrids)에서 사용
+            window.programTabs = {
+                getActive: function () { return active; },
+                // 등록된 공연이 없는 시즌 탭은 숨기고, 열려 있었다면 다음 탭으로 넘긴다
+                hideTab: function (cat) {
+                    var tab = tabOf(cat);
+                    if (!tab) return;
+                    tab.hidden = true;
+                    if (active === cat) activate(visibleCats()[0]);
+                }
+            };
+        })();
+    </script>
 
     <!-- INTEGRATED FOOTER -->
     <footer></footer>

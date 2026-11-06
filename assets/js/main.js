@@ -1957,25 +1957,24 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     async function renderProgramGrids() {
-        const grids = document.querySelectorAll('.program-grid[data-category]');
+        const grids = Array.from(document.querySelectorAll('.program-grid[data-category]'));
         if (grids.length === 0) return;
 
-        // 크리스마스 시즌(10~12월)에는 크리스마스 섹션을 어린이 섹션 위로 올린다
-        const xmasSection = document.getElementById('grid-크리스마스')?.closest('.program-category-section');
-        const kidsSection = document.getElementById('grid-어린이')?.closest('.program-category-section');
-        if (xmasSection && kidsSection && isChristmasSeason()) {
-            kidsSection.parentNode.insertBefore(xmasSection, kidsSection);
-        }
+        // 탭은 program/index.html 의 인라인 스크립트가 미리 만들어 둔다 (깜빡임 방지)
+        const tabs = window.programTabs || null;
+        // 열린 탭의 공연을 먼저 불러온다
+        const activeCat = tabs?.getActive();
+        grids.sort((a, b) => (b.dataset.category === activeCat) - (a.dataset.category === activeCat));
 
         for (const grid of grids) {
             const cat = grid.getAttribute('data-category');
             const programs = await getProgramsData(cat);
             grid.innerHTML = '';
-            // 시즌 공연(크리스마스)은 등록된 공연이 없으면 섹션 자체를 숨긴다
-            const section = grid.closest('.program-category-section');
-            if (cat === '크리스마스' && section) {
-                section.style.display = programs.length === 0 ? 'none' : '';
-                if (programs.length === 0) continue;
+            // 시즌 공연(크리스마스)은 등록된 공연이 없으면 탭과 섹션을 숨긴다
+            if (cat === '크리스마스' && programs.length === 0) {
+                if (tabs) tabs.hideTab(cat);
+                else grid.closest('.program-category-section')?.setAttribute('hidden', '');
+                continue;
             }
             if (programs.length === 0) {
                 grid.innerHTML = `<div class="glass-panel" style="padding:30px; text-align:center; color:var(--color-text-muted); grid-column:1 / -1;">등록된 프로그램이 없습니다.</div>`;

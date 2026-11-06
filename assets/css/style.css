@@ -912,6 +912,74 @@ header {
     color: var(--color-text-muted);
 }
 
+/* 공연 프로그램 카테고리 탭 */
+.program-tabs {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    max-width: 1200px;
+    margin: 0 auto 50px;
+    padding: 0 24px;
+}
+
+.program-tab {
+    padding: 11px 22px;
+    border-radius: 30px;
+    border: var(--border-glass);
+    background: var(--color-bg-card);
+    color: var(--color-text-muted);
+    font: inherit;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: var(--transition-smooth);
+}
+
+.program-tab:hover {
+    color: var(--color-text-light);
+    border-color: rgba(212, 175, 55, 0.5);
+}
+
+.program-tab.active {
+    background: var(--color-primary-gold);
+    border-color: var(--color-primary-gold);
+    color: #0b0a0f;
+}
+
+.program-tab:focus-visible {
+    outline: 2px solid var(--color-primary-gold);
+    outline-offset: 3px;
+}
+
+.program-tab[hidden],
+.program-category-section[hidden] {
+    display: none;
+}
+
+/* 모바일: 탭을 한 줄로 두고 가로 스크롤 */
+@media (max-width: 640px) {
+    .program-tabs {
+        flex-wrap: nowrap;
+        justify-content: flex-start;
+        overflow-x: auto;
+        gap: 8px;
+        margin-bottom: 36px;
+        padding: 0 16px 6px;
+        scrollbar-width: none;
+    }
+
+    .program-tabs::-webkit-scrollbar {
+        display: none;
+    }
+
+    .program-tab {
+        padding: 9px 16px;
+        font-size: 0.95rem;
+    }
+}
+
 /* 공연 프로그램 카드: PC 2열, 모바일 1열 */
 .program-grid {
     display: grid;
