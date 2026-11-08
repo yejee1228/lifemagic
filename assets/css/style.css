@@ -191,6 +191,7 @@ header {
 
 .nav-links {
     display: flex;
+    align-items: center;
     gap: 35px;
 }
 
@@ -224,6 +225,45 @@ header {
 .nav-links a:hover::after,
 .nav-links a.active::after {
     width: 100%;
+}
+
+/* 시즌 프로모션 헤더 버튼 (기간 중에만 JS가 추가, 반짝임) */
+.nav-links a.nav-season-promo {
+    display: inline-block;
+    padding: 6px 14px;
+    border-radius: 20px;
+    background: #d6283a;
+    color: #fff;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    animation: nav-season-blink 1.4s ease-in-out infinite;
+}
+
+.nav-links a.nav-season-promo::after {
+    display: none;
+}
+
+.nav-links a.nav-season-promo:hover,
+.nav-links a.nav-season-promo.active {
+    color: #fff;
+    background: #e83a4c;
+}
+
+@keyframes nav-season-blink {
+    0%, 100% {
+        opacity: 1;
+        box-shadow: 0 0 0 0 rgba(214, 40, 58, 0.7), 0 0 14px rgba(214, 40, 58, 0.55);
+    }
+    50% {
+        opacity: 0.55;
+        box-shadow: 0 0 0 6px rgba(214, 40, 58, 0), 0 0 4px rgba(214, 40, 58, 0.2);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .nav-links a.nav-season-promo {
+        animation: none;
+    }
 }
 
 /* Hamburger Menu button */

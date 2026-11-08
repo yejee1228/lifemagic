@@ -88,6 +88,36 @@ window._hImg = function(img) {
     parent.appendChild(svg);
 };
 
+// 시즌 프로모션 설정 — 홈 팝업과 헤더 버튼이 같은 기간(start~end)을 쓴다.
+// 시즌이 바뀌면 이 값만 교체할 것.
+const SEASON_POPUP = {
+    id: 'christmas-2026',
+    start: '2026-10-01',
+    end: '2026-12-31',
+    link: '/christmas/',
+    image: '/assets/images/program/program1-5.jpg',
+    badge: '🎄 CHRISTMAS 2026',
+    title: '크리스마스 공연<br>예약 마감 임박!',
+    desc: '12/1~12/11 평일 공연 예약 시<br><strong>전체금액 30% 할인</strong><br><span>오전 공연은 먼저 마감됩니다</span>',
+    cta: '자세히 보기',
+    navLabel: '🎄 크리스마스 프로모션'
+};
+
+function isSeasonActive(cfg, now = new Date()) {
+    const start = new Date(`${cfg.start}T00:00:00`);
+    const end = new Date(`${cfg.end}T23:59:59`);
+    return now >= start && now <= end;
+}
+
+// 헤더 메뉴 끝에 시즌 프로모션 버튼을 붙인다 (기간 중에만, 깜빡임 효과)
+function addSeasonNavButton(cfg) {
+    const nav = document.getElementById('nav-links');
+    if (!nav || !isSeasonActive(cfg) || nav.querySelector('.nav-season-promo')) return;
+    const li = document.createElement('li');
+    li.innerHTML = `<a href="${cfg.link}" class="nav-season-promo" data-page="season">${cfg.navLabel}</a>`;
+    nav.appendChild(li);
+}
+
 // 프로그램 카테고리 표시 순서. '크리스마스'(시즌 공연)는 평소엔 어린이 바로 아래,
 // 매년 10~12월에는 어린이보다 위(맨 앞)로 올린다.
 function isChristmasSeason(date = new Date()) {
@@ -184,6 +214,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             </button>
         </div>`;
             }
+            addSeasonNavButton(SEASON_POPUP);
             highlightActiveNav();
             initHeaderInteractions();
         }
@@ -245,6 +276,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         else if (page === 'history') activePage = 'history';
         else if (page === 'inquiry') activePage = 'inquiry';
         else if (page === 'admin') activePage = 'admin';
+        else if (`/${page}/` === SEASON_POPUP.link) activePage = 'season';
 
         // Highlight matching link
         document.querySelectorAll('.nav-links a').forEach(link => {
@@ -413,29 +445,15 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     /* ==========================================================================
        2c. SEASON POPUP (index.html)
-       시즌 페이지는 홈 팝업으로만 진입한다. 시즌이 바뀌면 SEASON_POPUP 값만 교체할 것.
+       시즌 페이지는 홈 팝업과 헤더 버튼으로 진입한다. 설정은 파일 상단 SEASON_POPUP 참고.
        ========================================================================== */
-    const SEASON_POPUP = {
-        id: 'christmas-2026',
-        start: '2026-10-01',
-        end: '2026-12-31',
-        link: '/christmas/',
-        image: '/assets/images/program/program1-5.jpg',
-        badge: '🎄 CHRISTMAS 2026',
-        title: '크리스마스 공연<br>예약 마감 임박!',
-        desc: '12/1~12/11 평일 공연 예약 시<br><strong>전체금액 30% 할인</strong><br><span>오전 공연은 먼저 마감됩니다</span>',
-        cta: '자세히 보기'
-    };
-
     if (document.body.classList.contains('home-snap-scroll')) {
         initSeasonPopup(SEASON_POPUP);
     }
 
     function initSeasonPopup(cfg) {
         const now = new Date();
-        const start = new Date(`${cfg.start}T00:00:00`);
-        const end = new Date(`${cfg.end}T23:59:59`);
-        if (now < start || now > end) return;
+        if (!isSeasonActive(cfg, now)) return;
 
         const hideKey = `season-popup-hide-${cfg.id}`;
         const todayStr = `${now.getFullYear()}-${now.getMonth() + 1}-${now.getDate()}`;
